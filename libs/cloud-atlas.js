@@ -6,7 +6,10 @@
         var domainJson = {
             "domains": [
                 {
-                    'name': 'solar', 'x': 0, 'y': 0, 'planets': [{name: 'earth', 'size': '1'}]
+                    'name': 'solar',
+                    'x': 0,
+                    'y': 0,
+                    'planets': [{name: 'earth', 'size': '1'}, {name: 'mars', 'size': '1'}]
                 },
                 {
                     'name': 'south', 'x': 100, 'y': 100, 'planets': [{name: 'primary-2', 'size': '2'}]
@@ -39,7 +42,7 @@
 
 
         var param = {
-            spaceUnit: 5,
+            spaceUnit: 3,
             solarSize: 2,
             planetSize: 0.5,
             stepIncrease: 0.002,
@@ -166,21 +169,26 @@
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
-            addPlanet();
+            addPlanet(domain);
 
 
-            function addPlanet() {
+            function addPlanet(domain) {
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
                     var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'earth.jpg')
-                    var currentX = domain.x + (i + 1) * param.spaceUnit
+                    var distance = (i + 1) * param.spaceUnit;
+                    var currentX = domain.x + distance
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
                     planet.name = planets[i].name
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
                     atlas.planets.push({
-                        'name': planet.name, 'cx': domain.x, 'cy': domain.y, 'd': (i + 1) * param.spaceUnit
+                        'name': planet.name,
+                        'cx': domain.x,
+                        'cy': domain.y,
+                        'd': distance,
+                        angle: Math.random() * 2 * Math.PI
                     })
                 }
             }
@@ -296,8 +304,8 @@
             for (var i = 0; i < atlas.planets.length; i++) {
                 var planet = atlas.planets[i]
                 var planetObj = atlas.scence.getObjectByName(planet.name);
-                planetObj.position.x = Math.cos(atlas.step * Math.PI * 2) * planet.d + planet.cx
-                planetObj.position.z = Math.sin(atlas.step * Math.PI * 2) * planet.d + planet.cy
+                planetObj.position.x = Math.cos(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cx
+                planetObj.position.z = Math.sin(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cy
             }
             atlas.render.render(atlas.scence, atlas.camera)
             requestAnimationFrame(atlas.draw);
