@@ -1,10 +1,12 @@
-svg {
-    z-index: 500;
-    position: absolute;
-    border-radius: 5px;
-}
-
 .solarReport {
     fill: #666;
     stroke: 'black';
+    margin: 5px;
+}
+
+#pop-report {
+    background-color: #ccc;
+    z-index: 500;
+    border-radius: 5px;
+    position: absolute;
 }

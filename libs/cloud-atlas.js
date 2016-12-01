@@ -162,6 +162,7 @@
 
         function addDomainSolar(domain) {
             var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 20, 20), 'solar.jpg')
+            solar.planets = []
             addLightSpot();
 
             solar.position.set(domain.x, param.entityHeight, domain.y)
@@ -169,10 +170,10 @@
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
-            addPlanet(domain);
+            addPlanet(domain, solar);
 
 
-            function addPlanet(domain) {
+            function addPlanet(domain, solar) {
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
                     var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'earth.jpg')
@@ -181,6 +182,7 @@
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
                     planet.name = planets[i].name
+                    solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
                     atlas.planets.push({
@@ -334,9 +336,9 @@
 
             var intersect = rayCaster.intersectObjects(atlas.solarObjects);
             if (intersect.length > 0) {
-                SELECTED = intersect[0].object;
-                window.report.showSolarReport(e.clientX, e.clientY);
-                link.activateLinks(SELECTED.name)
+                var domain = intersect[0].object;
+                window.report.showSolarReport(e.clientX, e.clientY, domain);
+                link.activateLinks(domain.name)
             } else {
                 window.report.hideSolarReport();
                 link.deactivateLinks()
