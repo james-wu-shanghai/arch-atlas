@@ -1,0 +1,16 @@
+<div class="solarReport">
+</div>
+<script>
+    (function () {
+        window.solarReport = {}
+
+        solarReport.render = function (domain) {
+            console.log(domain)
+            var report = d3.select('.solarReport')
+            var svg = report.append('svg');
+//            var rect = svg.append("rect").attr({fill: '#fff', stroke: 'steelblue', height: 95, width: 290})
+            svg.append('text').text('Solar System Name: ' + domain.name).attr({fill: 'black', 'font-size': '1em', y: 10})
+            svg.append('text').text('Planet No.: ' + domain.planets.length).attr({fill: 'black', 'font-size': '1em', y: 30})
+        }
+    }).call(this)
+</script>
