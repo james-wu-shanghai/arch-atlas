@@ -1,0 +1,10 @@
+svg {
+    z-index: 500;
+    position: absolute;
+    border-radius: 5px;
+}
+
+.solarReport {
+    fill: #666;
+    stroke: 'black';
+}
