@@ -1,0 +1,11 @@
+[
+{"from": "solar", "to": "south"},
+{"from": "solar", "to": "three"},
+{"from": "solar", "to": "north"},
+{"from": "solar", "to": "west"},
+{"from": "north", "to": "south"},
+{"from": "north", "to": "west"},
+{"from": "south", "to": "west"},
+{"from": "south", "to": "three"},
+{"from": "west", "to": "three"}
+]

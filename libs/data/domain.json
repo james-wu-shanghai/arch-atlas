@@ -1,0 +1,128 @@
+{
+  "domains": [
+    {
+      "name": "solar",
+      "pic": "solar.jpg",
+      "x": 0,
+      "y": 0,
+      "planets": [
+        {
+          "name": "earth",
+          "size": "1"
+        },
+        {
+          "name": "mars",
+          "size": "1"
+        }
+      ]
+    },
+    {
+      "name": "south",
+      "pic": "blue.png",
+      "x": 100,
+      "y": 100,
+      "planets": [
+        {
+          "name": "primary-2",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "three",
+      "pic": "red-black.png",
+      "x": -100,
+      "y": 100,
+      "planets": [
+        {
+          "name": "primary",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "north",
+      "pic": "golden.png",
+      "x": 100,
+      "y": -100,
+      "planets": [
+        {
+          "name": "primary-3",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "west",
+      "pic": "white.png",
+      "x": -100,
+      "y": -100,
+      "planets": [
+        {
+          "name": "primary-4",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "dark-red",
+      "pic": "dark-red.png",
+      "x": -30,
+      "y": -70,
+      "planets": [
+        {
+          "name": "primary-5",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "green-white",
+      "pic": "green-white.png",
+      "x": 50,
+      "y": -60,
+      "planets": [
+        {
+          "name": "primary-6",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "pink",
+      "pic": "pink.png",
+      "x": -50,
+      "y": -60,
+      "planets": [
+        {
+          "name": "primary-7",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "very-red",
+      "pic": "very-red.png",
+      "x": -90,
+      "y": 60,
+      "planets": [
+        {
+          "name": "primary-8",
+          "size": "2"
+        }
+      ]
+    },
+    {
+      "name": "yellow",
+      "pic": "yellow.png",
+      "x": -90,
+      "y": 10,
+      "planets": [
+        {
+          "name": "primary-9",
+          "size": "2"
+        }
+      ]
+    }
+  ]
+}

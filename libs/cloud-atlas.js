@@ -3,43 +3,8 @@
  */
 (function () {
         var atlas = window.atlas = {}
-        var domainJson = {
-            "domains": [
-                {
-                    'name': 'solar',
-                    'x': 0,
-                    'y': 0,
-                    'planets': [{name: 'earth', 'size': '1'}, {name: 'mars', 'size': '1'}]
-                },
-                {
-                    'name': 'south', 'x': 100, 'y': 100, 'planets': [{name: 'primary-2', 'size': '2'}]
-                },
-                {
-                    'name': 'three', 'x': -100, 'y': 100, 'planets': [{name: 'primary', 'size': '2'}]
-                },
-                {
-                    'name': 'north', 'x': 100, 'y': -100, 'planets': [{name: 'primary-3', 'size': '2'}]
-                },
-                {
-                    'name': 'west', 'x': -100, 'y': -100, 'planets': [{name: 'primary-4', 'size': '2'}]
-                },
-
-            ]
-
-        }
-
-        var edgesJson = [
-            {'from': 'solar', 'to': 'south'},
-            {'from': 'solar', 'to': 'three'},
-            {'from': 'solar', 'to': 'north'},
-            {'from': 'solar', 'to': 'west'},
-            {'from': 'north', 'to': 'south'},
-            {'from': 'north', 'to': 'west'},
-            {'from': 'south', 'to': 'west'},
-            {'from': 'south', 'to': 'three'},
-            {'from': 'west', 'to': 'three'},
-        ]
-
+        var domainJson = null;
+        var edgesJson = null;
 
         var param = {
             spaceUnit: 3,
@@ -58,39 +23,42 @@
             radiusSegments: 12,
             closed: false,
             addLinks: function () {
-                for (var i = 0; i < edgesJson.length; i++) {
-                    var edge = edgesJson[i];
-                    var fromSolar = atlas.scence.getObjectByName(edge.from);
-                    var toSolar = atlas.scence.getObjectByName(edge.to)
-                    if (fromSolar == null || toSolar == null) {
-                        console.warn('from or to object not found, from:' + edge.from + " to:" + edge.to);
+                d3.json('libs/data/connections.json', function (error, edgesJson) {
+                    atlas.edges = edgesJson;
+                    for (var i = 0; i < edgesJson.length; i++) {
+                        var edge = edgesJson[i];
+                        var fromSolar = atlas.scence.getObjectByName(edge.from);
+                        var toSolar = atlas.scence.getObjectByName(edge.to)
+                        if (fromSolar == null || toSolar == null) {
+                            console.warn('from or to object not found, from:' + edge.from + " to:" + edge.to);
+                        }
+
+                        var points = []
+
+                        var direction = new THREE.Vector3();
+                        points.push(direction.set(fromSolar.position.x, param.entityHeight, fromSolar.position.z).clone())
+
+                        // points.push(direction.set(fromSolar.position.x, 0, fromSolar.position.z).clone())
+                        // points.push(direction.set(toSolar.position.x, 0, toSolar.position.z).clone())
+                        points.push(direction.set(toSolar.position.x, param.entityHeight, toSolar.position.z).clone())
+                        var tubeGeometry = new THREE.TubeGeometry(
+                            new THREE.CatmullRomCurve3(points), link.segments, link.radius, link.radiusSegments, link.closed)
+
+                        var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
+                            transparent: true,
+                            opacity: 0.15,
+                            color: 0xffffff
+                        }))
+                        edge.link = mesh
+                        atlas.scence.add(mesh)
                     }
-
-                    var points = []
-
-                    var direction = new THREE.Vector3();
-                    points.push(direction.set(fromSolar.position.x, param.entityHeight, fromSolar.position.z).clone())
-
-                    // points.push(direction.set(fromSolar.position.x, 0, fromSolar.position.z).clone())
-                    // points.push(direction.set(toSolar.position.x, 0, toSolar.position.z).clone())
-                    points.push(direction.set(toSolar.position.x, param.entityHeight, toSolar.position.z).clone())
-                    var tubeGeometry = new THREE.TubeGeometry(
-                        new THREE.CatmullRomCurve3(points), link.segments, link.radius, link.radiusSegments, link.closed)
-
-                    var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
-                        transparent: true,
-                        opacity: 0.15,
-                        color: 0xffffff
-                    }))
-                    edge.link = mesh
-                    atlas.scence.add(mesh)
-                }
+                })
             }
             ,
 
             activateLinks: function (fromSolarName) {
-                for (var i = 0; i < edgesJson.length; i++) {
-                    var edge = edgesJson[i]
+                for (var i = 0; i < atlas.edges.length; i++) {
+                    var edge = atlas.edges[i]
                     if (edge.from == fromSolarName) {
                         var link = edge.link
                         if (link != null) {
@@ -103,8 +71,8 @@
             ,
 
             deactivateLinks: function () {
-                for (var i = 0; i < edgesJson.length; i++) {
-                    var edge = edgesJson[i]
+                for (var i = 0; i < atlas.edges.length; i++) {
+                    var edge = atlas.edges[i]
                     if (edge.activated == true) {
                         edge.link.material.color = new THREE.Color(0xffffff)
                         edge.activated = false
@@ -115,6 +83,7 @@
         }
 
         atlas.init = function (name) {
+
             atlas.step = 0
             atlas.raycaster = new THREE.Raycaster();
 
@@ -129,16 +98,13 @@
             atlas.stars = []
             atlas.planets = []
             atlas.solarObjects = []
-            initDomains(domainJson);
+            initDomains();
+
 
             atlas.camera.lookAt(atlas.scence.position)
             atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
             // atlas.render.domElement.addEventListener('mouseup', onDocumentMouseUp, false);
             $(name).append(atlas.render.domElement)
-
-            loadFont(name);
-
-            link.addLinks()
 
             atlas.draw();
         }
@@ -151,17 +117,21 @@
             return scence
         }
 
-        function initDomains(domainJson) {
-            var domains = domainJson.domains
-            for (var i = 0; i < domains.length; i++) {
-                var domain = domains[i]
-                addDomainSolar(domain)
-            }
+        function initDomains() {
+            d3.json('libs/data/domain.json', function (error, domainJson) {
+                var domains = domainJson.domains
+                for (var i = 0; i < domains.length; i++) {
+                    var domain = domains[i]
+                    addDomainSolar(domain)
+                }
+                loadFont(domains);
 
+                link.addLinks()
+            })
         }
 
         function addDomainSolar(domain) {
-            var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 20, 20), 'solar.jpg')
+            var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 20, 20), 'stars/' + domain.pic)
             solar.planets = []
             addLightSpot();
 
@@ -176,7 +146,7 @@
             function addPlanet(domain, solar) {
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
-                    var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'earth.jpg')
+                    var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'planet/earth.jpg')
                     var distance = (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
@@ -257,7 +227,7 @@
             atlas.scence.add(helper);
         }
 
-        function loadFont() {
+        function loadFont(domains) {
             var loader = new THREE.FontLoader();
             loader.load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
@@ -283,7 +253,6 @@
                     curveSegments: 1,
                     steps: 1
                 }
-                var domains = domainJson.domains
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
 
