@@ -151,7 +151,7 @@
                     var currentX = domain.x + distance
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
-                    planet.name = planets[i].name
+                    planet.name = "[" + domain.name + "]." + planets[i].name
                     solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
