@@ -7,10 +7,10 @@
         var edgesJson = null;
 
         var param = {
-            spaceUnit: 3,
-            solarSize: 2,
-            planetSize: 0.5,
-            stepIncrease: 0.002,
+            spaceUnit: 0.5,
+            solarSize: 1.5,
+            planetSize: 0.2,
+            stepIncrease: 0.0005,
             planeWidth: 250,
             planeHeight: 250,
             planeWdtSeg: 10,
@@ -23,7 +23,7 @@
             radiusSegments: 12,
             closed: false,
             addLinks: function () {
-                d3.json('libs/data/connections.json', function (error, edgesJson) {
+                d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
                     atlas.edges = edgesJson;
                     for (var i = 0; i < edgesJson.length; i++) {
                         var edge = edgesJson[i];
@@ -118,8 +118,12 @@
         }
 
         function initDomains() {
-            d3.json('libs/data/domain.json', function (error, domainJson) {
-                var domains = domainJson.domains
+            // d3.json('libs/data/domain.json', function (error, domainjson) {
+            // var domains = domainjson.domains
+
+
+            d3.json('libs/data/entity.json', function (error, entityJson) {
+                var domains = jsonConvert.convert(entityJson)
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
                     addDomainSolar(domain)
@@ -229,7 +233,8 @@
 
         function loadFont(domains) {
             var loader = new THREE.FontLoader();
-            loader.load('font/helvetiker_regular.typeface.json', function (response) {
+            // loader.load('font/helvetiker_regular.typeface.json', function (response) {
+             loader.load('font/FZFangSong-Z02_Regular.json', function (response) {
                 atlas.font = response;
                 addDomainTags()
 
