@@ -22,60 +22,81 @@
             radius: 0.5,
             radiusSegments: 12,
             closed: false,
+            opacity: 0.3,
             addLinks: function () {
                 d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
                     atlas.edges = edgesJson;
                     for (var i = 0; i < edgesJson.length; i++) {
-                        var edge = edgesJson[i];
-                        var fromSolar = atlas.scence.getObjectByName(edge.from);
-                        var toSolar = atlas.scence.getObjectByName(edge.to)
-                        if (fromSolar == null || toSolar == null) {
-                            console.warn('from or to object not found, from:' + edge.from + " to:" + edge.to);
-                        }
-
-                        var points = []
-
-                        var direction = new THREE.Vector3();
-                        points.push(direction.set(fromSolar.position.x, param.entityHeight, fromSolar.position.z).clone())
-
-                        // points.push(direction.set(fromSolar.position.x, 0, fromSolar.position.z).clone())
-                        // points.push(direction.set(toSolar.position.x, 0, toSolar.position.z).clone())
-                        points.push(direction.set(toSolar.position.x, param.entityHeight, toSolar.position.z).clone())
-                        var tubeGeometry = new THREE.TubeGeometry(
-                            new THREE.CatmullRomCurve3(points), link.segments, link.radius, link.radiusSegments, link.closed)
-
-                        var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
-                            transparent: true,
-                            opacity: 0.15,
-                            color: 0xffffff
-                        }))
-                        edge.link = mesh
-                        atlas.scence.add(mesh)
+                        if (edgesJson != null)
+                            var mesh = link.buildLink(edgesJson[i]);
+                        //atlas.scence.add(mesh)
                     }
                 })
-            }
-            ,
+            },
+            buildLink: function (edge) {
+                if (edge.link != null)
+                    return edge.link;
+                var fromSolar = atlas.scence.getObjectByName(edge.from);
+                var toSolar = atlas.scence.getObjectByName(edge.to)
+                // // if (fromSolar.name == toSolar.name)
+                //     return null;
+                if (fromSolar == null || toSolar == null) {
+                    console.warn('from or to object not found, from:' + edge.from + " to:" + edge.to);
+                    return null;
+                }
+
+                var points = []
+
+                var direction = new THREE.Vector3();
+                points.push(direction.set(fromSolar.position.x, param.entityHeight, fromSolar.position.z).clone())
+
+                // points.push(direction.set(fromSolar.position.x, 0, fromSolar.position.z).clone())
+                // points.push(direction.set(toSolar.position.x, 0, toSolar.position.z).clone())
+                points.push(direction.set(toSolar.position.x, param.entityHeight, toSolar.position.z).clone())
+                var tubeGeometry = new THREE.TubeGeometry(
+                    new THREE.CatmullRomCurve3(points), link.segments, link.radius, link.radiusSegments, link.closed)
+
+                var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
+                    transparent: true,
+                    opacity: 0.3,
+                    color: 0xfff
+                }))
+                mesh.name = fromSolar.name + "|" + toSolar.name;
+                edge.link = mesh
+                return mesh;
+            },
 
             activateLinks: function (fromSolarName) {
+                if (atlas.edges == null)
+                    return;
                 for (var i = 0; i < atlas.edges.length; i++) {
                     var edge = atlas.edges[i]
-                    if (edge.from == fromSolarName) {
-                        var link = edge.link
-                        if (link != null) {
-                            edge.activated = true
-                            link.material.color = new THREE.Color(0xfff)
-                        }
+                    if (edge.from == fromSolarName && edge.to != null) {
+                        var mesh = link.buildLink(edge)
+                        if (mesh == null)
+                            continue;
+                        // if (link != null) {
+                        edge.activated = true
+                        atlas.scence.add(mesh);
+                        // return;
+                        // link.material.opacity = 1//link.opacity
+                        // link.material.color = new THREE.Color(0xfff)
+                        // }
                     }
                 }
             }
             ,
 
             deactivateLinks: function () {
+                if (atlas.edges == null)
+                    return;
                 for (var i = 0; i < atlas.edges.length; i++) {
                     var edge = atlas.edges[i]
                     if (edge.activated == true) {
-                        edge.link.material.color = new THREE.Color(0xffffff)
-                        edge.activated = false
+                        atlas.scence.remove(edge.link);
+                        //     edge.link.material.opacity = 0
+                        //     edge.link.material.color = new THREE.Color(0xffffff)
+                        //     edge.activated = false
                     }
                 }
             }
@@ -234,7 +255,7 @@
         function loadFont(domains) {
             var loader = new THREE.FontLoader();
             // loader.load('font/helvetiker_regular.typeface.json', function (response) {
-             loader.load('font/FZFangSong-Z02_Regular.json', function (response) {
+            loader.load('font/FZFangSong-Z02_Regular.json', function (response) {
                 atlas.font = response;
                 addDomainTags()
 
