@@ -1,3 +1,6 @@
 .idea
 cloud-atlas.html
 planet-report.html
+lib/data/entity.json
+lib/data/entity-connections.json
+
