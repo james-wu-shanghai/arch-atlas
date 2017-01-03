@@ -25,7 +25,7 @@
             atlas.raycaster = new THREE.Raycaster();
 
             atlas.textureLoader = new THREE.TextureLoader()
-            atlas.scence = initScence()
+            atlas.scence = initScene()
             atlas.camera = initCamera();
             atlas.trackball = initTrackball(atlas.camera);
             atlas.render = initRender();
@@ -46,11 +46,11 @@
         }
 
 
-        function initScence() {
-            var scence = new THREE.Scene();
+        function initScene() {
+            var scene = new THREE.Scene();
             var mat = new THREE.MeshBasicMaterial()
-            scence.material = mat;
-            return scence
+            scene.material = mat;
+            return scene
         }
 
         function initDomains() {
@@ -114,11 +114,11 @@
         function initTrackball(camera) {
             var trackballControls = new THREE.TrackballControls(camera)
             // trackballControls.rotateSpeed = 1
-            // trackballControls.zoomSpeed = 1
+            trackballControls.zoomSpeed = 1
+            // trackballControls.noZoom = true
             trackballControls.panSpeed = 0.05
             trackballControls.noRotate = true
-            trackballControls.noZoom = true
-            trackballControls.noRoll = true
+            // trackballControls.noRoll = true
             // trackballControls.maxDistance = 100
             // trackballControls.minDistance = 20
             return trackballControls
@@ -135,8 +135,8 @@
 
         function initCamera() {
             var camera = new THREE.OrthographicCamera(window.innerWidth / -16, window.innerWidth / 16,
-                window.innerHeight / 16, window.innerHeight / -16, -200, 1500);
-            camera.position.set(-250, 250, 250);
+                window.innerHeight / 16, window.innerHeight / -16, -200, 2500);
+            camera.position.set(-150, 150, 150);
             return camera;
         }
 
