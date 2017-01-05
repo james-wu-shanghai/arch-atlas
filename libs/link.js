@@ -17,18 +17,25 @@ var links = {
     activate: function (fromSolarName) {
         if (atlas.edges == null)
             return;
+
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
-            if (edge.from == fromSolarName && edge.to != null) {
-                var mesh = links.build(edge)
-                if (mesh == null)
-                    continue;
-                edge.activated = true
-                atlas.scence.add(mesh);
-            }
+            var mesh = null;
+            //被域调用
+            if (edge.from == fromSolarName && edge.to != null)
+                mesh = links.build(edge, 'OUT');
+            // 调用域
+            else if (edge.to == fromSolarName && edge.from != null)
+                mesh = links.build(edge, 'IN')
+
+            if (mesh == null)
+                continue;
+            edge.activated = true
+            atlas.scence.add(mesh);
+
         }
     },
-    build: function (edge) {
+    build: function (edge, type) {
         if (edge.link != null)
             return edge.link;
         var fromSolar = atlas.scence.getObjectByName(edge.from);
@@ -48,10 +55,11 @@ var links = {
         var tubeGeometry = new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points), links.segments, links.radius, links.radiusSegments, links.closed)
 
+        var color = type == 'IN' ? 0xff0000 : 0x0000ff;
         var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
             transparent: true,
             opacity: 0.3,
-            color: 0xfff
+            color: color
         }))
         mesh.name = fromSolar.name + "|" + toSolar.name;
         edge.link = mesh
