@@ -16,6 +16,7 @@
             planeWdtSeg: 10,
             planeHgtSeg: 6,
             entityHeight: 5,
+            scale: 16
         }
 
 
@@ -134,8 +135,9 @@
         }
 
         function initCamera() {
-            var camera = new THREE.OrthographicCamera(window.innerWidth / -16, window.innerWidth / 16,
-                window.innerHeight / 16, window.innerHeight / -16, -200, 2500);
+            var scale = param.scale;
+            var camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale,
+                window.innerHeight / scale, window.innerHeight / -scale, -200, 2500);
             camera.position.set(-150, 150, 150);
             return camera;
         }
@@ -210,6 +212,17 @@
                 planetObj.position.x = Math.cos(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cx
                 planetObj.position.z = Math.sin(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cy
             }
+            // if (delta > 0.02) {
+            //     param.scale += 1;
+            //     if (param.scale >= 32)
+            //         param.scale = 1;
+            // }
+            // var scale = param.scale;
+            // atlas.camera.left = window.innerWidth / -scale
+            // atlas.camera.right = window.innerWidth / scale
+            // atlas.camera.top = window.innerHeight / scale
+            // atlas.camera.buttom = window.innerHeight / -scale
+            // atlas.camera.updateProjectionMatrix();
             atlas.render.render(atlas.scence, atlas.camera)
             requestAnimationFrame(atlas.draw);
         }
@@ -217,11 +230,14 @@
         function createPlaneMesh(geom, imageFile) {
             if (imageFile != null) {
                 var texture = atlas.textureLoader.load("./jpg/" + imageFile);
-                return new THREE.Mesh(
+                var mesh = new THREE.Mesh(
                     geom,
                     new THREE.MeshBasicMaterial({
                         map: texture
-                    }))
+                    }));
+                mesh.material.map.wrapS = THREE.RepeatWrapping;
+                mesh.material.map.wrapT = THREE.RepeatWrapping;
+                return mesh
 
             } else {
                 return new THREE.Mesh(geom, new THREE.MeshBasicMaterial({color: 0x000000}))
