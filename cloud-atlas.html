@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Atlas</title>
+    <script src="libs/three.js"></script>
+    <script src="libs/TrackballControls.js"></script>
+    <script src="libs/jquery-3.1.1.js"></script>
+    <script src="libs/d3-3.5.17.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            /*background-color: #000000;*/
+        }
+
+    </style>
+    <link rel="stylesheet" href="css/report.css">
+</head>
+<body>
+<div id="WebGL"></div>
+</body>
+<script src="libs/d3-report.js"></script>
+<script src="libs/link.js"></script>
+<script src="libs/jsonConvert.js"></script>
+<script src="libs/cloud-atlas.js"></script>
+<script>
+    $(function () {
+        atlas.init('#WebGL')
+        report.init()
+    })
+</script>
+</html>
