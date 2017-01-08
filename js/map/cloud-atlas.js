@@ -165,7 +165,7 @@
 
         function loadFont(domains) {
             var loader = new THREE.FontLoader();
-            loader.load('font/FZFangSong-Z02_Regular.json', function (response) {
+            loader.load('font/FZYaoTi_Regular.json', function (response) {
                 atlas.font = response;
                 addDomainTags()
 
@@ -182,19 +182,18 @@
                     font: atlas.font,
                     weight: 'normal',
                     style: 'normal',
-                    bevelThickness: 0,
-                    bevelSize: 2,
+                    // bevelThickness: 0,
+                    // bevelSize: 0,
                     bevelEnabled: false,
-                    bevelSegments: 2,
-                    curveSegments: 2,
-                    steps: 2
+                    // bevelSegments: 2,
+                    curveSegments: 5,
+                    steps: 5
                 }
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
 
                     var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
-                    text.position.set(domain.x+3, param.entityHeight - 5, domain.y+3)
-                    // text.rotateX(-8 / 16 * Math.PI)
+                    text.position.set(domain.x+3, param.entityHeight - 3, domain.y+3)
                     text.rotateY(4 / 16 * Math.PI)
                     atlas.scence.add(text)
                 }
