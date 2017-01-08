@@ -16,7 +16,7 @@
             planeWdtSeg: 10,
             planeHgtSeg: 6,
             entityHeight: 5,
-            scale: 16
+            scale:16
         }
 
 
@@ -55,9 +55,9 @@
         }
 
         function initDomains() {
-            d3.json('libs/data/domain.json', function (error, entityJson) {
-                // var domains = jsonConvert.convert(entityJson)
-                var domains = entityJson.domains
+            d3.json('libs/data/entity.json', function (error, entityJson) {
+                var domains = jsonConvert.convert(entityJson)
+                // var domains = entityJson.domains
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
                     addDomainSolar(domain)
@@ -87,7 +87,7 @@
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
                     var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'planet/earth.jpg')
-                    var distance = (i + 1) * param.spaceUnit;
+                    var distance = param.solarSize+ (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
@@ -117,10 +117,10 @@
             var trackballControls = new THREE.TrackballControls(camera)
             // trackballControls.rotateSpeed = 1
             trackballControls.zoomSpeed = 1
-            // trackballControls.noZoom = true
+            trackballControls.noZoom = true
             trackballControls.panSpeed = 0.05
             trackballControls.noRotate = true
-            // trackballControls.noRoll = true
+            trackballControls.noRoll = true
             // trackballControls.maxDistance = 100
             // trackballControls.minDistance = 20
             atlas.trackball = trackballControls;
@@ -139,8 +139,8 @@
         function initCamera() {
             var scale = param.scale;
             var camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale,
-                window.innerHeight / scale, window.innerHeight / -scale, -100, 500);
-            camera.position.set(-150, 150, 150);
+                window.innerHeight / scale, window.innerHeight / -scale, -1000, 5000);
+            camera.position.set(100, 500, 100);
             return camera;
         }
 
@@ -177,24 +177,25 @@
             });
             function addDomainTags() {
                 var options = {
-                    size: 2,
+                    size: 3,
                     height: 0.1,
                     font: atlas.font,
                     weight: 'normal',
                     style: 'normal',
                     bevelThickness: 0,
-                    bevelSize: 0,
+                    bevelSize: 2,
                     bevelEnabled: false,
-                    bevelSegments: 3,
-                    curveSegments: 1,
-                    steps: 1
+                    bevelSegments: 6,
+                    curveSegments: 2,
+                    steps: 2
                 }
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
 
                     var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
-                    text.position.set(domain.x, param.entityHeight - 5, domain.y)
-                    text.rotateY(-4 / 16 * Math.PI)
+                    text.position.set(domain.x+4, param.entityHeight - 5, domain.y+4)
+                    text.rotateX(-8 / 16 * Math.PI)
+                    text.rotateZ(4 / 16 * Math.PI)
                     atlas.scence.add(text)
                 }
             }
