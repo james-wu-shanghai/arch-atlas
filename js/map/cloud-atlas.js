@@ -31,7 +31,7 @@
             atlas.trackball = initTrackball(atlas.camera);
             atlas.render = initRender();
             atlas.clock = new THREE.Clock();
-            atlas.plane = initPlane(param.planeWidth, param.planeHeight, param.planeWdtSeg, param.planeHgtSeg)
+            atlas.plane = initPlane(param.planeWidth*1.5, param.planeHeight*1.5, param.planeWdtSeg, param.planeHgtSeg)
             addGridHelper()
             atlas.stars = []
             atlas.planets = []
@@ -140,7 +140,7 @@
             var scale = param.scale;
             var camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale,
                 window.innerHeight / scale, window.innerHeight / -scale, -1000, 5000);
-            camera.position.set(100, 500, 100);
+            camera.position.set(300, 300, 300);
             return camera;
         }
 
@@ -185,7 +185,7 @@
                     bevelThickness: 0,
                     bevelSize: 2,
                     bevelEnabled: false,
-                    bevelSegments: 6,
+                    bevelSegments: 2,
                     curveSegments: 2,
                     steps: 2
                 }
@@ -193,9 +193,9 @@
                     var domain = domains[i]
 
                     var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
-                    text.position.set(domain.x+4, param.entityHeight - 5, domain.y+4)
-                    text.rotateX(-8 / 16 * Math.PI)
-                    text.rotateZ(4 / 16 * Math.PI)
+                    text.position.set(domain.x+3, param.entityHeight - 5, domain.y+3)
+                    // text.rotateX(-8 / 16 * Math.PI)
+                    text.rotateY(4 / 16 * Math.PI)
                     atlas.scence.add(text)
                 }
             }
