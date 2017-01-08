@@ -17,19 +17,26 @@
     </style>
     <link rel="stylesheet" href="css/report.css">
     <link rel="stylesheet" href="css/control_panel.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 </head>
 <body>
-<div id="ControlPanel" class="controlPanel">
-    input your domain:<input name="domain" type="text" onblur="findDomain(this)">
-    change size:
-    <select id="changeSize" onchange="resize($('#' + this.id + ' option:selected').val())">
-        <option value="8">小</option>
-        <option value="16" selected="selected">中</option>
-        <option value="24">大</option>
-    </select>
-    <button id="reset" onclick="reset()">复原</button>
-
-
+<div id="ControlPanel" class="controlPanel row form-inline center-block">
+    <div class="input-group" title="寻找域">
+        <span class="glyphicon glyphicon-search input-group-addon"></span>
+        <input name="domain" class="form-control" type="text" onblur="findDomain(this)">
+    </div>
+    <div class="input-group" title="调整大小">
+        <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
+        <select class="form-control" id="changeSize"
+                onchange="resize($('#' + this.id + ' option:selected').val())">
+            <option value="8">小</option>
+            <option value="16" selected="selected">中</option>
+            <option value="24">大</option>
+        </select>
+        <span id="reset" title="复原" class="btn btn-info glyphicon glyphicon-retweet input-group-addon"
+              onclick="reset()"></span>
+    </div>
+    <div title="功能建设中..."class="text-center col-lg-9 input-group"><span class="glyphicon glyphicon-warning-sign btn-lg" ></span></div>
 </div>
 <div id="WebGL"></div>
 </body>
@@ -38,6 +45,7 @@
 <script src="js/map/jsonConvert.js"></script>
 <script src="js/map/cloud-atlas.js"></script>
 <script src="js/control/control_panel.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
 <script>
     $(function () {
         atlas.init('#WebGL')
