@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Cloud Atlas</title>
-    <script src="libs/three.js"></script>
-    <script src="libs/TrackballControls.js"></script>
-    <script src="libs/jquery-3.1.1.js"></script>
-    <script src="libs/d3-3.5.17.js"></script>
+    <script src="libs/thirdparty/three.js"></script>
+    <script src="libs/thirdparty/TrackballControls.js"></script>
+    <script src="libs/thirdparty/jquery-3.1.1.js"></script>
+    <script src="libs/thirdparty/d3-3.5.17.js"></script>
     <style>
         body {
             margin: 0;
@@ -16,14 +16,21 @@
 
     </style>
     <link rel="stylesheet" href="css/report.css">
+    <link rel="stylesheet" href="css/control_panel.css">
 </head>
 <body>
+<div id="ControlPanel" class="controlPanel">
+    input your domain:<input name="domain" type="text" value=""
+                             onmousedown="this.select()" onblur="findDomain(this)">
+
+</div>
 <div id="WebGL"></div>
 </body>
-<script src="libs/d3-report.js"></script>
-<script src="libs/link.js"></script>
-<script src="libs/jsonConvert.js"></script>
-<script src="libs/cloud-atlas.js"></script>
+<script src="libs/report/d3-report.js"></script>
+<script src="libs/map/link.js"></script>
+<script src="libs/map/jsonConvert.js"></script>
+<script src="libs/map/cloud-atlas.js"></script>
+<script src="libs/control/control_panel.js"></script>
 <script>
     $(function () {
         atlas.init('#WebGL')

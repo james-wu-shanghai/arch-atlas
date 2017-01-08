@@ -10,7 +10,7 @@ var links = {
 
     add: function (param) {
         links.param = param
-        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+        d3.json('libs/data/connections.json', function (error, edgesJson) {
             atlas.edges = edgesJson;
         })
     },

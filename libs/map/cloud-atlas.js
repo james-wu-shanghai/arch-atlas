@@ -39,7 +39,7 @@
             initDomains();
 
 
-            atlas.camera.lookAt(atlas.scence.position)
+            // atlas.camera.lookAt(atlas.scence.position)
             atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
             $(name).append(atlas.render.domElement)
 
@@ -55,8 +55,9 @@
         }
 
         function initDomains() {
-            d3.json('libs/data/entity.json', function (error, entityJson) {
-                var domains = jsonConvert.convert(entityJson)
+            d3.json('libs/data/domain.json', function (error, entityJson) {
+                // var domains = jsonConvert.convert(entityJson)
+                var domains = entityJson.domains
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
                     addDomainSolar(domain)
@@ -122,7 +123,8 @@
             // trackballControls.noRoll = true
             // trackballControls.maxDistance = 100
             // trackballControls.minDistance = 20
-            return trackballControls
+            atlas.trackball = trackballControls;
+            return atlas.trackball
         }
 
         function initRender() {
@@ -137,7 +139,7 @@
         function initCamera() {
             var scale = param.scale;
             var camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale,
-                window.innerHeight / scale, window.innerHeight / -scale, -200, 2500);
+                window.innerHeight / scale, window.innerHeight / -scale, -100, 500);
             camera.position.set(-150, 150, 150);
             return camera;
         }
