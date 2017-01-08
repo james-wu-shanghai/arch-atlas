@@ -16,7 +16,9 @@
             planeWdtSeg: 10,
             planeHgtSeg: 6,
             entityHeight: 5,
-            scale:16
+            scale: 16,
+            atlasHeight: window.innerHeight,
+            atlasWidth: window.innerWidth,
         }
 
 
@@ -31,7 +33,7 @@
             atlas.trackball = initTrackball(atlas.camera);
             atlas.render = initRender();
             atlas.clock = new THREE.Clock();
-            atlas.plane = initPlane(param.planeWidth*1.5, param.planeHeight*1.5, param.planeWdtSeg, param.planeHgtSeg)
+            atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
             addGridHelper()
             atlas.stars = []
             atlas.planets = []
@@ -87,7 +89,7 @@
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
                     var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'planet/earth.jpg')
-                    var distance = param.solarSize+ (i + 1) * param.spaceUnit;
+                    var distance = param.solarSize + (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
@@ -131,15 +133,15 @@
             var render = new THREE.WebGLRenderer()
             render.setClearColor(0x111111, 0.0)
 
-            render.setSize(window.innerWidth, window.innerHeight)
+            render.setSize(param.atlasWidth, param.atlasHeight)
             render.shadowMapEnabled = false;
             return render;
         }
 
         function initCamera() {
             var scale = param.scale;
-            var camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale,
-                window.innerHeight / scale, window.innerHeight / -scale, -1000, 5000);
+            var camera = new THREE.OrthographicCamera(param.atlasWidth / -scale, param.atlasWidth / scale,
+                param.atlasHeight / scale, param.atlasHeight / -scale, -1000, 5000);
             camera.position.set(300, 300, 300);
             return camera;
         }
@@ -193,7 +195,7 @@
                     var domain = domains[i]
 
                     var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
-                    text.position.set(domain.x+3, param.entityHeight - 3, domain.y+3)
+                    text.position.set(domain.x + 3, param.entityHeight - 3, domain.y + 3)
                     text.rotateY(4 / 16 * Math.PI)
                     atlas.scence.add(text)
                 }
@@ -214,17 +216,7 @@
                 planetObj.position.x = Math.cos(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cx
                 planetObj.position.z = Math.sin(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cy
             }
-            // if (delta > 0.02) {
-            //     param.scale += 1;
-            //     if (param.scale >= 32)
-            //         param.scale = 1;
-            // }
-            // var scale = param.scale;
-            // atlas.camera.left = window.innerWidth / -scale
-            // atlas.camera.right = window.innerWidth / scale
-            // atlas.camera.top = window.innerHeight / scale
-            // atlas.camera.buttom = window.innerHeight / -scale
-            // atlas.camera.updateProjectionMatrix();
+
             atlas.render.render(atlas.scence, atlas.camera)
             requestAnimationFrame(atlas.draw);
         }
@@ -237,8 +229,6 @@
                     new THREE.MeshBasicMaterial({
                         map: texture
                     }));
-                mesh.material.map.wrapS = THREE.RepeatWrapping;
-                mesh.material.map.wrapT = THREE.RepeatWrapping;
                 return mesh
 
             } else {
@@ -248,7 +238,7 @@
 
         function onDocumentMouseMove(e) {
             e.preventDefault();
-            var vector = new THREE.Vector2(( e.clientX / window.innerWidth) * 2 - 1, -( e.clientY / window.innerHeight ) * 2 + 1)
+            var vector = new THREE.Vector2(( e.clientX / param.atlasWidth) * 2 - 1, -( e.clientY / param.atlasHeight) * 2 + 1)
 
             var rayCaster = new THREE.Raycaster()
             rayCaster.setFromCamera(vector, atlas.camera);

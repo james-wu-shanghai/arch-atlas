@@ -20,8 +20,15 @@
 </head>
 <body>
 <div id="ControlPanel" class="controlPanel">
-    input your domain:<input name="domain" type="text" value=""
-                             onmousedown="this.select()" onblur="findDomain(this)">
+    input your domain:<input name="domain" type="text" onblur="findDomain(this)">
+    change size:
+    <select id="changeSize" onchange="resize($('#' + this.id + ' option:selected').val())">
+        <option value="8">小</option>
+        <option value="16" selected="selected">中</option>
+        <option value="24">大</option>
+    </select>
+    <button id="reset" onclick="reset()">复原</button>
+
 
 </div>
 <div id="WebGL"></div>
