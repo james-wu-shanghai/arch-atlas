@@ -30,8 +30,8 @@ var jsonConvert = {
             var domain = domains[i];
 
             domain.pic = this.pics[i % this.pics.length]
-            domain.x = 250 / 8 * (i % 8) - 125;
-            domain.y = 250 / 8 * (i / 8) - 125;
+            domain.x = 300 / 8 * (i % 8) - 150 + Math.random() * 20;
+            domain.y = 300 / 8 * (i / 8) - 150 + Math.random() * 20;
         }
 
         return domains;

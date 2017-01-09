@@ -7,6 +7,8 @@ var links = {
     radiusSegments: 12,
     closed: false,
     opacity: 0.3,
+    portDistance: 3,
+    portLength: 8,
 
     add: function (param) {
         links.param = param
@@ -21,8 +23,10 @@ var links = {
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             var mesh = null;
+            if (edge.bidirect == 'true')
+                mesh = links.build(edge, 'BIDIRECT')
             //被域调用
-            if (edge.from == fromSolarName && edge.to != null)
+            else if (edge.from == fromSolarName && edge.to != null)
                 mesh = links.build(edge, 'OUT');
             // 调用域
             else if (edge.to == fromSolarName && edge.from != null)
@@ -47,15 +51,14 @@ var links = {
             return null;
         }
 
-        var points = []
+        var points = this.generatePoints(fromSolar.position, toSolar.position);
 
-        var direction = new THREE.Vector3();
-        points.push(direction.set(fromSolar.position.x, links.param.entityHeight, fromSolar.position.z).clone())
-        points.push(direction.set(toSolar.position.x, links.param.entityHeight, toSolar.position.z).clone())
+        console.log(points)
+
         var tubeGeometry = new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points), links.segments, links.radius, links.radiusSegments, links.closed)
 
-        var color = type == 'IN' ? 0xff0000 : 0x0000ff;
+        var color = type == 'BIDIRECT' ? 0xff00ff : type == 'IN' ? 0xff0000 : 0x0000ff;
         var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
             transparent: true,
             opacity: 0.3,
@@ -66,6 +69,40 @@ var links = {
         return mesh;
     },
 
+    generatePoints: function (from, to) {
+        var direction = new THREE.Vector3();
+
+        var _xDiff = from.x - to.x
+        var _yDiff = from.y - to.y
+        var _zDiff = from.z - to.z
+
+        var portVector = new THREE.Vector3(Math.sign(_xDiff) * this.portDistance, Math.sign(_yDiff) * this.portDistance, Math.sign(_zDiff) * this.portDistance);
+
+        var _point1 = null;
+        var _point4 = null;
+        var _point3 = null;
+        var _point2 = null;
+
+        var maxDimDiff = Math.max(Math.abs(_xDiff), Math.abs(_yDiff), Math.abs(_zDiff));
+        if (maxDimDiff == Math.abs(_xDiff)) {
+            _point1 = direction.set(from.x - portVector.x, from.y, from.z).clone()
+            _point2 = direction.set(from.x - portVector.x / this.portDistance * this.portLength, from.y, from.z).clone()
+            _point4 = direction.set(to.x + portVector.x, to.y, to.z).clone()
+            _point3 = direction.set(to.x + portVector.x / this.portDistance * this.portLength, to.y, to.z).clone()
+        } else if (maxDimDiff == Math.abs(_zDiff)) {
+            _point1 = direction.set(from.x, from.y, from.z - portVector.z).clone()
+            _point2 = direction.set(_point1.x, _point1.y, _point1.z - portVector.z / this.portDistance * this.portLength).clone()
+            _point4 = direction.set(to.x, to.y, to.z + portVector.z).clone()
+            _point3 = direction.set(_point4.x, _point4.y, _point4.z + portVector.z / this.portDistance * this.portLength).clone()
+        }
+        else {
+            _point1 = direction.set(from.x, from.y - portVector.y, from.z).clone()
+            _point2 = direction.set(_point1.x, _point1.y - portVector.y / this.portDistance * this.portLength, _point1.z).clone()
+            _point4 = direction.set(to.x, to.y + portVector.y, to.z).clone()
+            _point3 = direction.set(_point4.x, _point4.y + portVector.y / this.portDistance * this.portLength, _point4.z).clone()
+        }
+        return [_point1, _point2, _point3, _point4];
+    },
 
     deactivate: function () {
         if (atlas.edges == null)
