@@ -20,5 +20,7 @@ function resize(size) {
 
 function reset() {
     atlas.trackball.reset();
-    resize(16)
+    var middleSize = 16;
+    resize(middleSize)
+    $("#changeSize").val(middleSize)
 }
