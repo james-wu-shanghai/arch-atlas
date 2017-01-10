@@ -23,29 +23,48 @@
 
 
         atlas.init = function (name) {
+            var progressUtils = window.progressUtils;
+            progressUtils.start()
+            progressUtils.progress(10, '加载字库中')
+            new THREE.FontLoader().load('font/FZYaoTi_Regular.json', function (response) {
+                atlas.font = response;
+                progressUtils.progress(60, '加载域对象中')
+                d3.json('libs/data/entity.json', function (error, entityJson) {
+                    if (error)
+                        alert(error)
+                    progressUtils.progress(90, '3D建模中')
+                    atlas.domainJson = entityJson;
 
-            atlas.step = 0
-            atlas.raycaster = new THREE.Raycaster();
+                    atlas.step = 0
+                    atlas.raycaster = new THREE.Raycaster();
 
-            atlas.textureLoader = new THREE.TextureLoader()
-            atlas.scence = initScene()
-            atlas.camera = initCamera();
-            atlas.trackball = initTrackball(atlas.camera);
-            atlas.render = initRender();
-            atlas.clock = new THREE.Clock();
-            atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
-            addGridHelper()
-            atlas.stars = []
-            atlas.planets = []
-            atlas.solarObjects = []
-            initDomains();
+                    atlas.textureLoader = new THREE.TextureLoader()
+                    atlas.scence = initScene()
+                    atlas.camera = initCamera();
+                    atlas.render = initRender();
+                    atlas.clock = new THREE.Clock();
+                    atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
+                    addGridHelper()
+                    atlas.stars = []
+                    atlas.planets = []
+                    atlas.solarObjects = []
+                    initDomains();
 
 
-            // atlas.camera.lookAt(atlas.scence.position)
-            atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
-            $(name).append(atlas.render.domElement)
+                    // atlas.camera.lookAt(atlas.scence.position)
+                    atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
+                    $(name).append(atlas.render.domElement)
 
-            atlas.draw();
+                    atlas.trackball = initTrackball(atlas.camera);
+                    atlas.draw();
+                    progressUtils.end()
+                })
+            }, function (progress) {
+                progressUtils.progress(progress.loaded / progress.total * 0.6 * 100)
+            }, function (error) {
+                console.error(error)
+            });
+
         }
 
 
@@ -57,19 +76,17 @@
         }
 
         function initDomains() {
-            d3.json('libs/data/entity.json', function (error, entityJson) {
-                var domains = jsonConvert.convert(entityJson)
-                // var domains = entityJson.domains
-                for (var i = 0; i < domains.length; i++) {
-                    var domain = domains[i]
-                    addDomainSolar(domain)
-                }
-                loadFont(domains);
+            var domains = jsonConvert.convert(atlas.domainJson)
+            // var domains = atlas.domainJson.domains
+            for (var i = 0; i < domains.length; i++) {
+                var domain = domains[i]
+                addDomainSolar(domain)
+            }
+            addTags(domains);
 
-                if (links)
-                    links.add(param)
+            if (links)
+                links.add(param)
 
-            })
         }
 
         function addDomainSolar(domain) {
@@ -165,40 +182,27 @@
             atlas.scence.add(helper);
         }
 
-        function loadFont(domains) {
-            var loader = new THREE.FontLoader();
-            loader.load('font/FZYaoTi_Regular.json', function (response) {
-                atlas.font = response;
-                addDomainTags()
+        function addTags(domains) {
+            var options = {
+                size: 3,
+                height: 0.1,
+                font: atlas.font,
+                weight: 'normal',
+                style: 'normal',
+                // bevelThickness: 0,
+                // bevelSize: 0,
+                bevelEnabled: false,
+                // bevelSegments: 2,
+                curveSegments: 5,
+                steps: 5
+            }
+            for (var i = 0; i < domains.length; i++) {
+                var domain = domains[i]
 
-            }, function (progress) {
-                // console.trace(progress)
-
-            }, function (error) {
-                console.error(error)
-            });
-            function addDomainTags() {
-                var options = {
-                    size: 3,
-                    height: 0.1,
-                    font: atlas.font,
-                    weight: 'normal',
-                    style: 'normal',
-                    // bevelThickness: 0,
-                    // bevelSize: 0,
-                    bevelEnabled: false,
-                    // bevelSegments: 2,
-                    curveSegments: 5,
-                    steps: 5
-                }
-                for (var i = 0; i < domains.length; i++) {
-                    var domain = domains[i]
-
-                    var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
-                    text.position.set(domain.x + 3, param.entityHeight - 3, domain.y + 3)
-                    text.rotateY(4 / 16 * Math.PI)
-                    atlas.scence.add(text)
-                }
+                var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
+                text.position.set(domain.x + 3, param.entityHeight - 3, domain.y + 3)
+                text.rotateY(4 / 16 * Math.PI)
+                atlas.scence.add(text)
             }
         }
 

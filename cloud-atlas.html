@@ -36,14 +36,36 @@
         <span id="reset" title="复原" class="btn btn-info glyphicon glyphicon-retweet input-group-addon"
               onclick="reset()"></span>
     </div>
-    <div title="功能建设中..."class="text-center col-lg-9 input-group"><span class="glyphicon glyphicon-warning-sign btn-lg" ></span></div>
+    <div title="功能建设中..." class="text-center col-lg-9 input-group"><span
+            class="glyphicon glyphicon-warning-sign btn-lg"></span></div>
 </div>
+<!-- 资源加载进度条-->
+<div class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">资源加载中，请稍后...</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress ">
+                    <div class="progress-bar progress-bar-striped active" style="width: 0%;"
+                         role="progressbar" aria-valuenow="0"
+                         aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 资源加载进度条-->
 <div id="WebGL"></div>
+
 </body>
 <script src="js/report/d3-report.js"></script>
 <script src="js/map/link.js"></script>
 <script src="js/map/jsonConvert.js"></script>
 <script src="js/map/cloud-atlas.js"></script>
+<script src="js/map/progress-util.js"></script>
 <script src="js/control/control_panel.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script>
