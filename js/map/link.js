@@ -141,9 +141,9 @@ var links = {
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             if (edge.activated == true) {
-                atlas.scence.remove(edge.link);
                 var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
                 atlas.scence.remove(cone);
+                atlas.scence.remove(edge.link);
             }
         }
     }
