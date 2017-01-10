@@ -7,12 +7,13 @@ var links = {
     radiusSegments: 12,
     closed: false,
     opacity: 0.3,
-    portDistance: 3,
+    portDistance: 4,
     portLength: 8,
 
     add: function (param) {
         links.param = param
         d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+            // d3.json('/service/domains/links/all', function (error, edgesJson) {
             atlas.edges = edgesJson;
         })
     },
@@ -23,21 +24,45 @@ var links = {
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             var mesh = null;
-            if (edge.bidirect == 'true')
-                mesh = links.build(edge, 'BIDIRECT')
+
             //被域调用
-            else if (edge.from == fromSolarName && edge.to != null)
-                mesh = links.build(edge, 'OUT');
+            if (edge.from == fromSolarName && edge.to != null)
+                mesh = links.build(edge, edge.bidirect == 'true' ? 'BIDIRECT' : 'OUT')
             // 调用域
             else if (edge.to == fromSolarName && edge.from != null)
-                mesh = links.build(edge, 'IN')
+                mesh = links.build(edge, edge.bidirect == 'true' ? 'BIDIRECT' : 'IN')
+
 
             if (mesh == null)
                 continue;
             edge.activated = true
-            atlas.scence.add(mesh);
+            atlas.scence.add(mesh)
+            var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
+            atlas.scence.add(arrow)
 
         }
+    },
+    generateArrow: function (cubeMesh, points) {
+        var endPoint = points[3];
+        var cone = new THREE.Mesh(new THREE.ConeGeometry(links.radius * 1.5, links.radius * 6, 8), new THREE.MeshBasicMaterial({
+            opacity: links.opacity*1.5,
+            transparent: true,
+            color: cubeMesh.material.color
+        }))
+
+        var direction = new THREE.Vector3(Math.sign(points[2].x - points[3].x), Math.sign(points[2].y - points[3].y), Math.sign(points[2].z - points[3].z));
+        cone.position.setX(endPoint.x - direction.x * links.radius * 3)
+        cone.position.setY(endPoint.y - direction.y * links.radius * 3)
+        cone.position.setZ(endPoint.z - direction.z * links.radius * 3)
+
+        //TODO: Now only support 2D, need support 3D
+        cone.rotateZ(direction.x * 1 / 2 * Math.PI)
+        // cone.rotateY(direction.y * 1 / 2 * Math.PI)
+        cone.rotateX(direction.z * -1 / 2 * Math.PI)
+
+
+        cone.name = cubeMesh.name + "|cone";
+        return cone;
     },
     build: function (edge, type) {
         if (edge.link != null)
@@ -53,15 +78,21 @@ var links = {
 
         var points = this.generatePoints(fromSolar.position, toSolar.position);
 
-        console.log(points)
-
         var tubeGeometry = new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points), links.segments, links.radius, links.radiusSegments, links.closed)
 
-        var color = type == 'BIDIRECT' ? 0xff00ff : type == 'IN' ? 0xff0000 : 0x0000ff;
+        var color = null;
+        if (type == 'BIDIRECT')
+            color = 0xff00ff
+        else if (type == 'IN')
+            color = 0xff0000
+        else
+            color = 0x0000ff;
+
+
         var mesh = new THREE.Mesh(tubeGeometry, new THREE.MeshBasicMaterial({
             transparent: true,
-            opacity: 0.3,
+            opacity: links.opacity,
             color: color
         }))
         mesh.name = fromSolar.name + "|" + toSolar.name;
@@ -111,6 +142,8 @@ var links = {
             var edge = atlas.edges[i]
             if (edge.activated == true) {
                 atlas.scence.remove(edge.link);
+                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
+                atlas.scence.remove(cone);
             }
         }
     }
