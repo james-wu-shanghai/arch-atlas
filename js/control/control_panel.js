@@ -4,6 +4,7 @@
 (function () {
     var cp = window.cp = {}
     cp.actSolarLmt = 10;
+    cp.activatedSolar = [];
 
     cp.param = {}
 
@@ -32,9 +33,19 @@
         links.deactivateAllLinks({byForce: true})
         report.hideSolarReport()
         $('#biDepChk').attr('checked', false);
+        cp.removeAllSolarBoxes()
         cp.param = {}
     }
-
+    cp.removeAllSolarBoxes = function () {
+        for (var i = 0; i < atlas.solarObjects.length; i++) {
+            var solar = atlas.solarObjects[i]
+            var boxName = solar.name + "|box"
+            if (solar.activated) {
+                atlas.scence.remove(atlas.scence.getObjectByName(boxName));
+                solar.activated = false
+            }
+        }
+    }
     cp.showBiDomainDep = function () {
         var isShow = $('#biDepChk').is(':checked')
         if (isShow) {
@@ -83,6 +94,7 @@
 
 
         if (!solar.activated) {
+
             if (cp.param.activatedSolarCount >= cp.actSolarLmt) {
                 sbar.message('激活的域超过' + cp.actSolarLmt + '个，为保证浏览器不挂掉，取消几个吧。或者干脆复原一下？')
                 return
@@ -93,10 +105,10 @@
             var box = new THREE.BoxHelper(solar, 0x00ff00)
             box.name = solar.name + "|box"
             atlas.scence.add(box)
-            window.report.showSolarReport(evtX, evtY, solar);
+            report.showSolarReport(evtX, evtY, solar);
         } else {
             links.deactivateSolarLinks(solar.name)
-            window.report.hideSolarReport();
+            report.hideSolarReport();
             solar.activated = false;
             atlas.scence.remove(atlas.scence.getObjectByName(solar.name + "|box"))
             if (cp.param.activatedSolarCount > 0)
@@ -104,5 +116,6 @@
 
         }
     }
+
 
 }).call(this)
