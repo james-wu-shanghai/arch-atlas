@@ -90,11 +90,15 @@
             ++cp.param.activatedSolarCount;
             solar.activated = true
             links.activate(solar.name)
+            var box = new THREE.BoxHelper(solar, 0x00ff00)
+            box.name = solar.name + "|box"
+            atlas.scence.add(box)
             window.report.showSolarReport(evtX, evtY, solar);
         } else {
             links.deactivateSolarLinks(solar.name)
             window.report.hideSolarReport();
             solar.activated = false;
+            atlas.scence.remove(atlas.scence.getObjectByName(solar.name + "|box"))
             if (cp.param.activatedSolarCount > 0)
                 --cp.param.activatedSolarCount
 
