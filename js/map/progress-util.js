@@ -4,16 +4,20 @@
 (function () {
     var progressUtils = window.progressUtils = {}
 
-    progressUtils.start = function () {
+    progressUtils.start = function (hint) {
+        if(!hint)
+            hint = '开始加载'
         $('.modal').modal('show')
-        this.progress(0, '开始加载资源')
+        this.progress(0, hint)
     }
     progressUtils.progress = function (percentage, hint) {
         $('.progress .progress-bar').css('width', percentage + '%')
         $('h4.modal-title').text(hint)
     }
-    progressUtils.end = function () {
-        this.progress(100, '资源加载完毕')
+    progressUtils.end = function (hint) {
+        if(!hint)
+           hint='加载结束'
+        this.progress(100, hint)
         setInterval("$('.modal').modal('hide')", 500)
     }
 }).call(this)

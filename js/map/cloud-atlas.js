@@ -24,47 +24,53 @@
 
         atlas.init = function (name) {
             var progressUtils = window.progressUtils;
-            progressUtils.start()
+            progressUtils.start('开始加载资源')
             progressUtils.progress(10, '加载字库中')
             new THREE.FontLoader().load('font/FZYaoTi_Regular.json', function (response) {
                 atlas.font = response;
-                progressUtils.progress(60, '加载域对象中')
+                progressUtils.progress(50, '加载域对象中')
+                // d3.json("/service/domains/all", function (error, entityJson) {
                 d3.json('libs/data/entity.json', function (error, entityJson) {
-                    if (error)
-                        alert(error)
-                    progressUtils.progress(90, '3D建模中')
+                    progressUtils.progress(70, '加载域依赖中')
                     atlas.domainJson = entityJson;
+                    // d3.json('/service/domains/links/all', function (error, edgesJson) {
+                    d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+                        if (error)
+                            alert(error)
+                        progressUtils.progress(90, '3D建模中')
+                        atlas.edges = edgesJson;
 
-                    atlas.step = 0
-                    atlas.raycaster = new THREE.Raycaster();
+                        atlas.step = 0
+                        atlas.raycaster = new THREE.Raycaster();
 
-                    atlas.textureLoader = new THREE.TextureLoader()
-                    atlas.scence = initScene()
-                    atlas.camera = initCamera();
-                    atlas.render = initRender();
-                    atlas.clock = new THREE.Clock();
-                    atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
-                    addGridHelper()
-                    atlas.stars = []
-                    atlas.planets = []
-                    atlas.solarObjects = []
-                    initDomains();
+                        atlas.textureLoader = new THREE.TextureLoader()
+                        atlas.scence = initScene()
+                        atlas.camera = initCamera();
+                        atlas.render = initRender();
+                        atlas.clock = new THREE.Clock();
+                        atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
+                        addGridHelper()
+                        atlas.stars = []
+                        atlas.planets = []
+                        atlas.solarObjects = []
+                        initDomains();
 
 
-                    // atlas.camera.lookAt(atlas.scence.position)
-                    atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
-                    $(name).append(atlas.render.domElement)
+                        // atlas.camera.lookAt(atlas.scence.position)
+                        // atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
+                        atlas.render.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
+                        $(name).append(atlas.render.domElement)
 
-                    atlas.trackball = initTrackball(atlas.camera);
-                    atlas.draw();
-                    progressUtils.end()
+                        atlas.trackball = initTrackball(atlas.camera);
+                        atlas.draw();
+                        progressUtils.end('资源加载完毕')
+                    })
                 })
             }, function (progress) {
                 progressUtils.progress(progress.loaded / progress.total * 0.6 * 100)
             }, function (error) {
                 console.error(error)
             });
-
         }
 
 
@@ -77,20 +83,16 @@
 
         function initDomains() {
             var domains = jsonConvert.convert(atlas.domainJson)
-            // var domains = atlas.domainJson.domains
             for (var i = 0; i < domains.length; i++) {
                 var domain = domains[i]
                 addDomainSolar(domain)
             }
             addTags(domains);
 
-            if (links)
-                links.add(param)
-
         }
 
         function addDomainSolar(domain) {
-            var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 20, 20), 'stars/' + domain.pic)
+            var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), 'stars/' + domain.pic)
             solar.planets = []
             addLightSpot();
 
@@ -111,6 +113,7 @@
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
                     planet.name = "[" + domain.name + "]." + planets[i].name
+                    planet.appName = planets[i].name
                     solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
@@ -169,6 +172,7 @@
             plane.rotation.x = -0.5 * Math.PI
             plane.name = 'plane'
             plane.position.set(0, 0, 0)
+            atlas.plane = plane;
             atlas.scence.add(plane)
             return plane
 
@@ -240,7 +244,8 @@
             }
         }
 
-        function onDocumentMouseMove(e) {
+
+        function onDocumentMouseDown(e) {
             e.preventDefault();
             var vector = new THREE.Vector2(( e.clientX / param.atlasWidth) * 2 - 1, -( e.clientY / param.atlasHeight) * 2 + 1)
 
@@ -249,16 +254,12 @@
 
             var intersect = rayCaster.intersectObjects(atlas.solarObjects);
             if (intersect.length > 0) {
-                var domain = intersect[0].object;
-                window.report.showSolarReport(e.clientX, e.clientY, domain);
-                links.activate(domain.name)
-            } else {
+                var solar = intersect[0].object
+                cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
+            } else
                 window.report.hideSolarReport();
-                links.deactivate()
-            }
 
         }
-
     }
 
 ).call(this)

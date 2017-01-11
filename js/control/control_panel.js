@@ -1,26 +1,104 @@
 /**
  * Created by jameswu on 17-1-7.
  */
-function findDomain(arg) {
-    var domainObj = atlas.scence.getObjectByName(arg.value)
-    if (domainObj) {
-        atlas.trackball.target = domainObj.position.clone();
-        atlas.camera.position = new THREE.Vector3(300, 300, 300)
-        atlas.camera.updateProjectionMatrix()
+(function () {
+    var cp = window.cp = {}
+    cp.actSolarLmt = 10;
+
+    cp.param = {}
+
+    cp.findDomain = function (arg) {
+        var domainObj = atlas.scence.getObjectByName(arg.value)
+        if (domainObj) {
+            atlas.trackball.target = domainObj.position.clone();
+            atlas.camera.position = new THREE.Vector3(300, 300, 300)
+            atlas.camera.updateProjectionMatrix()
+        }
     }
-}
 
-function resize(size) {
-    atlas.camera.left = window.innerWidth / -size
-    atlas.camera.right = window.innerWidth / size
-    atlas.camera.top = window.innerHeight / size
-    atlas.camera.buttom = window.innerHeight / -size
-    atlas.camera.updateProjectionMatrix();
-}
+    cp.resize = function (size) {
+        atlas.camera.left = window.innerWidth / -size
+        atlas.camera.right = window.innerWidth / size
+        atlas.camera.top = window.innerHeight / size
+        atlas.camera.buttom = window.innerHeight / -size
+        atlas.camera.updateProjectionMatrix();
+    }
 
-function reset() {
-    atlas.trackball.reset();
-    var middleSize = 16;
-    resize(middleSize)
-    $("#changeSize").val(middleSize)
-}
+    cp.reset = function () {
+        atlas.trackball.reset();
+        var middleSize = 16;
+        this.resize(middleSize)
+        $("#changeSize").val(middleSize)
+        links.deactivateAllLinks({byForce: true})
+        report.hideSolarReport()
+        $('#biDepChk').attr('checked', false);
+        cp.param = {}
+    }
+
+    cp.showBiDomainDep = function () {
+        var isShow = $('#biDepChk').is(':checked')
+        if (isShow) {
+            progressUtils.start('开始更新依赖')
+            links.deactivateAllLinks({byForce: true})
+            this.param.dependencyLock = true;
+            for (var i = 0; i < atlas.edges.length; i++) {
+                progressUtils.progress(i / atlas.edges.length * 100, '更新依赖中')
+                var edge = atlas.edges[i];
+                if (edge.bidirect == 'false')
+                    continue;
+                if (edge.from == null || edge.to == null)
+                    continue
+
+                var mesh = edge.link// atlas.scence.getObjectByName(edge.from + "|" + edge.to)
+
+                if (mesh == null) {
+                    var mesh = links.build(edge, 'BIDIRECT')
+                    if (mesh == null)
+                        continue;
+                    edge.link = mesh;
+                }
+                edge.activated = true
+                atlas.scence.add(mesh)
+                progressUtils.end('完成更新')
+            }
+        } else {
+            links.deactivateAllLinks({byForce: true})
+            this.param.dependencyLock = false;
+        }
+    }
+
+    cp.showBackground = function () {
+        var isShow = $('#showPlanChk').is(':checked')
+        if (isShow) {
+            if (!atlas.scence.getObjectByName('plane'))
+                atlas.scence.add(atlas.plane)
+        } else {
+            atlas.scence.remove(atlas.plane)
+        }
+    }
+
+    cp.activeSolar = function (solar, evtX, evtY) {
+        if (!cp.param.activatedSolarCount)
+            cp.param.activatedSolarCount = 0;
+
+
+        if (!solar.activated) {
+            if (cp.param.activatedSolarCount >= cp.actSolarLmt) {
+                sbar.message('激活的域超过' + cp.actSolarLmt + '个，为保证浏览器不挂掉，取消几个吧。或者干脆复原一下？')
+                return
+            }
+            ++cp.param.activatedSolarCount;
+            solar.activated = true
+            links.activate(solar.name)
+            window.report.showSolarReport(evtX, evtY, solar);
+        } else {
+            links.deactivateSolarLinks(solar.name)
+            window.report.hideSolarReport();
+            solar.activated = false;
+            if (cp.param.activatedSolarCount > 0)
+                --cp.param.activatedSolarCount
+
+        }
+    }
+
+}).call(this)

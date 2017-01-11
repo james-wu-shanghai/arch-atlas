@@ -10,31 +10,36 @@ var links = {
     portDistance: 4,
     portLength: 8,
 
-    add: function (param) {
-        links.param = param
-        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
-            // d3.json('/service/domains/links/all', function (error, edgesJson) {
-            atlas.edges = edgesJson;
-        })
-    },
-    activate: function (fromSolarName) {
-        if (atlas.edges == null)
+
+    activate: function (solarName) {
+        if (atlas.edges == null || cp.param.dependencyLock)
             return;
 
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
-            var mesh = null;
+            if (edge.activated)
+                continue
 
+            var edgeType = null;
             //被域调用
-            if (edge.from == fromSolarName && edge.to != null)
-                mesh = links.build(edge, edge.bidirect == 'true' ? 'BIDIRECT' : 'OUT')
+            if (edge.from == solarName && edge.to != null)
+                edgeType = 'OUT'
             // 调用域
-            else if (edge.to == fromSolarName && edge.from != null)
-                mesh = links.build(edge, edge.bidirect == 'true' ? 'BIDIRECT' : 'IN')
+            else if (edge.to == solarName && edge.from != null)
+                edgeType = 'IN'
+            else
+                edgeType = null
+            //双向
+            if (edgeType != null && edge.bidirect == 'true')
+                edgeType = 'BIDIRECT'
 
+            if (edgeType == null || edge.to == edge.from)
+                continue;
 
+            var mesh = links.build(edge, edgeType);
             if (mesh == null)
                 continue;
+
             edge.activated = true
             atlas.scence.add(mesh)
             var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
@@ -45,7 +50,7 @@ var links = {
     generateArrow: function (cubeMesh, points) {
         var endPoint = points[3];
         var cone = new THREE.Mesh(new THREE.ConeGeometry(links.radius * 1.5, links.radius * 6, 8), new THREE.MeshBasicMaterial({
-            opacity: links.opacity*1.5,
+            opacity: links.opacity * 1.5,
             transparent: true,
             color: cubeMesh.material.color
         }))
@@ -57,7 +62,7 @@ var links = {
 
         //TODO: Now only support 2D, need support 3D
         cone.rotateZ(direction.x * 1 / 2 * Math.PI)
-        // cone.rotateY(direction.y * 1 / 2 * Math.PI)
+        cone.rotateY(direction.y * Math.PI)
         cone.rotateX(direction.z * -1 / 2 * Math.PI)
 
 
@@ -69,14 +74,14 @@ var links = {
             return edge.link;
         var fromSolar = atlas.scence.getObjectByName(edge.from);
         var toSolar = atlas.scence.getObjectByName(edge.to)
-        if (fromSolar.name == toSolar.name)
+        if (fromSolar == null || toSolar == null || fromSolar.name == toSolar.name)
             return null;
         if (fromSolar == null || toSolar == null) {
             console.warn('from or to object not found, from:' + edge.from + " to:" + edge.to);
             return null;
         }
 
-        var points = this.generatePoints(fromSolar.position, toSolar.position);
+        var points = this._generatePoints(fromSolar.position, toSolar.position);
 
         var tubeGeometry = new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points), links.segments, links.radius, links.radiusSegments, links.closed)
@@ -100,7 +105,7 @@ var links = {
         return mesh;
     },
 
-    generatePoints: function (from, to) {
+    _generatePoints: function (from, to) {
         var direction = new THREE.Vector3();
 
         var _xDiff = from.x - to.x
@@ -135,17 +140,31 @@ var links = {
         return [_point1, _point2, _point3, _point4];
     },
 
-    deactivate: function () {
-        if (atlas.edges == null)
+    deactivateAllLinks: function (param) {
+
+        if (atlas.edges == null || (cp.param.dependencyLock && !param.byForce))
             return;
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             if (edge.activated == true) {
                 var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
-                atlas.scence.remove(cone);
                 atlas.scence.remove(edge.link);
+                atlas.scence.remove(cone);
+                edge.activated = false
+            }
+        }
+    },
+    deactivateSolarLinks: function (solarName) {
+        if (atlas.edges == null || cp.param.dependencyLock)
+            return;
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edge = atlas.edges[i]
+            if ((edge.from == solarName || edge.to == solarName) && edge.link) {
+                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
+                atlas.scence.remove(edge.link);
+                atlas.scence.remove(cone);
+                edge.activated = false
             }
         }
     }
-
 }
