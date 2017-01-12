@@ -1,35 +1,41 @@
-<div class="solarReport">
-</div>
-<script>
-    (function () {
-        window.solarReport = {}
-
-        solarReport.render = function (domain) {
-            console.log(domain)
-            var report = d3.select('.solarReport')
-            report.style('height', (domain.planets.length * 0.8 + 2) + 'em')
-            var svg = report.append('svg');
-            svg.style('height', (domain.planets.length * 0.8 + 2) + 'em')
-//            var rect = svg.append("rect").attr({fill: '#fff', stroke: 'steelblue', height: 95, width: 290})
-            svg.append('text').text('Solar System Name: ' + domain.name).attr({
-                fill: 'black',
-                'font-size': '0.8em',
-                y: '1em'
-            })
-            svg.append('text').text('Planet No.: ' + domain.planets.length).attr({
-                fill: 'black',
-                'font-size': '0.8em',
-                y: '2em'
-            })
-            for (var i = 0; i < domain.planets.length; i++) {
-                var planet = domain.planets[i];
-                svg.append('text').text('Planet:' + planet.name).attr({
-                    fill: 'black',
-                    'font-size': '0.8em',
-                    y: (3 + i) + 'em',
-                    x: '1em'
-                })
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/thirdparty/jquery-2.2.4.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <style type="text/css">
+        .tooltip {
+            font-family: simsun;
+            font-size: 16px;
+            width: 120px;
+            height: auto;
+            position: absolute;
+            text-align: center;
+            border-style: solid;
+            border-width: 1px;
+            background-color: white;
+            border-radius: 5px;
         }
-    }).call(this)
-</script>
+
+    </style>
+
+</head>
+<body>
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#appList" data-toggle="tab">应用列表</a></li>
+    <li><a href="#depLine" data-toggle="tab">依赖统计</a></li>
+    <li><a href="#solarPie" data-toggle="tab">域统计</a></li>
+</ul>
+<div class="solarReport tab-content">
+    <div class="tab-pane active" id='appList'></div>
+    <div class="tab-pane" id="depLine">
+        <div id="depBar"></div>
+        <div id="depContent" style="width: 200px"></div>
+    </div>
+    <div class="tab-pane" id="solarPie"></div>
+</div>
+</body>
+</html>
+

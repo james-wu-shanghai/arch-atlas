@@ -26,48 +26,53 @@
             var progressUtils = window.progressUtils;
             progressUtils.start('开始加载资源')
             progressUtils.progress(10, '加载字库中')
-            new THREE.FontLoader().load('font/FZYaoTi_Regular.json', function (response) {
+            new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
-                progressUtils.progress(50, '加载域对象中')
-                // d3.json("/service/domains/all", function (error, entityJson) {
-                d3.json('libs/data/entity.json', function (error, entityJson) {
-                    progressUtils.progress(70, '加载域依赖中')
+                progressUtils.progress(30, '加载域对象中')
+                // d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
+                    d3.json('libs/data/entity.json', function (error, entityJson) {
+                    progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
-                    // d3.json('/service/domains/links/all', function (error, edgesJson) {
-                    d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
-                        if (error)
-                            alert(error)
-                        progressUtils.progress(90, '3D建模中')
-                        atlas.edges = edgesJson;
+                    // d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
+                        d3.json('libs/data/static.json', function (error, depStaticJson) {
+                        progressUtils.progress(70, '加载依赖统计中')
+                        atlas.depStatic = depStaticJson;
+                        // d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
+                            d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+                            if (error)
+                                alert(error)
+                            progressUtils.progress(90, '3D建模中')
+                            atlas.edges = edgesJson;
 
-                        atlas.step = 0
-                        atlas.raycaster = new THREE.Raycaster();
+                            atlas.step = 0
+                            atlas.raycaster = new THREE.Raycaster();
 
-                        atlas.textureLoader = new THREE.TextureLoader()
-                        atlas.scence = initScene()
-                        atlas.camera = initCamera();
-                        atlas.render = initRender();
-                        atlas.clock = new THREE.Clock();
-                        atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
-                        addGridHelper()
-                        atlas.stars = []
-                        atlas.planets = []
-                        atlas.solarObjects = []
-                        initDomains();
+                            atlas.textureLoader = new THREE.TextureLoader()
+                            atlas.scence = initScene()
+                            atlas.camera = initCamera();
+                            atlas.render = initRender();
+                            atlas.clock = new THREE.Clock();
+                            atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
+                            addGridHelper()
+                            atlas.stars = []
+                            atlas.planets = []
+                            atlas.solarObjects = []
+                            initDomains();
 
 
-                        // atlas.camera.lookAt(atlas.scence.position)
-                        // atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
-                        atlas.render.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
-                        $(name).append(atlas.render.domElement)
+                            // atlas.camera.lookAt(atlas.scence.position)
+                            // atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
+                            atlas.render.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
+                            $(name).append(atlas.render.domElement)
 
-                        atlas.trackball = initTrackball(atlas.camera);
-                        atlas.draw();
-                        progressUtils.end('资源加载完毕')
+                            atlas.trackball = initTrackball(atlas.camera);
+                            atlas.draw();
+                            progressUtils.end('资源加载完毕')
+                        })
                     })
                 })
             }, function (progress) {
-                progressUtils.progress(progress.loaded / progress.total * 0.6 * 100)
+                progressUtils.progress(progress.loaded / progress.total * 0.6 * 100 + 10)
             }, function (error) {
                 console.error(error)
             });
@@ -96,6 +101,7 @@
             solar.planets = []
             addLightSpot();
 
+            solar.domainJsonObj = domain;
             solar.position.set(domain.x, param.entityHeight, domain.y)
             solar.name = domain.name
             atlas.scence.add(solar)

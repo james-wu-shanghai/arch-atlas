@@ -18,6 +18,6 @@
         if(!hint)
            hint='加载结束'
         this.progress(100, hint)
-        setInterval("$('.modal').modal('hide')", 500)
+        setInterval("$('.modal').modal('hide')", 200)
     }
 }).call(this)

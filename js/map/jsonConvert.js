@@ -12,7 +12,8 @@ var jsonConvert = {
         'very-red.png',
         'white.png',
         'yellow.png'],
-    valid_suffix: ["-gw", "-app", "-svc", "-srv", "-web"],
+    // valid_suffix: ["-gw", "-app", "-svc", "-srv", "-web"],
+    valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (entityJson) {
         var domains = [];
 
@@ -56,6 +57,7 @@ var jsonConvert = {
         return planet;
     }
     ,
+
 
     insertPlanet: function (domains, planet) {
         for (var i = 0; i < domains.length; i++) {
