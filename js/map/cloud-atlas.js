@@ -30,15 +30,15 @@
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
                 // d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
-                    d3.json('libs/data/entity.json', function (error, entityJson) {
+                d3.json('libs/data/entity.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
                     // d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
-                        d3.json('libs/data/static.json', function (error, depStaticJson) {
+                    d3.json('libs/data/static.json', function (error, depStaticJson) {
                         progressUtils.progress(70, '加载依赖统计中')
                         atlas.depStatic = depStaticJson;
                         // d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
-                            d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+                        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
                             if (error)
                                 alert(error)
                             progressUtils.progress(90, '3D建模中')
@@ -67,6 +67,7 @@
 
                             atlas.trackball = initTrackball(atlas.camera);
                             atlas.draw();
+                            cp.reset();
                             progressUtils.end('资源加载完毕')
                         })
                     })

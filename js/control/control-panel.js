@@ -8,8 +8,8 @@
 
     cp.param = {}
 
-    cp.findDomain = function (arg) {
-        var domainObj = atlas.scence.getObjectByName(arg.value)
+    cp.findDomain = function (searchInput) {
+        var domainObj = atlas.scence.getObjectByName(searchInput.value)
         if (domainObj) {
             atlas.trackball.target = domainObj.position.clone();
             atlas.camera.position = new THREE.Vector3(300, 300, 300)
@@ -27,7 +27,11 @@
 
     cp.reset = function () {
         atlas.trackball.reset();
+        //自适应
         var middleSize = 16;
+        if (window.innerWidth < 1440)
+            middleSize = 8
+
         this.resize(middleSize)
         $("#changeSize").val(middleSize)
         links.deactivateAllLinks({byForce: true})
@@ -114,6 +118,13 @@
             if (cp.param.activatedSolarCount > 0)
                 --cp.param.activatedSolarCount
 
+        }
+    }
+    cp.searchKeyUp = function (searchInput) {
+        console.log(window.event)
+        if (window.event.keyCode == '13') {
+            this.findDomain(searchInput)
+            searchInput.select()
         }
     }
 

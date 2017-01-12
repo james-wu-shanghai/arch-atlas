@@ -27,7 +27,7 @@
             <div class="input-group" title="寻找域">
                 <span class="glyphicon glyphicon-search input-group-addon"></span>
                 <input name="domain" class="form-control" type="text" onkeypress="return false"
-                       onblur="window.cp.findDomain(this)">
+                       onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.findDomain(this)">
             </div>
         </form>
         <form class="navbar-form navbar-left" role="presentation">
@@ -35,9 +35,10 @@
                 <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
                 <select class="form-control" id="changeSize"
                         onchange="window.cp.resize($('#' + this.id + ' option:selected').val())">
+                    <option value="6">很小</option>
                     <option value="8">小</option>
-                    <option value="16" selected="selected">中</option>
-                    <option value="24">大</option>
+                    <option value="16" selected="selected">大</option>
+                    <option value="24">很大</option>
                 </select>
                 <span id="reset" title="复原" class="btn btn-info glyphicon glyphicon-retweet input-group-addon"
                       onclick="window.cp.reset()"></span>
