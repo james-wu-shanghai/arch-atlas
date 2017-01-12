@@ -121,8 +121,8 @@
         }
     }
     cp.searchKeyUp = function (searchInput) {
-        console.log(window.event)
-        if (window.event.keyCode == '13') {
+        var keyCode = parseInt(event.keyCode);
+        if (keyCode == 13) {
             this.findDomain(searchInput)
             searchInput.select()
         }
