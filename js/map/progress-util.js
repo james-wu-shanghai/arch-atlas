@@ -8,7 +8,7 @@
         if(!hint)
             hint = '开始加载'
         $('.modal').modal('show')
-        this.progress(0, hint)
+        this.progress(5, hint)
     }
     progressUtils.progress = function (percentage, hint) {
         $('.progress .progress-bar').css('width', percentage + '%')

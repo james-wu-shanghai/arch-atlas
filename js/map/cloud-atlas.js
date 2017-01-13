@@ -24,7 +24,7 @@
 
         atlas.init = function (name) {
             var progressUtils = window.progressUtils;
-            progressUtils.start('开始加载资源')
+            // progressUtils.start('开始加载资源')
             progressUtils.progress(10, '加载字库中')
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
@@ -114,7 +114,9 @@
             function addPlanet(domain, solar) {
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
-                    var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10), 'planet/earth.jpg')
+                    var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10))
+                    planet.material.color = new THREE.Color('#1874CD')
+                    // console.log(planet)
                     var distance = param.solarSize + (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
