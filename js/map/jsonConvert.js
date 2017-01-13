@@ -2,16 +2,16 @@
  * Created by jameswu on 16-12-19.
  */
 var jsonConvert = {
-    pics: ['blue.png',
-        'dark-red.png',
-        'golden.png',
-        'green-white.png',
-        'pink.png',
-        'red-black.png',
+    pics: ['blue.jpg',
+        'dark-red.jpg',
+        'golden.jpg',
+        'green-white.jpg',
+        'pink.jpg',
+        'red-black.jpg',
         'solar.jpg',
-        'very-red.png',
-        'white.png',
-        'yellow.png'],
+        'very-red.jpg',
+        'white.jpg',
+        'yellow.jpg'],
     // valid_suffix: ["-gw", "-app", "-svc", "-srv", "-web"],
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (entityJson) {
