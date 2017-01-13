@@ -5,7 +5,6 @@
         var atlas = window.atlas = {}
         var domainJson = null;
         var edgesJson = null;
-
         var param = {
             spaceUnit: 0.5,
             solarSize: 1.5,
@@ -19,6 +18,18 @@
             scale: 16,
             atlasHeight: window.innerHeight,
             atlasWidth: window.innerWidth,
+        }
+        atlas.textureProgress = {}
+
+        atlas.textureProgress.textureLmt = 55
+        atlas.textureProgress.loadedImages = []
+        atlas.textureProgress.loaded = function (texture) {
+            atlas.textureProgress.loadedImages.push(texture.image.baseURI)
+            if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
+                progressUtils.end('资源加载完毕')
+        }
+        atlas.textureProgress.loading = function (evt) {
+            progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
         }
 
 
@@ -68,7 +79,7 @@
                             atlas.trackball = initTrackball(atlas.camera);
                             atlas.draw();
                             cp.reset();
-                            progressUtils.end('资源加载完毕')
+                            // progressUtils.end('资源加载完毕')
                         })
                     })
                 })
@@ -240,7 +251,7 @@
 
         function createPlaneMesh(geom, imageFile) {
             if (imageFile != null) {
-                var texture = atlas.textureLoader.load("./jpg/" + imageFile);
+                var texture = atlas.textureLoader.load("./jpg/" + imageFile, atlas.textureProgress.loaded, atlas.textureProgress.loading);
                 var mesh = new THREE.Mesh(
                     geom,
                     new THREE.MeshBasicMaterial({
