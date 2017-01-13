@@ -19,18 +19,6 @@
             atlasHeight: window.innerHeight,
             atlasWidth: window.innerWidth,
         }
-        atlas.textureProgress = {}
-
-        atlas.textureProgress.textureLmt = 55
-        atlas.textureProgress.loadedImages = []
-        atlas.textureProgress.loaded = function (texture) {
-            atlas.textureProgress.loadedImages.push(texture.image.baseURI)
-            if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
-                progressUtils.end('资源加载完毕')
-        }
-        atlas.textureProgress.loading = function (evt) {
-            progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
-        }
 
 
         atlas.init = function (name) {
@@ -79,7 +67,6 @@
                             atlas.trackball = initTrackball(atlas.camera);
                             atlas.draw();
                             cp.reset();
-                            // progressUtils.end('资源加载完毕')
                         })
                     })
                 })
@@ -90,6 +77,18 @@
             });
         }
 
+        //根据材质加载更新进度条，完成解锁模弹
+        atlas.textureProgress = {}
+        atlas.textureProgress.textureLmt = 55
+        atlas.textureProgress.loadedImages = []
+        atlas.textureProgress.loaded = function (texture) {
+            atlas.textureProgress.loadedImages.push(texture.image.baseURI)
+            if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
+                progressUtils.end('资源加载完毕')
+        }
+        atlas.textureProgress.loading = function (evt) {
+            progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
+        }
 
         function initScene() {
             var scene = new THREE.Scene();
