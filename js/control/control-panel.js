@@ -23,6 +23,7 @@
         atlas.camera.top = window.innerHeight / size
         atlas.camera.buttom = window.innerHeight / -size
         atlas.camera.updateProjectionMatrix();
+        $("#changeSize").val(size)
     }
 
     cp.reset = function () {
@@ -33,7 +34,6 @@
             middleSize = 8
 
         this.resize(middleSize)
-        $("#changeSize").val(middleSize)
         links.deactivateAllLinks({byForce: true})
         report.hideSolarReport()
         $('#biDepChk').attr('checked', false);

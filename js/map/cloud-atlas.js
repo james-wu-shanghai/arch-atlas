@@ -62,6 +62,7 @@
                             // atlas.camera.lookAt(atlas.scence.position)
                             // atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
                             atlas.render.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
+                            atlas.render.domElement.addEventListener('mousewheel', onDocumentMouseWheel, false);
                             $(name).append(atlas.render.domElement)
 
                             atlas.trackball = initTrackball(atlas.camera);
@@ -278,6 +279,22 @@
             } else
                 window.report.hideSolarReport();
 
+        }
+
+        function onDocumentMouseWheel(event) {
+            event.preventDefault();
+            var delta = 0;
+            if (event.wheelDelta)  // WebKit / Opera / Explorer 9
+                delta = event.wheelDelta / 40;
+            else if (event.detail)  // Firefox
+                delta = -event.detail / 3;
+
+            var index = $('#changeSize option:selected').index();
+            var size = $('#changeSize').get('0').options.length;
+            var zoomValue = -Math.sign(delta);
+            if (index + zoomValue >= 0 && index + zoomValue < size) {
+                cp.resize($("#changeSize").get(0).options[index + zoomValue].value)
+            }
         }
     }
 
