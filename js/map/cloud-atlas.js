@@ -22,6 +22,7 @@
 
 
         atlas.init = function (name) {
+            window.textureUtil.loadTexture()
             var progressUtils = window.progressUtils;
             // progressUtils.start('开始加载资源')
             progressUtils.progress(10, '加载字库中')
@@ -43,15 +44,12 @@
                             progressUtils.progress(90, '3D建模中')
                             atlas.step = 0
                             atlas.edges = edgesJson;
-                            atlas.textureLoader = new THREE.TextureLoader()
-
                             atlas.raycaster = new THREE.Raycaster();
 
                             atlas.scence = initScene()
                             atlas.camera = initCamera();
                             atlas.render = initRender();
                             atlas.clock = new THREE.Clock();
-                            window.textureUtil.loadTexture()
                             atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
                             addGridHelper()
                             atlas.stars = []
