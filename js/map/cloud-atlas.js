@@ -41,16 +41,17 @@
                             if (error)
                                 alert(error)
                             progressUtils.progress(90, '3D建模中')
-                            atlas.edges = edgesJson;
-
                             atlas.step = 0
+                            atlas.edges = edgesJson;
+                            atlas.textureLoader = new THREE.TextureLoader()
+
                             atlas.raycaster = new THREE.Raycaster();
 
-                            atlas.textureLoader = new THREE.TextureLoader()
                             atlas.scence = initScene()
                             atlas.camera = initCamera();
                             atlas.render = initRender();
                             atlas.clock = new THREE.Clock();
+                            window.textureUtil.loadTexture()
                             atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
                             addGridHelper()
                             atlas.stars = []
@@ -68,90 +69,35 @@
                             atlas.trackball = initTrackball(atlas.camera);
                             atlas.draw();
                             cp.reset();
+                            progressUtils.end('资源加载完毕')
                         })
                     })
                 })
             }, function (progress) {
-                progressUtils.progress(progress.loaded / progress.total * 0.6 * 100 + 10)
+                progressUtils.progress(progress.loaded / progress.total * 0.3 * 100 + 10)
             }, function (error) {
                 console.error(error)
             });
         }
 
         //根据材质加载更新进度条，完成解锁模弹
-        atlas.textureProgress = {}
-        atlas.textureProgress.textureLmt = 55
-        atlas.textureProgress.loadedImages = []
-        atlas.textureProgress.loaded = function (texture) {
-            atlas.textureProgress.loadedImages.push(texture.image.baseURI)
-            if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
-                progressUtils.end('资源加载完毕')
-        }
-        atlas.textureProgress.loading = function (evt) {
-            progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
-        }
+        // atlas.textureProgress = {}
+        // atlas.textureProgress.textureLmt = 55
+        // atlas.textureProgress.loadedImages = []
+        // atlas.textureProgress.loaded = function (texture) {
+        //     atlas.textureProgress.loadedImages.push(texture.image.baseURI)
+        //     if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
+        //         progressUtils.end('资源加载完毕')
+        // }
+        // atlas.textureProgress.loading = function (evt) {
+        //     progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
+        // }
 
         function initScene() {
             var scene = new THREE.Scene();
             var mat = new THREE.MeshBasicMaterial()
             scene.material = mat;
             return scene
-        }
-
-        function initDomains() {
-            var domains = jsonConvert.convert(atlas.domainJson)
-            for (var i = 0; i < domains.length; i++) {
-                var domain = domains[i]
-                addDomainSolar(domain)
-            }
-            addTags(domains);
-
-        }
-
-        function addDomainSolar(domain) {
-            var solar = createPlaneMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), 'stars/' + domain.pic)
-            solar.planets = []
-            addLightSpot();
-
-            solar.domainJsonObj = domain;
-            solar.position.set(domain.x, param.entityHeight, domain.y)
-            solar.name = domain.name
-            atlas.scence.add(solar)
-            atlas.stars.push(domain.name)
-            atlas.solarObjects.push(solar)
-            addPlanet(domain, solar);
-
-
-            function addPlanet(domain, solar) {
-                var planets = domain.planets
-                for (var i = 0; i < planets.length; i++) {
-                    var planet = createPlaneMesh(new THREE.SphereGeometry(param.planetSize, 10, 10))
-                    planet.material.color = new THREE.Color('#1874CD')
-                    // console.log(planet)
-                    var distance = param.solarSize + (i + 1) * param.spaceUnit;
-                    var currentX = domain.x + distance
-                    var currentY = domain.y
-                    planet.position.set(currentX, param.entityHeight, currentY)
-                    planet.name = "[" + domain.name + "]." + planets[i].name
-                    planet.appName = planets[i].name
-                    solar.planets.push(planet)
-                    atlas.scence.add(planet)
-                    atlas.stars.push(planet.name)
-                    atlas.planets.push({
-                        'name': planet.name,
-                        'cx': domain.x,
-                        'cy': domain.y,
-                        'd': distance,
-                        angle: Math.random() * 2 * Math.PI
-                    })
-                }
-            }
-
-            function addLightSpot() {
-                var pointLight = new THREE.PointLight('#FFFFFF', 10, 10);
-                pointLight.position.set(domain.x, param.entityHeight, domain.y)
-                atlas.scence.add(pointLight)
-            }
         }
 
 
@@ -206,6 +152,62 @@
             atlas.scence.add(helper);
         }
 
+        function initDomains() {
+            var domains = jsonConvert.convert(atlas.domainJson)
+            for (var i = 0; i < domains.length; i++) {
+                var domain = domains[i]
+                addDomainSolar(domain)
+            }
+            addTags(domains);
+
+        }
+
+        function addDomainSolar(domain) {
+            var solar = createSolarMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), domain.pic)
+            solar.planets = []
+            addLightSpot();
+
+            solar.domainJsonObj = domain;
+            solar.position.set(domain.x, param.entityHeight, domain.y)
+            solar.name = domain.name
+            atlas.scence.add(solar)
+            atlas.stars.push(domain.name)
+            atlas.solarObjects.push(solar)
+            addPlanet(domain, solar);
+
+
+            function addPlanet(domain, solar) {
+                var planets = domain.planets
+                for (var i = 0; i < planets.length; i++) {
+                    var planet = createPlanetMesh(new THREE.SphereGeometry(param.planetSize, 10, 10))
+                    planet.material.color = new THREE.Color('#1874CD')
+                    // console.log(planet)
+                    var distance = param.solarSize + (i + 1) * param.spaceUnit;
+                    var currentX = domain.x + distance
+                    var currentY = domain.y
+                    planet.position.set(currentX, param.entityHeight, currentY)
+                    planet.name = "[" + domain.name + "]." + planets[i].name
+                    planet.appName = planets[i].name
+                    solar.planets.push(planet)
+                    atlas.scence.add(planet)
+                    atlas.stars.push(planet.name)
+                    atlas.planets.push({
+                        'name': planet.name,
+                        'cx': domain.x,
+                        'cy': domain.y,
+                        'd': distance,
+                        angle: Math.random() * 2 * Math.PI
+                    })
+                }
+            }
+
+            function addLightSpot() {
+                var pointLight = new THREE.PointLight('#FFFFFF', 10, 10);
+                pointLight.position.set(domain.x, param.entityHeight, domain.y)
+                atlas.scence.add(pointLight)
+            }
+        }
+
         function addTags(domains) {
             var options = {
                 size: 3,
@@ -249,9 +251,32 @@
             requestAnimationFrame(atlas.draw);
         }
 
-        function createPlaneMesh(geom, imageFile) {
+        function createPlaneMesh(geom) {
+            var texture = window.textureUtil.getTexture('universe.jpg')
+            var mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({
+                    map: texture,
+                    transparent: true,
+                    opacity: 0.5
+                }));
+            return mesh
+        }
+
+        function createSolarMesh(geom, textureName) {
+            var texture = window.textureUtil.getTexture(textureName)
+            var mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({
+                    map: texture,
+                }));
+            return mesh
+        }
+
+        function createPlanetMesh(geom, imageFile) {
             if (imageFile != null) {
-                var texture = atlas.textureLoader.load("./jpg/" + imageFile, atlas.textureProgress.loaded, atlas.textureProgress.loading);
+                // var texture = atlas.textureLoader.load("./jpg/" + imageFile, atlas.textureProgress.loaded, atlas.textureProgress.loading);
+                var texture = window.textureUtil.getTexture('earth.jpg')
                 var mesh = new THREE.Mesh(
                     geom,
                     new THREE.MeshBasicMaterial({
@@ -263,7 +288,6 @@
                 return new THREE.Mesh(geom, new THREE.MeshBasicMaterial({color: 0x000000}))
             }
         }
-
 
         function onDocumentMouseDown(e) {
             e.preventDefault();

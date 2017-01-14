@@ -2,16 +2,7 @@
  * Created by jameswu on 16-12-19.
  */
 var jsonConvert = {
-    pics: ['blue.jpg',
-        'dark-red.jpg',
-        'golden.jpg',
-        'green-white.jpg',
-        'pink.jpg',
-        'red-black.jpg',
-        'solar.jpg',
-        'very-red.jpg',
-        'white.jpg',
-        'yellow.jpg'],
+    pics: window.textureUtil.pics,
     // valid_suffix: ["-gw", "-app", "-svc", "-srv", "-web"],
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (entityJson) {
