@@ -18,6 +18,9 @@
             atlasWidth: window.innerWidth,
         }
 
+        //TODO:these 2 move to links
+        atlas.allLinks = []
+        atlas.linkEdges = []
 
         atlas.init = function (name) {
             textureUtil.loadTexture()
@@ -60,6 +63,7 @@
 
                             atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
                             atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
+                            atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
                             $(name).append(atlas.render.domElement)
 
                             atlas.trackball = initTrackball(atlas.camera);

@@ -42,6 +42,7 @@ var links = {
 
             edge.activated = true
             atlas.scence.add(mesh)
+            atlas.allLinks.push(mesh)
             var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
             atlas.scence.add(arrow)
 
@@ -102,6 +103,7 @@ var links = {
         }))
         mesh.name = fromSolar.name + "|" + toSolar.name;
         edge.link = mesh
+        mesh.edgeJson = edge
         return mesh;
     },
 
@@ -166,5 +168,6 @@ var links = {
                 edge.activated = false
             }
         }
+        atlas.allLinks = []
     }
 }

@@ -153,9 +153,62 @@
 
         var index = $('#changeSize option:selected').index();
         var size = $('#changeSize').get('0').options.length;
-        var zoomValue = -Math.sign(delta);
+        var zoomValue = Math.sign(delta);
         if (index + zoomValue >= 0 && index + zoomValue < size) {
             cp.resize($("#changeSize").get(0).options[index + zoomValue].value)
+        }
+    }
+
+    cp.onMousemove = function (e) {
+        e.preventDefault();
+        var vector = new THREE.Vector2(( e.clientX / atlas.param.atlasWidth) * 2 - 1, -( e.clientY / atlas.param.atlasHeight) * 2 + 1)
+
+        var rayCaster = new THREE.Raycaster()
+        rayCaster.setFromCamera(vector, atlas.camera);
+
+        var intersect = rayCaster.intersectObjects(atlas.allLinks);
+
+        if (intersect.length > 0) {
+            for (var i = 0; i < intersect.length; i++) {
+                var link = intersect[i].object
+                addLinkHints(link);
+                showEdges(link);
+            }
+            showLinkHints();
+
+        }
+        else {
+            $('#linkHint').css('display', 'none')
+            for (var i = 0; i < atlas.linkEdges.length; i++) {
+                atlas.scence.remove(atlas.linkEdges[i])
+            }
+            atlas.linkEdges = []
+        }
+        function addLinkHints(link) {
+            var edgeJson = link.edgeJson;
+            var from = edgeJson.from;
+            var to = edgeJson.to;
+            var span = $('<span class="glyphicon glyphicon-arrow-right"></span>')
+
+            span.text('从:' + from + " 到:" + to + ( edgeJson.bidirect == 'true' ? ' 双向依赖' : ''))
+            var p = $('<p>')
+            $('#linkHint').append(span).append(p)
+
+        }
+
+        function showEdges(link) {
+            var linkEdge = new THREE.EdgesHelper(link, 0x00ff00)
+            atlas.linkEdges.push(linkEdge)
+            atlas.scence.add(linkEdge);
+            return linkEdge;
+        }
+
+        function showLinkHints() {
+            $('#linkHint').css('display', 'block')
+            d3.select('#linkHint').style({
+                left: e.clientX + "px",
+                top: e.clientY + "px",
+            })
         }
     }
 

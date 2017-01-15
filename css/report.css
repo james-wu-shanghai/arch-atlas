@@ -11,3 +11,13 @@
     position: absolute;
     opacity: 0.95;
 }
+
+.linkHint {
+    background-color: #ccc;
+    z-index: 600;
+    border-radius: 5px;
+    height: auto;
+    width: auto;
+    position: absolute;
+    padding: 5px;
+}
