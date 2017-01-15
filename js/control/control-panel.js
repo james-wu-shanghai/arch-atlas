@@ -180,7 +180,7 @@
         else {
             $('#linkHint').css('display', 'none')
             for (var i = 0; i < atlas.linkEdges.length; i++) {
-                atlas.scence.remove(atlas.linkEdges[i])
+                atlas.linkEdges[i].material.opacity = window.links.opacity
             }
             atlas.linkEdges = []
         }
@@ -197,10 +197,8 @@
         }
 
         function showEdges(link) {
-            var linkEdge = new THREE.EdgesHelper(link, 0x00ff00)
-            atlas.linkEdges.push(linkEdge)
-            atlas.scence.add(linkEdge);
-            return linkEdge;
+            link.material.opacity = 0.9
+            atlas.linkEdges.push(link)
         }
 
         function showLinkHints() {
