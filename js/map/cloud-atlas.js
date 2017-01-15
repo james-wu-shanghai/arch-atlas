@@ -3,12 +3,10 @@
  */
 (function () {
         var atlas = window.atlas = {}
-        var domainJson = null;
-        var edgesJson = null;
         var param = atlas.param = {
-            spaceUnit: 0.5,
-            solarSize: 1.5,
-            planetSize: 0.2,
+            spaceUnit: 0.45,
+            solarSize: 2.2,
+            planetSize: 0.3,
             stepIncrease: 0.0005,
             planeWidth: 250,
             planeHeight: 250,
@@ -80,8 +78,7 @@
 
         function initScene() {
             var scene = new THREE.Scene();
-            var mat = new THREE.MeshBasicMaterial()
-            scene.material = mat;
+            scene.add(new THREE.AmbientLight(0x888888));
             return scene
         }
 
@@ -150,7 +147,7 @@
         function addDomainSolar(domain) {
             var solar = createSolarMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), domain.pic)
             solar.planets = []
-            addLightSpot();
+            addLightSpot(domain);
 
             solar.domainJsonObj = domain;
             solar.position.set(domain.x, param.entityHeight, domain.y)
@@ -165,8 +162,6 @@
                 var planets = domain.planets
                 for (var i = 0; i < planets.length; i++) {
                     var planet = createPlanetMesh(new THREE.SphereGeometry(param.planetSize, 10, 10))
-                    planet.material.color = new THREE.Color('#1874CD')
-                    // console.log(planet)
                     var distance = param.solarSize + (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
@@ -186,8 +181,8 @@
                 }
             }
 
-            function addLightSpot() {
-                var pointLight = new THREE.PointLight('#FFFFFF', 10, 10);
+            function addLightSpot(domain) {
+                var pointLight = new THREE.PointLight(0xffffff, 10, 10);
                 pointLight.position.set(domain.x, param.entityHeight, domain.y)
                 atlas.scence.add(pointLight)
             }
@@ -231,18 +226,19 @@
 
         function createSolarMesh(geom, textureName) {
             var texture = textureUtil.getTexture(textureName)
-            var mesh = new THREE.Mesh(
-                geom,
-                new THREE.MeshBasicMaterial({map: texture}));
+            var basicMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: true, opacity: 1});
+            var mesh = new THREE.Mesh(geom, basicMaterial);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
             return mesh
         }
 
         function createPlanetMesh(geom) {
             var texture = textureUtil.getTexture('earth.jpg')
-            var mesh = new THREE.Mesh(
-                geom,
-                new THREE.MeshBasicMaterial({map: texture}));
-            return mesh
+            var basicMat = new THREE.MeshBasicMaterial({map: texture, transparent: true, opacity: 0.5});
+            var normalMat = new THREE.MeshLambertMaterial({color: 0x3399ff})
+            return new THREE.SceneUtils.createMultiMaterialObject(geom, [basicMat, normalMat])
+
         }
 
         atlas.draw = function () {
