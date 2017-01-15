@@ -4,14 +4,17 @@
 (function () {
         var textureUtil = window.textureUtil = {}
 
-        var pics = window.textureUtil.pics = ['blue.jpg',
-            'dark-red.jpg',
+        var pics = window.textureUtil.pics = [
+            'blue.jpg',
             'golden.jpg',
             'pink.jpg',
-            'red-black.jpg',
-            'solar.jpg',
+            'red.jpg',
             'very-red.jpg',
-            'yellow.jpg'];
+            'purple.jpg',
+            'yellow.jpg',
+            'green.jpg',
+            'brown.jpg',
+            'cyan.jpg'];
 
         var earth = 'earth.jpg'
         var plane = 'universe.jpg'
