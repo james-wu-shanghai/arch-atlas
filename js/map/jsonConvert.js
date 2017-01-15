@@ -3,7 +3,6 @@
  */
 var jsonConvert = {
     pics: window.textureUtil.pics,
-    // valid_suffix: ["-gw", "-app", "-svc", "-srv", "-web"],
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (entityJson) {
         var domains = [];
@@ -27,8 +26,8 @@ var jsonConvert = {
         }
 
         return domains;
-    }
-    ,
+    },
+
     endWith: function (original, suffix) {
         if (suffix == null || suffix == "" || this.length == 0 || suffix.length > this.length)
             return false;
@@ -37,8 +36,7 @@ var jsonConvert = {
         else
             return false;
         return true;
-    }
-    ,
+    },
 
     generatePlanet: function (entity) {
         var planet = {};
@@ -46,9 +44,7 @@ var jsonConvert = {
         planet.size = 1;
         planet.domainName = entity.attributes.module;
         return planet;
-    }
-    ,
-
+    },
 
     insertPlanet: function (domains, planet) {
         for (var i = 0; i < domains.length; i++) {

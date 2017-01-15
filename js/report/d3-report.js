@@ -2,12 +2,12 @@
  * Created by jameswu on 16-11-29.
  */
 (function () {
-    window.report = {}
+    var report = window.report = {}
     report.init = function () {
         var popReport = d3.select('body').append('div')
         popReport.attr('id', 'pop-report')
-        window.report.showSolarReport = showSolarReport
-        window.report.hideSolarReport = hideSolarReport
+        report.showSolarReport = showSolarReport
+        report.hideSolarReport = hideSolarReport
     }
 
     function showSolarReport(x, y, domain) {

@@ -2,7 +2,7 @@
  * Created by james on 17-1-12.
  */
 (function () {
-    window.solarReport = {}
+    var solarReport = window.solarReport = {}
     solarReport.render = function (solar) {
         var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip") //用于css设置类样式
@@ -16,7 +16,6 @@
         report.style('height', (solar.planets.length * 0.8 + 2) + 'em')
         var svg = report.append('svg');
         svg.style('height', (solar.planets.length * 0.8 + 2) + 'em')
-        //            var rect = svg.append("rect").attr({fill: '#fff', stroke: 'steelblue', height: 95, width: 290})
         svg.append('text').text('Domain Name: ' + solar.name).attr({
             fill: 'black',
             'font-size': '0.8em',
@@ -29,7 +28,7 @@
         })
         for (var i = 0; i < solar.planets.length; i++) {
             var planet = solar.planets[i];
-            svg.append('text').html( planet.name ).attr({
+            svg.append('text').html(planet.name).attr({
                 fill: 'black',
                 'font-size': '0.8em',
                 y: (3 + i) + 'em',
@@ -163,12 +162,12 @@
                 var wid = d >= 10 ? 10 : d
                 return wid * lineWidthUnit;
             })
-            .style('cursor','help')
+            .style('cursor', 'help')
             .on('click', function (d, i) {
                 var text = $('#depContent').text()
                 if (text == "")
                     $('#depContent').html(function () {
-                        var hint = hintSet[i] + ":"+depSet[i]
+                        var hint = hintSet[i] + ":" + depSet[i]
                         // for (var j = 0; j < depSet.length; j++)
                         //     for (var k = 0; k < depSet[i].length; k++)
                         //         hint += '\<a title=\'展示应用依赖\' target=\'vaadin\' href=\'/ui/vaadin/?appName=' + depSet[j][k] + '\'\>' + depSet[j][k] + '\</a\>'

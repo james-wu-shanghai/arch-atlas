@@ -127,6 +127,36 @@
             searchInput.select()
         }
     }
+    cp.onMousedown = function (e) {
+        e.preventDefault();
+        var vector = new THREE.Vector2(( e.clientX / atlas.param.atlasWidth) * 2 - 1, -( e.clientY / atlas.param.atlasHeight) * 2 + 1)
 
+        var rayCaster = new THREE.Raycaster()
+        rayCaster.setFromCamera(vector, atlas.camera);
+
+        var intersect = rayCaster.intersectObjects(atlas.solarObjects);
+        if (intersect.length > 0) {
+            var solar = intersect[0].object
+            cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
+        } else
+            report.hideSolarReport();
+
+    }
+
+    cp.onMousewheel = function (event) {
+        event.preventDefault();
+        var delta = 0;
+        if (event.wheelDelta)  // WebKit / Opera / Explorer 9
+            delta = event.wheelDelta / 40;
+        else if (event.detail)  // Firefox
+            delta = -event.detail / 3;
+
+        var index = $('#changeSize option:selected').index();
+        var size = $('#changeSize').get('0').options.length;
+        var zoomValue = -Math.sign(delta);
+        if (index + zoomValue >= 0 && index + zoomValue < size) {
+            cp.resize($("#changeSize").get(0).options[index + zoomValue].value)
+        }
+    }
 
 }).call(this)

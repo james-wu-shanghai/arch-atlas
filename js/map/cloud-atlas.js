@@ -5,7 +5,7 @@
         var atlas = window.atlas = {}
         var domainJson = null;
         var edgesJson = null;
-        var param = {
+        var param = atlas.param = {
             spaceUnit: 0.5,
             solarSize: 1.5,
             planetSize: 0.2,
@@ -22,9 +22,11 @@
 
 
         atlas.init = function (name) {
-            window.textureUtil.loadTexture()
-            var progressUtils = window.progressUtils;
-            // progressUtils.start('开始加载资源')
+            textureUtil.loadTexture()
+
+            //cache ajax request,mainly for html xhr included, i remove them from xhr html pages, so no longer needed.
+            // $.ajaxSetup({cache:true})
+
             progressUtils.progress(10, '加载字库中')
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
@@ -58,10 +60,8 @@
                             initDomains();
 
 
-                            // atlas.camera.lookAt(atlas.scence.position)
-                            // atlas.render.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
-                            atlas.render.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
-                            atlas.render.domElement.addEventListener('mousewheel', onDocumentMouseWheel, false);
+                            atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
+                            atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
                             $(name).append(atlas.render.domElement)
 
                             atlas.trackball = initTrackball(atlas.camera);
@@ -77,19 +77,6 @@
                 console.error(error)
             });
         }
-
-        //根据材质加载更新进度条，完成解锁模弹
-        // atlas.textureProgress = {}
-        // atlas.textureProgress.textureLmt = 55
-        // atlas.textureProgress.loadedImages = []
-        // atlas.textureProgress.loaded = function (texture) {
-        //     atlas.textureProgress.loadedImages.push(texture.image.baseURI)
-        //     if (atlas.textureProgress.loadedImages.length >= atlas.textureProgress.textureLmt)
-        //         progressUtils.end('资源加载完毕')
-        // }
-        // atlas.textureProgress.loading = function (evt) {
-        //     progressUtils.progress(90 + atlas.textureProgress.loadedImages.length / atlas.textureProgress.textureLmt * 100)
-        // }
 
         function initScene() {
             var scene = new THREE.Scene();
@@ -230,6 +217,34 @@
             }
         }
 
+        function createPlaneMesh(geom) {
+            var texture = textureUtil.getTexture('universe.jpg')
+            var mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({
+                    map: texture,
+                    transparent: true,
+                    opacity: 0.5
+                }));
+            return mesh
+        }
+
+        function createSolarMesh(geom, textureName) {
+            var texture = textureUtil.getTexture(textureName)
+            var mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({map: texture}));
+            return mesh
+        }
+
+        function createPlanetMesh(geom) {
+            var texture = textureUtil.getTexture('earth.jpg')
+            var mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({map: texture}));
+            return mesh
+        }
+
         atlas.draw = function () {
             var delta = atlas.clock.getDelta();
             atlas.trackball.update(delta)
@@ -248,76 +263,5 @@
             atlas.render.render(atlas.scence, atlas.camera)
             requestAnimationFrame(atlas.draw);
         }
-
-        function createPlaneMesh(geom) {
-            var texture = window.textureUtil.getTexture('universe.jpg')
-            var mesh = new THREE.Mesh(
-                geom,
-                new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    opacity: 0.5
-                }));
-            return mesh
-        }
-
-        function createSolarMesh(geom, textureName) {
-            var texture = window.textureUtil.getTexture(textureName)
-            var mesh = new THREE.Mesh(
-                geom,
-                new THREE.MeshBasicMaterial({
-                    map: texture,
-                }));
-            return mesh
-        }
-
-        function createPlanetMesh(geom, imageFile) {
-            if (imageFile != null) {
-                // var texture = atlas.textureLoader.load("./jpg/" + imageFile, atlas.textureProgress.loaded, atlas.textureProgress.loading);
-                var texture = window.textureUtil.getTexture('earth.jpg')
-                var mesh = new THREE.Mesh(
-                    geom,
-                    new THREE.MeshBasicMaterial({
-                        map: texture
-                    }));
-                return mesh
-
-            } else {
-                return new THREE.Mesh(geom, new THREE.MeshBasicMaterial({color: 0x000000}))
-            }
-        }
-
-        function onDocumentMouseDown(e) {
-            e.preventDefault();
-            var vector = new THREE.Vector2(( e.clientX / param.atlasWidth) * 2 - 1, -( e.clientY / param.atlasHeight) * 2 + 1)
-
-            var rayCaster = new THREE.Raycaster()
-            rayCaster.setFromCamera(vector, atlas.camera);
-
-            var intersect = rayCaster.intersectObjects(atlas.solarObjects);
-            if (intersect.length > 0) {
-                var solar = intersect[0].object
-                cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
-            } else
-                window.report.hideSolarReport();
-
-        }
-
-        function onDocumentMouseWheel(event) {
-            event.preventDefault();
-            var delta = 0;
-            if (event.wheelDelta)  // WebKit / Opera / Explorer 9
-                delta = event.wheelDelta / 40;
-            else if (event.detail)  // Firefox
-                delta = -event.detail / 3;
-
-            var index = $('#changeSize option:selected').index();
-            var size = $('#changeSize').get('0').options.length;
-            var zoomValue = -Math.sign(delta);
-            if (index + zoomValue >= 0 && index + zoomValue < size) {
-                cp.resize($("#changeSize").get(0).options[index + zoomValue].value)
-            }
-        }
     }
-
 ).call(this)
