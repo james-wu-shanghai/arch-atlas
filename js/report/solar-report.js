@@ -132,7 +132,6 @@
                     return d.data[0]
                 return ""
             })
-        console.log(solar.domainJsonObj)
     }
     solarReport.renderDepLines = function (solar) {
 
