@@ -31,13 +31,12 @@
                 txrs.push(txrObj);
             }
 
-            _loadTexture('./jpg/universe.jpg', plane, textureLoader, textures)
             _loadTexture('./jpg/planet/earth.jpg', earth, textureLoader, textures)
             for (var i = 0; i < pics.length; i++) {
                 var fileName = "./jpg/stars/" + pics[i];
                 _loadTexture(fileName, pics[i], textureLoader, textures)
             }
-
+            _loadTexture('./jpg/universe.jpg', plane, textureLoader, textures)
         }
 
         window.textureUtil.getTexture = function (textureName) {

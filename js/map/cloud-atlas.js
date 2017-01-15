@@ -247,7 +247,7 @@
 
             atlas.step += param.stepIncrease
             for (var i = 0; i < atlas.stars.length; i++) {
-                atlas.scence.getObjectByName(atlas.stars[i]).rotation.y = atlas.step*20
+                atlas.scence.getObjectByName(atlas.stars[i]).rotation.y = atlas.step
             }
             for (var i = 0; i < atlas.planets.length; i++) {
                 var planet = atlas.planets[i]
