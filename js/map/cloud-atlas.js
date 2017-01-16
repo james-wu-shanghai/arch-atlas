@@ -21,6 +21,8 @@
         //TODO:these 2 move to links
         atlas.allLinks = []
         atlas.linkEdges = []
+        //TODO:these one become solar fonts
+        atlas.fonts = []
 
         atlas.init = function (name) {
             textureUtil.loadTexture()
@@ -33,15 +35,15 @@
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
                 //d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
-                    d3.json('libs/data/entity.json', function (error, entityJson) {
+                d3.json('libs/data/entity.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
                     //d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
-                        d3.json('libs/data/static.json', function (error, depStaticJson) {
+                    d3.json('libs/data/static.json', function (error, depStaticJson) {
                         progressUtils.progress(70, '加载依赖统计中')
                         atlas.depStatic = depStaticJson;
                         //d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
-                            d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+                        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
                             if (error)
                                 alert(error)
                             progressUtils.progress(90, '3D建模中')
@@ -60,10 +62,11 @@
                             atlas.solarObjects = []
                             initDomains();
 
-
+                            window.addEventListener('resize', cp.autoResize, false)
                             atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
                             atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
                             atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
+
                             $(name).append(atlas.render.domElement)
 
                             atlas.trackball = initTrackball(atlas.camera);
@@ -212,6 +215,7 @@
                 var text = new THREE.Mesh(new THREE.TextGeometry(domain.name, options))
                 text.position.set(domain.x + 3, param.entityHeight - 3, domain.y + 3)
                 text.rotateY(4 / 16 * Math.PI)
+                atlas.fonts.push(text)
                 atlas.scence.add(text)
             }
         }

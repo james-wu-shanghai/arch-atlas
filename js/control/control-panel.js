@@ -18,12 +18,22 @@
     }
 
     cp.resize = function (size) {
+        if ($("#changeSize").val() == size)
+            return true
         atlas.camera.left = window.innerWidth / -size
         atlas.camera.right = window.innerWidth / size
         atlas.camera.top = window.innerHeight / size
         atlas.camera.buttom = window.innerHeight / -size
+        atlas.param.scale = size
         atlas.camera.updateProjectionMatrix();
         $("#changeSize").val(size)
+        // auto adjust size
+        var index = $('#changeSize option:selected').index()
+        for (var i = 0; i < atlas.fonts.length; i++) {
+            var font = atlas.fonts[i]
+            var _scale = (1 + (2 - index) * 0.1)
+            font.scale.set(_scale, _scale, _scale)
+        }
     }
 
     cp.reset = function () {
@@ -41,7 +51,21 @@
         cp.param = {}
         cp.removeAllLinkHints()
         atlas.allLinks = []
+        atlas.camera.position.set(300, 300, 300)
+        atlas.camera.updateProjectionMatrix()
     }
+    cp.autoResize = function () {
+        var height = atlas.param.atlasHeight = window.innerHeight;
+        var width = atlas.param.atlasWidth = window.innerWidth
+        var camera = atlas.camera;
+        var scale = atlas.param.scale;
+        camera.left = width / -scale;
+        camera.right = width / scale;
+        camera.top = height / scale;
+        camera.bottom = height / -scale;
+        camera.updateProjectionMatrix();
+        atlas.render.setSize(width, height);
+    };
     cp.removeAllSolarBoxes = function () {
         for (var i = 0; i < atlas.solarObjects.length; i++) {
             var solar = atlas.solarObjects[i]
@@ -129,6 +153,7 @@
             searchInput.select()
         }
     }
+
     cp.onMousedown = function (e) {
         e.preventDefault();
         var vector = new THREE.Vector2(( e.clientX / atlas.param.atlasWidth) * 2 - 1, -( e.clientY / atlas.param.atlasHeight) * 2 + 1)
