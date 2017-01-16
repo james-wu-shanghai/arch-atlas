@@ -32,16 +32,16 @@
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
-                // d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
-                d3.json('libs/data/entity.json', function (error, entityJson) {
+                //d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
+                    d3.json('libs/data/entity.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
-                    // d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
-                    d3.json('libs/data/static.json', function (error, depStaticJson) {
+                    //d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
+                        d3.json('libs/data/static.json', function (error, depStaticJson) {
                         progressUtils.progress(70, '加载依赖统计中')
                         atlas.depStatic = depStaticJson;
-                        // d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
-                        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
+                        //d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
+                            d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
                             if (error)
                                 alert(error)
                             progressUtils.progress(90, '3D建模中')
@@ -82,7 +82,7 @@
 
         function initScene() {
             var scene = new THREE.Scene();
-            scene.add(new THREE.AmbientLight(0x888888));
+            //scene.add(new THREE.AmbientLight(0x888888));
             return scene
         }
 
@@ -120,7 +120,7 @@
 
         function initPlane(width, height, widthSeg, heightSeg) {
             var plane = createPlaneMesh(
-                new THREE.PlaneGeometry(width, height, widthSeg, heightSeg), 'universe.jpg')
+                new THREE.CircleGeometry(width * .75, 108))
             plane.rotation.x = -0.5 * Math.PI
             plane.name = 'plane'
             plane.position.set(0, 0, 0)
@@ -151,7 +151,7 @@
         function addDomainSolar(domain) {
             var solar = createSolarMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), domain.pic)
             solar.planets = []
-            addLightSpot(domain);
+            //addLightSpot(domain);
 
             solar.domainJsonObj = domain;
             solar.position.set(domain.x, param.entityHeight, domain.y)
@@ -217,13 +217,14 @@
         }
 
         function createPlaneMesh(geom) {
-            var texture = textureUtil.getTexture('universe.jpg')
+            //var texture = textureUtil.getTexture('universe.jpg')
             var mesh = new THREE.Mesh(
                 geom,
                 new THREE.MeshBasicMaterial({
-                    map: texture,
+                    //map: texture,
+                    color: 0x222222,
                     transparent: true,
-                    opacity: 0.5
+                    //opacity: 0.5
                 }));
             return mesh
         }
@@ -232,16 +233,16 @@
             var texture = textureUtil.getTexture(textureName)
             var basicMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: true, opacity: 1});
             var mesh = new THREE.Mesh(geom, basicMaterial);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
+            //mesh.castShadow = true;
+            //mesh.receiveShadow = true;
             return mesh
         }
 
         function createPlanetMesh(geom) {
             var texture = textureUtil.getTexture('earth.jpg')
-            var basicMat = new THREE.MeshBasicMaterial({map: texture, transparent: true, opacity: 0.5});
-            var normalMat = new THREE.MeshLambertMaterial({color: 0x3399ff})
-            return new THREE.SceneUtils.createMultiMaterialObject(geom, [basicMat, normalMat])
+            var basicMat = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
+            //var normalMat = new THREE.MeshLambertMaterial({color: 0x3399ff})
+            return new THREE.Mesh(geom, basicMat)
 
         }
 

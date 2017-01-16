@@ -7,8 +7,8 @@ var links = {
     radiusSegments: 12,
     closed: false,
     opacity: 0.3,
-    portDistance: 4,
-    portLength: 8,
+    portDistance: 5.5,
+    portLength: 9,
 
 
     activate: function (solarName) {
@@ -51,7 +51,7 @@ var links = {
     generateArrow: function (cubeMesh, points) {
         var endPoint = points[3];
         var cone = new THREE.Mesh(new THREE.ConeGeometry(links.radius * 1.5, links.radius * 6, 8), new THREE.MeshBasicMaterial({
-            opacity: links.opacity * 1.5,
+            opacity: links.opacity * 2,
             transparent: true,
             color: cubeMesh.material.color
         }))

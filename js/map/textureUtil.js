@@ -36,7 +36,7 @@
                 var fileName = "./jpg/stars/" + pics[i];
                 _loadTexture(fileName, pics[i], textureLoader, textures)
             }
-            _loadTexture('./jpg/universe.jpg', plane, textureLoader, textures)
+            //_loadTexture('./jpg/universe.jpg', plane, textureLoader, textures)
         }
 
         window.textureUtil.getTexture = function (textureName) {

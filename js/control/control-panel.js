@@ -28,10 +28,10 @@
 
     cp.reset = function () {
         atlas.trackball.reset();
-        //自适应
         var middleSize = 16;
-        if (window.innerWidth < 1440)
-            middleSize = 8
+        //自适应, 效果不好，不做了
+        //if (window.innerWidth < 1440)
+        //    middleSize = 8
 
         this.resize(middleSize)
         links.deactivateAllLinks({byForce: true})
@@ -39,6 +39,8 @@
         $('#biDepChk').attr('checked', false);
         cp.removeAllSolarBoxes()
         cp.param = {}
+        cp.removeAllLinkHints()
+        atlas.allLinks = []
     }
     cp.removeAllSolarBoxes = function () {
         for (var i = 0; i < atlas.solarObjects.length; i++) {
@@ -159,6 +161,7 @@
         }
     }
 
+
     cp.onMousemove = function (e) {
         e.preventDefault();
         var vector = new THREE.Vector2(( e.clientX / atlas.param.atlasWidth) * 2 - 1, -( e.clientY / atlas.param.atlasHeight) * 2 + 1)
@@ -169,6 +172,7 @@
         var intersect = rayCaster.intersectObjects(atlas.allLinks);
 
         if (intersect.length > 0) {
+            $('#linkHint').empty()
             for (var i = 0; i < intersect.length; i++) {
                 var link = intersect[i].object
                 addLinkHints(link);
@@ -178,11 +182,7 @@
 
         }
         else {
-            $('#linkHint').css('display', 'none')
-            for (var i = 0; i < atlas.linkEdges.length; i++) {
-                atlas.linkEdges[i].material.opacity = window.links.opacity
-            }
-            atlas.linkEdges = []
+            cp.removeAllLinkHints();
         }
         function addLinkHints(link) {
             var edgeJson = link.edgeJson;
@@ -208,6 +208,15 @@
                 top: e.clientY + "px",
             })
         }
+    }
+
+    cp.removeAllLinkHints = function () {
+        $('#linkHint').css('display', 'none')
+        $('#linkHint').empty()
+        for (var i = 0; i < atlas.linkEdges.length; i++) {
+            atlas.linkEdges[i].material.opacity = window.links.opacity
+        }
+        atlas.linkEdges = []
     }
 
 }).call(this)

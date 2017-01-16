@@ -42,7 +42,7 @@ var jsonConvert = {
         var planet = {};
         planet.name = entity.key;
         planet.size = 1;
-        planet.domainName = entity.attributes.module;
+        planet.domainName = entity.attributes.domain;
         return planet;
     },
 
