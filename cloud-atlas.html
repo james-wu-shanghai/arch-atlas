@@ -17,44 +17,52 @@
 </head>
 <body>
 <div class="controlPanel">
-    <nav class="navbar nav-tabs" role="navigation">
-        <form class="navbar-form navbar-left" role="search">
-            <div class="input-group" title="寻找域">
-                <span class="glyphicon glyphicon-search input-group-addon"></span>
-                <input name="domain" class="form-control" type="text"
-                       onkeypress="if(event.keyCode == '13') return false"
-                       onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.findDomain(this)">
-            </div>
-        </form>
-        <form class="navbar-form navbar-left" role="presentation">
-            <div class="input-group" title="调整大小">
-                <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
-                <select class="form-control" id="changeSize"
-                        onchange="window.cp.resize($('#' + this.id + ' option:selected').val())">
-                    <option value="6">很小</option>
-                    <option value="8">小</option>
-                    <option value="16" selected="selected">中</option>
-                    <option value="24">大</option>
-                </select>
-                <span id="reset" title="复原" class="btn btn-info glyphicon glyphicon-retweet input-group-addon"
-                      onclick="window.cp.reset()"></span>
-            </div>
-        </form>
-        <form class="navbar-form navbar-left" role="presentation">
-            <div class="checkbox">
-                <label><input id="showPlanChk" type="checkbox" checked="checked"
-                              onclick="cp.showBackground()"><span class="glyphicon glyphicon-th-large">背景</span>
-                </label>
-            </div>
-        </form>
-        <form class="navbar-form navbar-left" role="presentation">
-            <div class="checkbox ">
-                <label><input id="biDepChk" type="checkbox" onclick="cp.showBiDomainDep()">
-                    <span class="glyphicon glyphicon-transfer">
+    <div id="controlPanelCollapse" class="collapse">
+        <nav class="navbar nav-tabs" role="navigation">
+            <form class="navbar-form navbar-left" role="search">
+                <div class="input-group" title="寻找域">
+                    <span class="glyphicon glyphicon-search input-group-addon"></span>
+                    <input name="domain" class="form-control" type="text"
+                           onkeypress="if(event.keyCode == '13') return false"
+                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.findDomain(this)">
+                </div>
+            </form>
+            <form class="navbar-form navbar-left" role="presentation">
+                <div class="input-group" title="调整大小">
+                    <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
+                    <select class="form-control" id="changeSize"
+                            onchange="window.cp.resize($('#' + this.id + ' option:selected').val())">
+                        <option value="6">很小</option>
+                        <option value="8">小</option>
+                        <option value="16" selected="selected">中</option>
+                        <option value="24">大</option>
+                    </select>
+                    <span id="reset" title="复原" class="btn btn-info glyphicon glyphicon-retweet input-group-addon"
+                          onclick="window.cp.reset()"></span>
+                </div>
+            </form>
+            <form class="navbar-form navbar-left" role="presentation">
+                <div class="checkbox">
+                    <label><input id="showPlanChk" type="checkbox" checked="checked"
+                                  onclick="cp.showBackground()"><span class="glyphicon glyphicon-th-large">背景</span>
+                    </label>
+                </div>
+            </form>
+            <form class="navbar-form navbar-left" role="presentation">
+                <div class="checkbox ">
+                    <label><input id="biDepChk" type="checkbox" onclick="cp.showBiDomainDep()">
+                        <span class="glyphicon glyphicon-transfer">
                     双向依赖</span></label>
-            </div>
-        </form>
-    </nav>
+                </div>
+            </form>
+        </nav>
+    </div>
+    <div class="row text-center">
+        <span id="cpCollapseButton" data-toggle="collapse" title="菜单栏" data-status="0" style="width: 100%"
+              onclick="$('#cpCollapseButton').attr('class')=='glyphicon glyphicon-chevron-up'?$('#cpCollapseButton').attr('class','glyphicon glyphicon-chevron-down'):$('#cpCollapseButton').attr('class','glyphicon glyphicon-chevron-up')"
+              class="glyphicon glyphicon-chevron-down"
+              data-target="#controlPanelCollapse"></span>
+    </div>
 </div>
 
 <div class="linkHint row pre-scrollable" id="linkHint"></div>
