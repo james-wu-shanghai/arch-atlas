@@ -29,7 +29,7 @@ var jsonConvert = {
     },
 
     endWith: function (original, suffix) {
-        if (suffix == null || suffix == "" || this.length == 0 || suffix.length > this.length)
+        if (suffix == null || suffix == "" || original.length == 0 || suffix.length > original.length)
             return false;
         if (original.substring(original.length - suffix.length) == suffix)
             return true;
@@ -37,7 +37,14 @@ var jsonConvert = {
             return false;
         return true;
     },
-
+    startWith: function (original, prefix) {
+        if (prefix == null || prefix == "" || original.length == 0 || prefix.length > original.length)
+            return false;
+        if (original.substring(0, prefix.length) == prefix)
+            return true;
+        else
+            return false;
+    },
     generatePlanet: function (entity) {
         var planet = {};
         planet.name = entity.key;
@@ -58,5 +65,25 @@ var jsonConvert = {
         domain.name = planet.domainName;
         domain.planets = [planet];
         domains.push(domain);
+    },
+
+    //按照类型排序
+    sortByType: function (planets) {
+        var typeSort = ['web', 'gw', 'i-', 'app', '-job', 'svc']
+        var sorts = [[], [], [], [], [], []]
+        var result = []
+        for (var i = 0; i < planets.length; i++) {
+            var planet = planets[i]
+            for (var j = 0; j < typeSort.length; j++) {
+                if (jsonConvert.startWith(planet.name, typeSort[j]) || jsonConvert.endWith(planet.name, typeSort[j])) {
+                    sorts[j].push(planet.name)
+                    break;
+                }
+            }
+        }
+        for (var i = 0; i < sorts.length; i++)
+            for (var j = 0; j < sorts[i].length; j++)
+                result.unshift(sorts[i][j])
+        return result
     }
 }

@@ -26,9 +26,12 @@
             'font-size': '0.8em',
             y: '2em'
         })
-        for (var i = 0; i < solar.planets.length; i++) {
-            var planet = solar.planets[i];
-            svg.append('text').html(planet.name).attr({
+
+
+        var names = jsonConvert.sortByType(solar.planets)
+        for (var i = 0; i < names.length; i++) {
+            var name = names[i]
+            svg.append('text').html(name).attr({
                 fill: 'black',
                 'font-size': '0.8em',
                 y: (3 + i) + 'em',
@@ -210,7 +213,7 @@
             .text(function (d, i) {
                 return d
             })
-            .attr('style','pointer-events:none')
+            .attr('style', 'pointer-events:none')
         for (var i = 0; i < hintSet.length; i++) {
             svg.append("text").attr('x', 0).attr({'fill': 'steelblue', 'dy': '1.2em'}).attr('y', function () {
                 return i * (step + lineHeight)
