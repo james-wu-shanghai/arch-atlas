@@ -3,7 +3,7 @@
  */
 (function () {
     var cp = window.cp = {}
-    cp.actSolarLmt = 10;
+    cp.actSolarLmt = 5;
     cp.activatedSolar = [];
 
     cp.param = {}
@@ -20,15 +20,14 @@
             filterLinks('ALL')
 
         function filterLinks(type) {
-            for (var i = 0; i < atlas.allLinks.length; i++) {
-                var link = atlas.allLinks[i]
+            for (var i = 0; i < links.activatedLinks.length; i++) {
+                var link = links.activatedLinks[i]
                 var edgeJson = link.edgeJson;
                 var edgeType = edgeJson.edgeType;
                 if (type == edgeType || type == 'ALL')
-                    edgeJson.setVisible(true)
+                    edgeJson.setVisible(true, {highlight: false})
                 else if (edgeType != type)
                     edgeJson.setVisible(false)
-
             }
         }
     }
@@ -70,13 +69,12 @@
         //    middleSize = 8
 
         this.resize(middleSize)
-        links.deactivateAllLinks({byForce: true})
+        links.deactivateAllLinks()
         report.hideSolarReport()
-        $('#biDepChk').attr('checked', false);
+        // $('#biDepChk').attr('checked', false);
         cp.removeAllSolarBoxes()
         cp.param = {}
         cp.removeAllLinkHints()
-        atlas.allLinks = []
         atlas.camera.position.set(300, 300, 300)
         atlas.camera.updateProjectionMatrix()
     }
@@ -102,37 +100,6 @@
             }
         }
     }
-    // cp.showBiDomainDep = function () {
-    //     var isShow = $('#biDepChk').is(':checked')
-    //     if (isShow) {
-    //         progressUtils.start('开始更新依赖')
-    //         links.deactivateAllLinks({byForce: true})
-    //         this.param.dependencyLock = true;
-    //         for (var i = 0; i < atlas.edges.length; i++) {
-    //             progressUtils.progress(i / atlas.edges.length * 100, '更新依赖中')
-    //             var edge = atlas.edges[i];
-    //             if (edge.bidirect == 'false')
-    //                 continue;
-    //             if (edge.from == null || edge.to == null)
-    //                 continue
-    //
-    //             var mesh = edge.link// atlas.scence.getObjectByName(edge.from + "|" + edge.to)
-    //
-    //             if (mesh == null) {
-    //                 var mesh = links.build(edge, 'BIDIRECT')
-    //                 if (mesh == null)
-    //                     continue;
-    //                 edge.link = mesh;
-    //             }
-    //             edge.activated = true
-    //             atlas.scence.add(mesh)
-    //             progressUtils.end('完成更新')
-    //         }
-    //     } else {
-    //         links.deactivateAllLinks({byForce: true})
-    //         this.param.dependencyLock = false;
-    //     }
-    // }
 
     cp.showBackground = function () {
         var isShow = $('#showPlanChk').is(':checked')
@@ -221,15 +188,14 @@
         var rayCaster = new THREE.Raycaster()
         rayCaster.setFromCamera(vector, atlas.camera);
 
-        var intersect = rayCaster.intersectObjects(atlas.allLinks);
-
+        var intersect = rayCaster.intersectObjects(links.activatedLinks, true);
         if (intersect.length > 0) {
             $('#linkHint').empty()
             for (var i = 0; i < intersect.length; i++) {
-                var link = intersect[i].object
+                var link = intersect[i].object.parent
                 if (link.edgeJson.show) {
                     addLinkHints(link);
-                    showEdges(link);
+                    highlightEdge(link);
                 }
             }
             showLinkHints();
@@ -250,9 +216,9 @@
 
         }
 
-        function showEdges(link) {
-            link.material.opacity = 0.9
-            atlas.linkEdges.push(link)
+        function highlightEdge(link) {
+            link.edgeJson.setVisible(true, {highlight: true})
+            links.highlightLinkEdges.push(link)
         }
 
         function showLinkHints() {
@@ -269,10 +235,11 @@
     cp.removeAllLinkHints = function () {
         $('#linkHint').css('display', 'none')
         $('#linkHint').empty()
-        for (var i = 0; i < atlas.linkEdges.length; i++) {
-            atlas.linkEdges[i].material.opacity = window.links.opacity
+        for (var i = 0; i < links.highlightLinkEdges.length; i++) {
+            var link = links.highlightLinkEdges[i]
+            link.edgeJson.setVisible(true)
         }
-        atlas.linkEdges = []
+        links.highlightLinkEdges = []
     }
 
     /***

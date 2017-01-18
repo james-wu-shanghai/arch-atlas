@@ -18,9 +18,7 @@
             atlasWidth: window.innerWidth,
         }
 
-        //TODO:these 2 move to links
-        atlas.allLinks = []
-        atlas.linkEdges = []
+
         //TODO:these one become solar fonts
         atlas.fonts = []
 

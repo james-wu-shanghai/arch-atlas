@@ -9,27 +9,43 @@ var links = {
     opacity: 0.3,
     portDistance: 5.5,
     portLength: 9,
-
+    activatedLinks: [],
+    highlightLinkEdges: [],
 
     activate: function (solarName) {
         if (atlas.edges == null || cp.param.dependencyLock)
             return;
 
         for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = {}
-            edge.from = atlas.edges[i].from
-            edge.to = atlas.edges[i].to
-            edge.bidirect = atlas.edges[i].bidirect
-            edge.setVisible = function (isVisible) {
-                for (var i = 0; i < this.link.children.length; i++) {
-                    var obj = this.link.children[i]
-                    obj.material.opacity = isVisible ? links.opacity : 0
-                }
-                edge.show = isVisible
-            }
-            atlas.edges[i] = edge
-            if (edge.activated)
+            if (atlas.edges[i].activated)
                 continue
+            var edge = null
+            if (!atlas.edges[i].inited) {
+                edge = {}
+                edge.from = atlas.edges[i].from
+                edge.to = atlas.edges[i].to
+                edge.bidirect = atlas.edges[i].bidirect
+                edge.show = false
+                edge.activated = false
+                edge.inited = true
+                edge.setVisible = function (isVisible, params) {
+                    for (var i = 0; i < this.link.children.length; i++) {
+                        var obj = this.link.children[i]
+                        var opacity = links.opacity
+                        if (params && params.highlight)
+                            opacity *= 3
+                        obj.material.opacity = isVisible ? opacity * 1.5 : 0.1
+                    }
+                    this.show = isVisible
+                }
+                edge.deactivate = function () {
+                    this.activated = false
+                    this.show = false
+                    atlas.scence.remove(this.link);
+                }
+                atlas.edges[i] = edge
+            } else
+                edge = atlas.edges[i]
 
             var edgeType = null;
             //被域调用
@@ -50,7 +66,7 @@ var links = {
             var mesh = links.build(edge, edgeType);
             if (mesh == null)
                 continue;
-            atlas.allLinks.push(mesh)
+            links.activatedLinks.push(mesh)
 
             atlas.scence.add(mesh)
 
@@ -119,6 +135,7 @@ var links = {
         group.name = fromSolar.name + "|" + toSolar.name;
         edge.link = group
         edge.activated = true
+        edge.show = true
 
         return group;
     },
@@ -158,28 +175,23 @@ var links = {
         return [_point1, _point2, _point3, _point4];
     },
 
-    deactivateAllLinks: function (param) {
-
-        if (atlas.edges == null || (cp.param.dependencyLock && !param.byForce))
-            return;
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
-            if (edge.activated == true) {
-                atlas.scence.remove(edge.link);
-                edge.activated = false
-            }
+    deactivateAllLinks: function () {
+        for (var i = 0; i < links.activatedLinks.length; i++) {
+            var link = links.activatedLinks[i]
+            link.edgeJson.deactivate()
         }
+        links.activatedLinks = []
     },
     deactivateSolarLinks: function (solarName) {
-        if (atlas.edges == null || cp.param.dependencyLock)
-            return;
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
-            if ((edge.from == solarName || edge.to == solarName) && edge.link) {
-                atlas.scence.remove(edge.link);
-                edge.activated = false
-            }
+        var copyArray = []
+        for (var i = 0; i < links.activatedLinks.length; i++) {
+            var link = links.activatedLinks[i]
+            var edge = link.edgeJson
+            if (edge && (edge.from == solarName || edge.to == solarName))
+                edge.deactivate()
+            else
+                copyArray.push(link)
         }
-        atlas.allLinks = []
+        links.activatedLinks = copyArray
     }
 }
