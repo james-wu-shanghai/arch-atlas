@@ -31,7 +31,9 @@
         var names = jsonConvert.sortByType(solar.planets)
         for (var i = 0; i < names.length; i++) {
             var name = names[i]
-            svg.append('text').html(name).attr({
+            svg.append('text').html(
+                name
+            ).attr({
                 fill: 'black',
                 'font-size': '0.8em',
                 y: (3 + i) + 'em',
