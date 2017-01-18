@@ -16,22 +16,33 @@ var links = {
             return;
 
         for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
+            var edge = {}
+            edge.from = atlas.edges[i].from
+            edge.to = atlas.edges[i].to
+            edge.bidirect = atlas.edges[i].bidirect
+            edge.setVisible = function (isVisible) {
+                for (var i = 0; i < this.link.children.length; i++) {
+                    var obj = this.link.children[i]
+                    obj.material.opacity = isVisible ? links.opacity : 0
+                }
+                edge.show = isVisible
+            }
+            atlas.edges[i] = edge
             if (edge.activated)
                 continue
 
             var edgeType = null;
             //被域调用
             if (edge.from == solarName && edge.to != null)
-                edgeType = 'OUT'
+                edge.edgeType = edgeType = 'OUT'
             // 调用域
             else if (edge.to == solarName && edge.from != null)
-                edgeType = 'IN'
+                edge.edgeType = edgeType = 'IN'
             else
-                edgeType = null
+                edge.edgeType = edgeType = null
             //双向
             if (edgeType != null && edge.bidirect == 'true')
-                edgeType = 'BIDIRECT'
+                edge.edgeType = edgeType = 'BIDIRECT'
 
             if (edgeType == null || edge.to == edge.from)
                 continue;
@@ -39,12 +50,9 @@ var links = {
             var mesh = links.build(edge, edgeType);
             if (mesh == null)
                 continue;
-
-            edge.activated = true
-            atlas.scence.add(mesh)
             atlas.allLinks.push(mesh)
-            var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
-            atlas.scence.add(arrow)
+
+            atlas.scence.add(mesh)
 
         }
     },
@@ -101,10 +109,18 @@ var links = {
             opacity: links.opacity,
             color: color
         }))
-        mesh.name = fromSolar.name + "|" + toSolar.name;
-        edge.link = mesh
-        mesh.edgeJson = edge
-        return mesh;
+
+        var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
+
+        var group = new THREE.Object3D()
+        group.add(mesh)
+        group.add(arrow)
+        group.edgeJson = edge
+        group.name = fromSolar.name + "|" + toSolar.name;
+        edge.link = group
+        edge.activated = true
+
+        return group;
     },
 
     _generatePoints: function (from, to) {
@@ -149,9 +165,7 @@ var links = {
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             if (edge.activated == true) {
-                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
                 atlas.scence.remove(edge.link);
-                atlas.scence.remove(cone);
                 edge.activated = false
             }
         }
@@ -162,9 +176,7 @@ var links = {
         for (var i = 0; i < atlas.edges.length; i++) {
             var edge = atlas.edges[i]
             if ((edge.from == solarName || edge.to == solarName) && edge.link) {
-                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
                 atlas.scence.remove(edge.link);
-                atlas.scence.remove(cone);
                 edge.activated = false
             }
         }

@@ -8,6 +8,32 @@
 
     cp.param = {}
 
+    cp.filterBiDep = function () {
+        var type = $('#dep_filter :radio:checked').attr('data-type')
+        if (type == 'dep_in')
+            filterLinks('IN')
+        else if (type == 'dep_out')
+            filterLinks('OUT')
+        else if (type == 'dep_bi')
+            filterLinks('BIDIRECT')
+        else
+            filterLinks('ALL')
+
+        function filterLinks(type) {
+            for (var i = 0; i < atlas.allLinks.length; i++) {
+                var link = atlas.allLinks[i]
+                var edgeJson = link.edgeJson;
+                var edgeType = edgeJson.edgeType;
+                if (type == edgeType || type == 'ALL')
+                    edgeJson.setVisible(true)
+                else if (edgeType != type)
+                    edgeJson.setVisible(false)
+
+            }
+        }
+    }
+
+
     cp.findDomain = function (searchInput) {
         var domainObj = atlas.scence.getObjectByName(searchInput.value)
         if (domainObj) {
@@ -76,37 +102,37 @@
             }
         }
     }
-    cp.showBiDomainDep = function () {
-        var isShow = $('#biDepChk').is(':checked')
-        if (isShow) {
-            progressUtils.start('开始更新依赖')
-            links.deactivateAllLinks({byForce: true})
-            this.param.dependencyLock = true;
-            for (var i = 0; i < atlas.edges.length; i++) {
-                progressUtils.progress(i / atlas.edges.length * 100, '更新依赖中')
-                var edge = atlas.edges[i];
-                if (edge.bidirect == 'false')
-                    continue;
-                if (edge.from == null || edge.to == null)
-                    continue
-
-                var mesh = edge.link// atlas.scence.getObjectByName(edge.from + "|" + edge.to)
-
-                if (mesh == null) {
-                    var mesh = links.build(edge, 'BIDIRECT')
-                    if (mesh == null)
-                        continue;
-                    edge.link = mesh;
-                }
-                edge.activated = true
-                atlas.scence.add(mesh)
-                progressUtils.end('完成更新')
-            }
-        } else {
-            links.deactivateAllLinks({byForce: true})
-            this.param.dependencyLock = false;
-        }
-    }
+    // cp.showBiDomainDep = function () {
+    //     var isShow = $('#biDepChk').is(':checked')
+    //     if (isShow) {
+    //         progressUtils.start('开始更新依赖')
+    //         links.deactivateAllLinks({byForce: true})
+    //         this.param.dependencyLock = true;
+    //         for (var i = 0; i < atlas.edges.length; i++) {
+    //             progressUtils.progress(i / atlas.edges.length * 100, '更新依赖中')
+    //             var edge = atlas.edges[i];
+    //             if (edge.bidirect == 'false')
+    //                 continue;
+    //             if (edge.from == null || edge.to == null)
+    //                 continue
+    //
+    //             var mesh = edge.link// atlas.scence.getObjectByName(edge.from + "|" + edge.to)
+    //
+    //             if (mesh == null) {
+    //                 var mesh = links.build(edge, 'BIDIRECT')
+    //                 if (mesh == null)
+    //                     continue;
+    //                 edge.link = mesh;
+    //             }
+    //             edge.activated = true
+    //             atlas.scence.add(mesh)
+    //             progressUtils.end('完成更新')
+    //         }
+    //     } else {
+    //         links.deactivateAllLinks({byForce: true})
+    //         this.param.dependencyLock = false;
+    //     }
+    // }
 
     cp.showBackground = function () {
         var isShow = $('#showPlanChk').is(':checked')
@@ -145,6 +171,7 @@
                 --cp.param.activatedSolarCount
 
         }
+        cp.filterBiDep()
     }
     cp.searchKeyUp = function (searchInput) {
         var keyCode = parseInt(event.keyCode);
@@ -200,8 +227,10 @@
             $('#linkHint').empty()
             for (var i = 0; i < intersect.length; i++) {
                 var link = intersect[i].object
-                addLinkHints(link);
-                showEdges(link);
+                if (link.edgeJson.show) {
+                    addLinkHints(link);
+                    showEdges(link);
+                }
             }
             showLinkHints();
 
@@ -227,11 +256,13 @@
         }
 
         function showLinkHints() {
-            $('#linkHint').css('display', 'block')
-            d3.select('#linkHint').style({
-                left: e.clientX + "px",
-                top: e.clientY + "px",
-            })
+            if ($('#linkHint').html() != "") {
+                $('#linkHint').css('display', 'block')
+                d3.select('#linkHint').style({
+                    left: e.clientX + "px",
+                    top: e.clientY + "px",
+                })
+            }
         }
     }
 
@@ -244,4 +275,13 @@
         atlas.linkEdges = []
     }
 
+    /***
+     * start init
+     */
+
+    $('#dep_filter :radio').on('change', cp.filterBiDep)
+    $('#showPlanChk').on('change', cp.showBackground)
+    /***
+     * end init
+     */
 }).call(this)

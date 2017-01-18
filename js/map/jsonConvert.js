@@ -17,14 +17,30 @@ var jsonConvert = {
                 }
             }
         }
+        function hasUnknown(domains, pic) {
+            var unknown = null
+            for (var i = 0; i < domains.length; i++) {
+                if (domains[i].name == 'Unknown') {
+                    unknown = domains[i]
+                    domains = domains.splice(i, 1)
+                    break;
+                }
+            }
+            unknown.pic = pic
+            unknown.x = 220
+            unknown.y = -200
+            return unknown
+        };
+        var known = hasUnknown(domains, this.pics[0])
+
         for (var i = 0; i < domains.length; i++) {
             var domain = domains[i];
-
             domain.pic = this.pics[i % this.pics.length]
             domain.x = 300 / 8 * (i % 8) - 150 + Math.random() * 20;
             domain.y = 300 / 8 * (i / 8) - 150 + Math.random() * 20;
         }
-
+        if (known != null)
+            domains.push(known)
         return domains;
     },
 

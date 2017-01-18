@@ -121,7 +121,7 @@
             return camera;
         }
 
-        function initPlane(width, height, widthSeg, heightSeg) {
+        function initPlane(width) {
             var plane = createPlaneMesh(
                 new THREE.CircleGeometry(width * .75, 108))
             plane.rotation.x = -0.5 * Math.PI
