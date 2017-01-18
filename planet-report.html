@@ -19,6 +19,17 @@
             border-radius: 5px;
         }
 
+        .depContent {
+            height: auto;
+            width: 200px;
+            display: none;
+            position: absolute;
+            z-index: 1200;
+            border-width: 1px;
+            background-color: white;
+            border-radius: 5px;
+            padding: 3px;
+        }
     </style>
 
 </head>
@@ -32,10 +43,10 @@
     <div class="tab-pane active" id='appList'></div>
     <div class="tab-pane" id="depLine">
         <div id="depBar"></div>
-        <div id="depContent" style="width: 200px"></div>
     </div>
     <div class="tab-pane" id="solarPie"></div>
 </div>
+<div id="depContent" class="depContent"></div>
 </body>
 </html>
 

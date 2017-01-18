@@ -39,7 +39,7 @@
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
                     //d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
-                    d3.json('libs/data/static.json', function (error, depStaticJson) {
+                    d3.json('libs/data/static-entity.json', function (error, depStaticJson) {
                         progressUtils.progress(70, '加载依赖统计中')
                         atlas.depStatic = depStaticJson;
                         //d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {

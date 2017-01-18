@@ -432,6 +432,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		document.addEventListener( 'mouseup', mouseup, false );
 
 		_this.dispatchEvent( startEvent );
+		return
 
 	}
 

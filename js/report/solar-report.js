@@ -150,7 +150,7 @@
         var height = 300;
         var step = 30;
         var lineHeight = 20
-        var lineWidthUnit = 20;
+        var lineWidthUnit = 30;
         var svg = d3.select("#depBar").append("svg").attr("width", width).attr("height", height);
         var enter = svg.selectAll('rect').data(dataset).enter();
         var rect = enter.append("rect").attr("fill", "steelblue")
@@ -159,22 +159,38 @@
             }).attr('x', 0)
             .attr('height', lineHeight)
             .attr('width', function (d, i) {
-                var wid = d >= 10 ? 10 : d
+                var wid = Math.log2(1 + d)
+                if (wid > 10)
+                    wid = 10
                 return wid * lineWidthUnit;
             })
             .style('cursor', 'help')
-            .on('click', function (d, i) {
-                var text = $('#depContent').text()
-                if (text == "")
-                    $('#depContent').html(function () {
-                        var hint = hintSet[i] + ":" + depSet[i]
-                        // for (var j = 0; j < depSet.length; j++)
-                        //     for (var k = 0; k < depSet[i].length; k++)
-                        //         hint += '\<a title=\'展示应用依赖\' target=\'vaadin\' href=\'/ui/vaadin/?appName=' + depSet[j][k] + '\'\>' + depSet[j][k] + '\</a\>'
-                        return hint;
-                    })
-                else
-                    $('#depContent').text("")
+            .on('mouseenter', function (d, i) {
+                    var $depContent = $('#depContent')
+                    if ($depContent.css('display') == 'none') {
+                        $depContent.html(function () {
+
+                            var hint = "<text><tspan>" + hintSet[i] + ":" + depSet[i] + "</tspan></text>"
+                            // for (var j = 0; j < depSet.length; j++)
+                            //     for (var k = 0; k < depSet[i].length; k++)
+                            //         hint += '\<a title=\'展示应用依赖\' target=\'vaadin\' href=\'/ui/vaadin/?appName=' + depSet[j][k] + '\'\>' + depSet[j][k] + '\</a\>'
+                            return hint;
+                        })
+                        var $pop = $('#pop-report');
+                        var popTop = Number.parseInt($pop.css('top'))
+                        var popLeft = Number.parseInt($pop.css('left'))
+                        var hintTop = event.clientY - popTop
+                        var hintLeft = event.clientX - popLeft
+                        $depContent.css({'display': 'block', 'top': hintTop, 'left': hintLeft})
+                    }
+                }
+            ).on('mouseleave', function () {
+                console.log('mouse out')
+                var $depContent = $('#depContent')
+                if ($depContent.css('display') == 'block') {
+                    $depContent.text("")
+                    $depContent.css({"display": "none", "left": '0px', 'top': '0px'})
+                }
             })
         // var rectTran = rect.transition()
         //     .duration(2000).ease("back-in")
@@ -194,6 +210,7 @@
             .text(function (d, i) {
                 return d
             })
+            .attr('style','pointer-events:none')
         for (var i = 0; i < hintSet.length; i++) {
             svg.append("text").attr('x', 0).attr({'fill': 'steelblue', 'dy': '1.2em'}).attr('y', function () {
                 return i * (step + lineHeight)
