@@ -3,7 +3,7 @@
  */
 (function () {
     var cp = window.cp = {}
-    cp.actSolarLmt = 5;
+    cp.actSolarLmt = 10;
     cp.activatedSolar = [];
 
     cp.param = {}
@@ -16,6 +16,8 @@
             filterLinks('OUT')
         else if (type == 'dep_bi')
             filterLinks('BIDIRECT')
+        else if (type == 'dep_none')
+            filterLinks('NONE')
         else
             filterLinks('ALL')
 
@@ -26,7 +28,7 @@
                 var edgeType = edgeJson.edgeType;
                 if (type == edgeType || type == 'ALL')
                     edgeJson.setVisible(true, {highlight: false})
-                else if (edgeType != type)
+                else if (edgeType == 'NONE' || edgeType != type)
                     edgeJson.setVisible(false)
             }
         }
