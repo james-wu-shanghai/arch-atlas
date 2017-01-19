@@ -141,8 +141,8 @@
 
         var static = null;
         for (var i = 0; i < atlas.edges.length; i++) {
-            if (solar.name == atlas.edges[i].domain) {
-                static = atlas.edges[i];
+            if (solar.name == atlas.edges[i].name) {
+                static = atlas.edges[i].stat;
                 break;
             }
         }
