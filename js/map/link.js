@@ -41,6 +41,8 @@ var links = {
         edgesInfo.addOrRemoveEdges = function (edges, isAdd, copyActivatedLinks) {
             for (var i = 0; i < edges.length; i++) {
                 var edge = edges[i]
+                if (edge.from == edge.to)
+                    continue
                 if (isAdd) {
                     edge.activate()
                     copyActivatedLinks.push(edge.link)
