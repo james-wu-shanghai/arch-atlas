@@ -11,67 +11,102 @@ var links = {
     portLength: 9,
     activatedLinks: [],
     highlightLinkEdges: [],
-
-    activate: function (solarName) {
-        if (atlas.edges == null || cp.param.dependencyLock)
+    initEdgesInfo: function (edgesInfo) {
+        if (edgesInfo.inited)
             return;
-
-        for (var i = 0; i < atlas.edges.length; i++) {
-            if (atlas.edges[i].activated)
-                continue
-            var edge = null
-            if (!atlas.edges[i].inited) {
-                edge = {}
-                edge.from = atlas.edges[i].from
-                edge.to = atlas.edges[i].to
-                edge.bidirect = atlas.edges[i].bidirect
-                edge.show = false
-                edge.activated = false
-                edge.inited = true
-                edge.setVisible = function (isVisible, params) {
-                    for (var i = 0; i < this.link.children.length; i++) {
-                        var obj = this.link.children[i]
-                        var opacity = links.opacity
-                        if (params && params.highlight)
-                            opacity *= 3
-                        obj.material.opacity = isVisible ? opacity * 1.5 : 0.1
-                    }
-                    this.show = isVisible
+        edgesInfo.initEdge = function (edge, edgeType) {
+            links.build(edge, edgeType);
+            edge.setVisible = function (isVisible, params) {
+                for (var i = 0; i < this.link.children.length; i++) {
+                    var obj = this.link.children[i]
+                    var opacity = links.opacity
+                    if (params && params.highlight)
+                        opacity *= 3
+                    obj.material.opacity = isVisible ? opacity * 1.5 : 0.1
                 }
-                edge.deactivate = function () {
-                    this.activated = false
-                    this.show = false
-                    atlas.scence.remove(this.link);
+                this.show = isVisible
+            }
+            edge.activate = function () {
+                atlas.scence.add(this.link);
+            }
+            edge.deactivate = function () {
+                atlas.scence.remove(this.link);
+            }
+        }
+        edgesInfo.initEdges = function (edges, edgeType) {
+            for (var i = 0; i < edges.length; i++) {
+                this.initEdge(edges[i], edgeType)
+            }
+        }
+        edgesInfo.addOrRemoveEdges = function (edges, isAdd, copyActivatedLinks) {
+            for (var i = 0; i < edges.length; i++) {
+                var edge = edges[i]
+                if (isAdd) {
+                    edge.activate()
+                    copyActivatedLinks.push(edge.link)
                 }
-                atlas.edges[i] = edge
-            } else
-                edge = atlas.edges[i]
-
-            var edgeType = null;
-            //被域调用
-            if (edge.from == solarName && edge.to != null)
-                edge.edgeType = edgeType = 'OUT'
-            // 调用域
-            else if (edge.to == solarName && edge.from != null)
-                edge.edgeType = edgeType = 'IN'
+                else
+                    edge.deactivate()
+            }
+            links.activatedLinks = copyActivatedLinks;
+        }
+        edgesInfo.turnSwitchOnEdges = function (swArray, copyActivatedLinks) {
+            var edgesArray = [this.in, this.out, this.bi]
+            for (var i = 0; i < edgesArray.length; i++) {
+                this.addOrRemoveEdges(edgesArray[i], swArray[i], copyActivatedLinks)
+            }
+        }
+        edgesInfo.activateLinks = function (type) {
+            this.activated = true
+            var copyActivatedLinks = []
+            if (type == 'IN')
+                this.turnSwitchOnEdges([1, 0, 0], copyActivatedLinks)
+            else if (type == 'OUT')
+                this.turnSwitchOnEdges([0, 1, 0], copyActivatedLinks)
+            else if (type == 'BIDIRECT')
+                this.turnSwitchOnEdges([0, 0, 1], copyActivatedLinks)
+            else if (type == 'ALL')
+                this.turnSwitchOnEdges([1, 1, 1], copyActivatedLinks)
             else
-                edge.edgeType = edgeType = null
-            //双向
-            if (edgeType != null && edge.bidirect == 'true')
-                edge.edgeType = edgeType = 'BIDIRECT'
-
-            if (edgeType == null || edge.to == edge.from)
-                continue;
-
-            var mesh = links.build(edge, edgeType);
-            if (mesh == null)
-                continue;
-            links.activatedLinks.push(mesh)
-
-            atlas.scence.add(mesh)
+                this.turnSwitchOnEdges([0, 0, 0], copyActivatedLinks)
 
         }
+        edgesInfo.deactivateLinks = function () {
+            if (!this.activated)
+                return
+            this.activateLinks('NONE')
+            this.activated = false;
+
+        }
+        edgesInfo.initEdges(edgesInfo.in, 'IN')
+        edgesInfo.initEdges(edgesInfo.out, 'OUT')
+        edgesInfo.initEdges(edgesInfo.bi, 'BIDIRECT')
+        edgesInfo.inited = true;
     },
+    getBySolarName: function (solarName) {
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i]
+            if (edgesInfo.name == solarName)
+                return edgesInfo;
+        }
+        return null;
+    },
+    activate: function (solarName) {
+        var edgesInfo = this.getBySolarName(solarName)
+        if (edgesInfo != null) {
+            this.initEdgesInfo(edgesInfo)
+            edgesInfo.activateLinks('ALL')
+        }
+    },
+    activateByType: function (type) {
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i]
+            if (edgesInfo.activated)
+                edgesInfo.activateLinks(type)
+        }
+    },
+
+
     generateArrow: function (cubeMesh, points) {
         var endPoint = points[3];
         var cone = new THREE.Mesh(new THREE.ConeGeometry(links.radius * 1.5, links.radius * 6, 8), new THREE.MeshBasicMaterial({
@@ -90,10 +125,10 @@ var links = {
         cone.rotateY(direction.y * Math.PI)
         cone.rotateX(direction.z * -1 / 2 * Math.PI)
 
-
         cone.name = cubeMesh.name + "|cone";
         return cone;
     },
+
     build: function (edge, type) {
         if (edge.link != null)
             return edge.link;
@@ -175,23 +210,17 @@ var links = {
         return [_point1, _point2, _point3, _point4];
     },
 
-    deactivateAllLinks: function () {
-        for (var i = 0; i < links.activatedLinks.length; i++) {
-            var link = links.activatedLinks[i]
-            link.edgeJson.deactivate()
+    deactivateAll: function () {
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i];
+            if (edgesInfo.inited)
+                edgesInfo.deactivateLinks()
         }
-        links.activatedLinks = []
     },
-    deactivateSolarLinks: function (solarName) {
-        var copyArray = []
-        for (var i = 0; i < links.activatedLinks.length; i++) {
-            var link = links.activatedLinks[i]
-            var edge = link.edgeJson
-            if (edge && (edge.from == solarName || edge.to == solarName))
-                edge.deactivate()
-            else
-                copyArray.push(link)
-        }
-        links.activatedLinks = copyArray
+
+    deactivate: function (solarName) {
+        var edgesInfo = this.getBySolarName(solarName)
+        if (edgesInfo != null)
+            edgesInfo.deactivateLinks();
     }
 }

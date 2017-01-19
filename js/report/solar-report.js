@@ -140,16 +140,16 @@
     solarReport.renderDepLines = function (solar) {
 
         var static = null;
-        for (var i = 0; i < atlas.depStatic.length; i++) {
-            if (solar.name == atlas.depStatic[i].domain) {
-                static = atlas.depStatic[i];
+        for (var i = 0; i < atlas.edges.length; i++) {
+            if (solar.name == atlas.edges[i].domain) {
+                static = atlas.edges[i];
                 break;
             }
         }
         if (!static)
             return
-        var dataset = [static.dependsByApps.length, static.dependsByDomains.length, static.dependsOnApps.length, static.dependsOnDomains.length, static.biDependApps.length, static.biDependDomains.length]
-        var depSet = [static.dependsByApps, static.dependsByDomains, static.dependsOnApps, static.dependsOnDomains, static.biDependApps, static.biDependDomains]
+        var dataset = [static.byApps.length, static.byDomains.length, static.onApps.length, static.onDomains.length, static.biApps.length, static.biDomains.length]
+        var depSet = [static.byApps, static.byDomains, static.onApps, static.onDomains, static.biApps, static.biDomains]
         var hintSet = ['ToPlanets', 'ToSolar', 'fromPlanets', 'fromSolar', 'biDirectPlanets', 'biDirectSolars']
         var width = 200
         var height = 300;

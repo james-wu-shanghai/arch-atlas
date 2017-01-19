@@ -22,15 +22,7 @@
             filterLinks('ALL')
 
         function filterLinks(type) {
-            for (var i = 0; i < links.activatedLinks.length; i++) {
-                var link = links.activatedLinks[i]
-                var edgeJson = link.edgeJson;
-                var edgeType = edgeJson.edgeType;
-                if (type == edgeType || type == 'ALL')
-                    edgeJson.setVisible(true, {highlight: false})
-                else if (edgeType == 'NONE' || edgeType != type)
-                    edgeJson.setVisible(false)
-            }
+            links.activateByType(type)
         }
     }
 
@@ -71,7 +63,7 @@
         //    middleSize = 8
 
         this.resize(middleSize)
-        links.deactivateAllLinks()
+        links.deactivateAll()
         report.hideSolarReport()
         // $('#biDepChk').attr('checked', false);
         cp.removeAllSolarBoxes()
@@ -132,7 +124,7 @@
             atlas.scence.add(box)
             report.showSolarReport(evtX, evtY, solar);
         } else {
-            links.deactivateSolarLinks(solar.name)
+            links.deactivate(solar.name)
             report.hideSolarReport();
             solar.activated = false;
             atlas.scence.remove(atlas.scence.getObjectByName(solar.name + "|box"))
