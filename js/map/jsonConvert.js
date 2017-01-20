@@ -91,8 +91,8 @@ var jsonConvert = {
         for (var i = 0; i < planets.length; i++) {
             var planet = planets[i]
             for (var j = 0; j < typeSort.length; j++) {
-                if (jsonConvert.startWith(planet.name, typeSort[j]) || jsonConvert.endWith(planet.name, typeSort[j])) {
-                    sorts[j].push(planet.name)
+                if (jsonConvert.startWith(planet.appName, typeSort[j]) || jsonConvert.endWith(planet.appName, typeSort[j])) {
+                    sorts[j].push(planet.appName)
                     break;
                 }
             }
