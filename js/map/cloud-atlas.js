@@ -70,7 +70,7 @@
                     })
                 })
             }, function (progress) {
-                progressUtils.progress(progress.loaded / progress.total * 0.3 * 100 + 10)
+                progressUtils.progress(progress.loaded / progress.total * 0.2 * 100 + 10)
             }, function (error) {
                 console.error(error)
             });

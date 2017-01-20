@@ -206,9 +206,22 @@
             var edge = link.edge;
             var from = edge.from;
             var to = edge.to;
-            var span = $('<span class="glyphicon glyphicon-arrow-right"></span>')
 
-            span.text('从:' + from + " 到:" + to + ( edge.bidirect == 'true' ? ' 双向依赖' : ''))
+            var span = $('<span title="调入"></span>')
+            linkInfoReport.setInfo(edge)
+            span.on('click', linkInfoReport.open)
+            var icon = 'glyphicon-open'
+            if (edge.type == 'OUT') {
+                icon = 'glyphicon-save'
+                span.attr('title', '调出')
+            }
+            else if (edge.type == 'BIDIRECT') {
+                icon = ' glyphicon-resize-vertical'
+                span.attr('title', '双向依赖')
+            }
+            var button = $('<button class="btn btn-primary glyphicon ' + icon + '"></button>.')
+            span.append(button)
+            span.append("<text>" + '从:' + from + " 到:" + to + ( edge.type == 'BIDIRECT' ? ' 双向依赖' : '') + "</text>")
             var p = $('<p>')
             $('#linkHint').append(span).append(p)
 

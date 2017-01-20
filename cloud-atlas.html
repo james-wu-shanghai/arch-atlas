@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/report.css">
     <link rel="stylesheet" href="css/control_panel.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dataTable/css/jquery.dataTables.min.css">
 </head>
 <body>
 <div class="controlPanel">
@@ -91,11 +92,11 @@
 
 <div class="linkHint row pre-scrollable" id="linkHint"></div>
 <!-- 资源加载进度条-->
-<div class="modal">
+<div id="progModal" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">资源加载中，请稍后...</h4>
+                <h4 id="progHint" class="modal-title">资源加载中，请稍后...</h4>
             </div>
             <div class="modal-body">
                 <div class="progress ">
@@ -109,6 +110,73 @@
     </div>
 </div>
 <!-- 资源加载进度条-->
+<div id="infoPanel" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title">Modal标题</h4>
+            </div>
+            <div id='panelInfoBody' class="modal-body">
+                <table id="panelInfoBodyTable">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    <tr>
+                        <td>Tiger Nixon</td>
+                        <td>System Architect</td>
+                        <td>Edinburgh</td>
+                        <td>61</td>
+                        <td>2011/04/25</td>
+                        <td>$320,800</td>
+                    </tr>
+                    <tr>
+                        <td>Cedric Kelly</td>
+                        <td>Senior Javascript Developer</td>
+                        <td>Edinburgh</td>
+                        <td>22</td>
+                        <td>2012/03/29</td>
+                        <td>$433,060</td>
+                    </tr>
+                    <tr>
+                        <td>Airi Satou</td>
+                        <td>Accountant</td>
+                        <td>Tokyo</td>
+                        <td>33</td>
+                        <td>2008/11/28</td>
+                        <td>$162,700</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button data-toggle="modal" data-target="#infoPanel" class="btn btn-primary">
+                    退出
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="stateBar">
     <h5 id="stateBarHint" class="h5">
         状态栏
@@ -125,6 +193,7 @@
 <script src="js/thirdparty/three.min.js"></script>
 <script src="js/thirdparty/TrackballControls.js"></script>
 <script src="js/thirdparty/d3-3.5.17-min.js"></script>
+<script src="dataTable/js/jquery.dataTables.min.js"></script>
 <script src="js/report/d3-report.js"></script>
 <script src="js/map/link.js"></script>
 <script src="js/map/textureUtil.js"></script>
@@ -134,11 +203,13 @@
 <script src="js/control/state-bar.js"></script>
 <script src="js/report/reportUtil.js"></script>
 <script src="js/report/solar-report.js"></script>
+<script src="js/report/link-info-report.js"></script>
 <script src="js/config/config.js"></script>
 <script>
     $(function () {
         atlas.init('#WebGL')
         report.init()
+
     })
 </script>
 </html>
