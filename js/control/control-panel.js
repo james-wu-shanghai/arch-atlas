@@ -182,12 +182,16 @@
         var rayCaster = new THREE.Raycaster()
         rayCaster.setFromCamera(vector, atlas.camera);
 
-        var intersect = rayCaster.intersectObjects(links.activatedLinks, true);
+        var activatedLinks = []
+        for (var i = 0; i < links.activatedEdges.length; i++)
+            activatedLinks.push(links.activatedEdges[i].link)
+
+        var intersect = rayCaster.intersectObjects(activatedLinks, true);
         if (intersect.length > 0) {
             $('#linkHint').empty()
             for (var i = 0; i < intersect.length; i++) {
                 var link = intersect[i].object.parent
-                if (link.edgeJson.show) {
+                if (link.edge.show) {
                     addLinkHints(link);
                     highlightEdge(link);
                 }
@@ -199,20 +203,20 @@
             cp.removeAllLinkHints();
         }
         function addLinkHints(link) {
-            var edgeJson = link.edgeJson;
-            var from = edgeJson.from;
-            var to = edgeJson.to;
+            var edge = link.edge;
+            var from = edge.from;
+            var to = edge.to;
             var span = $('<span class="glyphicon glyphicon-arrow-right"></span>')
 
-            span.text('从:' + from + " 到:" + to + ( edgeJson.bidirect == 'true' ? ' 双向依赖' : ''))
+            span.text('从:' + from + " 到:" + to + ( edge.bidirect == 'true' ? ' 双向依赖' : ''))
             var p = $('<p>')
             $('#linkHint').append(span).append(p)
 
         }
 
         function highlightEdge(link) {
-            link.edgeJson.setVisible(true, {highlight: true})
-            links.highlightLinkEdges.push(link)
+            link.edge.setHighlight(true)
+            links.highLightEdges.push(link)
         }
 
         function showLinkHints() {
@@ -229,11 +233,11 @@
     cp.removeAllLinkHints = function () {
         $('#linkHint').css('display', 'none')
         $('#linkHint').empty()
-        for (var i = 0; i < links.highlightLinkEdges.length; i++) {
-            var link = links.highlightLinkEdges[i]
-            link.edgeJson.setVisible(true)
+        for (var i = 0; i < links.highLightEdges.length; i++) {
+            var link = links.highLightEdges[i]
+            link.edge.setHighlight(false)
         }
-        links.highlightLinkEdges = []
+        links.highLightEdges = []
     }
 
     /***

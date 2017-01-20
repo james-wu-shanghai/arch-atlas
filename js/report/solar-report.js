@@ -127,7 +127,6 @@
                     }
                 }
             ).on('mouseleave', function () {
-                console.log('mouse out')
                 var $depContent = $('#depContent')
                 if ($depContent.css('display') == 'block') {
                     $depContent.text("")

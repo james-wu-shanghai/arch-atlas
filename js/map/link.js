@@ -9,28 +9,45 @@ var links = {
     opacity: 0.3,
     portDistance: 5.5,
     portLength: 9,
-    activatedLinks: [],
-    highlightLinkEdges: [],
+    activatedEdges: [],
+    highLightEdges: [],
     initEdgesInfo: function (edgesInfo) {
         if (edgesInfo.inited)
             return;
         edgesInfo.initEdge = function (edge, edgeType) {
             links.build(edge, edgeType);
-            edge.setVisible = function (isVisible, params) {
+            edge.setHighlight = function (isHighlight) {
                 for (var i = 0; i < this.link.children.length; i++) {
                     var obj = this.link.children[i]
                     var opacity = links.opacity
-                    if (params && params.highlight)
-                        opacity *= 3
-                    obj.material.opacity = isVisible ? opacity * 1.5 : 0.1
+                    obj.material.opacity = isHighlight ? opacity * 3 : opacity
                 }
-                this.show = isVisible
             }
             edge.activate = function () {
                 atlas.scence.add(this.link);
+                this.addToEdges(links.activatedEdges)
             }
             edge.deactivate = function () {
                 atlas.scence.remove(this.link);
+                this.removeFromEdges(links.activatedEdges)
+            }
+            edge.addToEdges = function (actEdges) {
+                for (var i = 0; i < actEdges.length; i++) {
+                    var actEdge = actEdges[i]
+                    if (actEdge.from == this.from && actEdge.to == this.to && actEdge.type == this.type) {
+                        return
+                    }
+                }
+                actEdges.push(this)
+            }
+            edge.removeFromEdges = function (actEdges) {
+                for (var i = 0; i < actEdges.length; i++) {
+                    var actEdge = actEdges[i]
+                    if (actEdge.from == this.from && actEdge.to == this.to && actEdge.type == this.type) {
+                        actEdges.splice(i, 1)
+                        return
+                    }
+                }
             }
         }
         edgesInfo.initEdges = function (edges, edgeType) {
@@ -38,39 +55,36 @@ var links = {
                 this.initEdge(edges[i], edgeType)
             }
         }
-        edgesInfo.addOrRemoveEdges = function (edges, isAdd, copyActivatedLinks) {
+        edgesInfo.addOrRemoveEdges = function (edges, isAdd) {
             for (var i = 0; i < edges.length; i++) {
                 var edge = edges[i]
                 if (edge.from == edge.to)
                     continue
                 if (isAdd) {
                     edge.activate()
-                    copyActivatedLinks.push(edge.link)
                 }
                 else
                     edge.deactivate()
             }
-            links.activatedLinks = copyActivatedLinks;
         }
-        edgesInfo.turnSwitchOnEdges = function (swArray, copyActivatedLinks) {
+        edgesInfo.turnSwitchOnEdges = function (swArray) {
             var edgesArray = [this.in, this.out, this.bi]
             for (var i = 0; i < edgesArray.length; i++) {
-                this.addOrRemoveEdges(edgesArray[i], swArray[i], copyActivatedLinks)
+                this.addOrRemoveEdges(edgesArray[i], swArray[i])
             }
         }
         edgesInfo.activateLinks = function (type) {
             this.activated = true
-            var copyActivatedLinks = []
             if (type == 'IN')
-                this.turnSwitchOnEdges([1, 0, 0], copyActivatedLinks)
+                this.turnSwitchOnEdges([1, 0, 0])
             else if (type == 'OUT')
-                this.turnSwitchOnEdges([0, 1, 0], copyActivatedLinks)
+                this.turnSwitchOnEdges([0, 1, 0])
             else if (type == 'BIDIRECT')
-                this.turnSwitchOnEdges([0, 0, 1], copyActivatedLinks)
+                this.turnSwitchOnEdges([0, 0, 1])
             else if (type == 'ALL')
-                this.turnSwitchOnEdges([1, 1, 1], copyActivatedLinks)
+                this.turnSwitchOnEdges([1, 1, 1])
             else
-                this.turnSwitchOnEdges([0, 0, 0], copyActivatedLinks)
+                this.turnSwitchOnEdges([0, 0, 0])
 
         }
         edgesInfo.deactivateLinks = function () {
@@ -97,10 +111,11 @@ var links = {
         var edgesInfo = this.getBySolarName(solarName)
         if (edgesInfo != null) {
             this.initEdgesInfo(edgesInfo)
-            edgesInfo.activateLinks('ALL')
+            edgesInfo.activateLinks('ALL'.activatedEdges)
         }
     },
     activateByType: function (type) {
+        links.activatedEdges = []
         for (var i = 0; i < atlas.edges.length; i++) {
             var edgesInfo = atlas.edges[i]
             if (edgesInfo.activated)
@@ -108,6 +123,20 @@ var links = {
         }
     },
 
+    deactivateAll: function () {
+        links.activatedEdges = []
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i];
+            if (edgesInfo.inited)
+                edgesInfo.deactivateLinks()
+        }
+    },
+
+    deactivate: function (solarName) {
+        var edgesInfo = this.getBySolarName(solarName)
+        if (edgesInfo != null)
+            edgesInfo.deactivateLinks();
+    },
 
     generateArrow: function (cubeMesh, points) {
         var endPoint = points[3];
@@ -168,9 +197,10 @@ var links = {
         var group = new THREE.Object3D()
         group.add(mesh)
         group.add(arrow)
-        group.edgeJson = edge
+        group.edge = edge
         group.name = fromSolar.name + "|" + toSolar.name;
         edge.link = group
+        edge.type = type
         edge.activated = true
         edge.show = true
 
@@ -212,17 +242,4 @@ var links = {
         return [_point1, _point2, _point3, _point4];
     },
 
-    deactivateAll: function () {
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edgesInfo = atlas.edges[i];
-            if (edgesInfo.inited)
-                edgesInfo.deactivateLinks()
-        }
-    },
-
-    deactivate: function (solarName) {
-        var edgesInfo = this.getBySolarName(solarName)
-        if (edgesInfo != null)
-            edgesInfo.deactivateLinks();
-    }
 }
