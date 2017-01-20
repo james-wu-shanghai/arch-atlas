@@ -3,10 +3,16 @@
  */
 (function () {
     var solarReport = window.solarReport = {}
+    solarReport.initResource = function () {
+        $('ul a:contains(${appList})').html(globalResource.appList)
+        $('ul a:contains(${depLine})').html(globalResource.depLine)
+        $('ul a:contains(${solarPie})').html(globalResource.solarPie)
+    }
     solarReport.render = function (solar) {
         var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip") //用于css设置类样式
             .attr("opacity", 0.0);
+        this.initResource()
         solarReport.renderAppList(solar);
         solarReport.renderStaticPie(solar);
         solarReport.renderDepLines(solar);
@@ -32,7 +38,7 @@
         for (var i = 0; i < names.length; i++) {
             var name = names[i]
             svg.append('text').html(
-                name
+                globalResource.appNameDecorator(name)
             ).attr({
                 fill: 'black',
                 'font-size': '0.8em',
@@ -68,77 +74,9 @@
         for (var i = 0; i < jsonConvert.valid_suffix.length; i++) {
             dataset.push([jsonConvert.valid_suffix[i], planetTypes[i]])
         }
-        var pie = d3.layout.pie().value(function (d) {
-            return d[1];
-        })
-        var piedata = pie(dataset)
-
-        var width = 200
-        var height = 200
-        var outerRadius = width / 3
-        var innerRadius = 0;
-        var arc = d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius)
-        var color = d3.scale.category20()
-        var svg = d3.select("#solarPie").append("svg").attr({width: width, height: height})
-        var arcs = svg.selectAll("g").data(piedata).enter()
-            .append("g")
-            .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
-        arcs.append("path")
-            .attr("fill", function (d, i) {
-                return color(i)
-            })
-            .attr("d", function (d) {
-                return arc(d)
-            })
-        arcs.append("text")
-            .attr("transform", function (d) {
-                var x = arc.centroid(d)[0] * 1.4;
-                var y = arc.centroid(d)[1] * 1.4;
-                return "translate(" + x + "," + y + ")";
-            })
-            .attr("text-anchor", "middle")
-            .text(function (d) {
-                var percent = Number(d.value) / d3.sum(dataset, function (d) {
-                        return d[1]
-                    }) * 100
-                if (percent != 0)
-                    return percent.toFixed(1) + "%"
-            })
-        arcs.append("line")
-            .attr("stroke", "black")
-            .attr("x1", function (d) {
-                return arc.centroid(d)[0] * 2
-            })
-            .attr("y1", function (d) {
-                return arc.centroid(d)[1] * 2
-            })
-            .attr("x2", function (d) {
-                var longX = 2.2
-                if (d.data[1] == 0)
-                    longX = 2
-                return arc.centroid(d)[0] * longX
-            })
-            .attr("y2", function (d) {
-                var longY = 2.2
-                if (d.data[1] == 0)
-                    longY = 2
-                return arc.centroid(d)[1] * longY
-            })
-        arcs.append("text")
-            .attr("transform", function (d) {
-                var x = arc.centroid(d)[0] * 2.5
-                var y = arc.centroid(d)[1] * 2.5
-                return "translate(" + x + "," + y + ")"
-            })
-            .attr("text-anchor", "middle")
-            .text(function (d) {
-                if (d.data[1] != 0)
-                    return d.data[0]
-                return ""
-            })
+        reportUtil.drawPieChart('#solarPie', dataset, {height: 200, width: 200, radius: 200 / 3})
     }
     solarReport.renderDepLines = function (solar) {
-
         var static = null;
         for (var i = 0; i < atlas.edges.length; i++) {
             if (solar.name == atlas.edges[i].name) {
@@ -150,7 +88,7 @@
             return
         var dataset = [static.byApps.length, static.byDomains.length, static.onApps.length, static.onDomains.length, static.biApps.length, static.biDomains.length]
         var depSet = [static.byApps, static.byDomains, static.onApps, static.onDomains, static.biApps, static.biDomains]
-        var hintSet = ['ToPlanets', 'ToSolar', 'fromPlanets', 'fromSolar', 'biDirectPlanets', 'biDirectSolars']
+        var hintSet = globalResource.hintSet
         var width = 200
         var height = 300;
         var step = 30;
@@ -174,8 +112,7 @@
                     var $depContent = $('#depContent')
                     if ($depContent.css('display') == 'none') {
                         $depContent.html(function () {
-
-                            var hint = "<text><tspan>" + hintSet[i] + ":" + depSet[i] + "</tspan></text>"
+                            var hint = hintSet[i] + ":" + depSet[i]
                             // for (var j = 0; j < depSet.length; j++)
                             //     for (var k = 0; k < depSet[i].length; k++)
                             //         hint += '\<a title=\'展示应用依赖\' target=\'vaadin\' href=\'/ui/vaadin/?appName=' + depSet[j][k] + '\'\>' + depSet[j][k] + '\</a\>'
@@ -197,13 +134,6 @@
                     $depContent.css({"display": "none", "left": '0px', 'top': '0px'})
                 }
             })
-        // var rectTran = rect.transition()
-        //     .duration(2000).ease("back-in")
-        //     .attrTween("width", function (d, i, a) {
-        //         return function (t) {
-        //             return Number(a) + t * 300
-        //         }
-        //     })
         var textEnter = svg.selectAll('#depBar text').data(dataset).enter()
         textEnter.append("text")
             .attr("fill", "white")
