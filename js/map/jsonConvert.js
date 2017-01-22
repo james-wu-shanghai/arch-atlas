@@ -83,23 +83,5 @@ var jsonConvert = {
         domains.push(domain);
     },
 
-    //按照类型排序
-    sortByType: function (planets) {
-        var typeSort = ['web', 'gw', 'i-', 'app', '-job', 'svc']
-        var sorts = [[], [], [], [], [], []]
-        var result = []
-        for (var i = 0; i < planets.length; i++) {
-            var planet = planets[i]
-            for (var j = 0; j < typeSort.length; j++) {
-                if (jsonConvert.startWith(planet.appName, typeSort[j]) || jsonConvert.endWith(planet.appName, typeSort[j])) {
-                    sorts[j].push(planet.appName)
-                    break;
-                }
-            }
-        }
-        for (var i = 0; i < sorts.length; i++)
-            for (var j = 0; j < sorts[i].length; j++)
-                result.push(sorts[i][j])
-        return result
-    },
+
 }

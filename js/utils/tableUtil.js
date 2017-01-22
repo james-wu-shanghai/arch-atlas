@@ -15,6 +15,7 @@
                 console.warn('table with id not found:' + containerId)
                 return
             }
+
             var table = $('<table class="table table-striped table-hover"></table>')
             var tableId = container.attr('id') + 'Table';
             $('#' + tableId).html("");

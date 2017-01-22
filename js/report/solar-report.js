@@ -55,56 +55,80 @@
         solarReport.renderDepLines(solar);
     }
     solarReport.renderAppList = function renderAppList(solar) {
-        var report = d3.select('#appList')
-        report.style('height', (solar.planets.length * 0.8 + 2) + 'em')
-        var svg = report.append('svg');
-        svg.style('height', (solar.planets.length * 0.8 + 2) + 'em')
-        svg.append('text').text('Domain Name: ' + solar.name).attr({
-            fill: 'black',
-            'font-size': '0.8em',
-            y: '1em'
-        })
-        svg.append('text').text('App No.: ' + solar.planets.length).attr({
-            fill: 'black',
-            'font-size': '0.8em',
-            y: '2em'
-        })
+        var solarLink = links.getBySolarName(solar.name);
+        var totalCatOut = solarLink.totalCatOut;
+        $('#domainTitle').text(solar.name + globalResource.domainCallOutTotal + totalCatOut);
+        $('#domainTitle').attr('data-total', totalCatOut)
+        var table = tableUtil.buildTable('#appList', globalResource.appListHead);
+        var planets = solarReport.sortByType(solar.planets)
 
-
-        var names = jsonConvert.sortByType(solar.planets)
-        for (var i = 0; i < names.length; i++) {
-            var name = names[i]
-            svg.append('text').html(
-                globalResource.appNameDecorator(name)
-            ).attr({
-                fill: 'black',
-                'font-size': '0.8em',
-                y: (3 + i) + 'em',
-                x: '1em'
-            })
-        }
-    }
-    solarReport.doStatic = function (solar) {
-        var planetStatic = solar.domainJsonObj.planetStatic;
-        var validSuffix = jsonConvert.valid_suffix;
-
-        if (planetStatic)
-            return planetStatic
-
-        planetStatic = []
-        for (var i = 0; i < validSuffix.length; i++)
-            planetStatic[i] = 0
-        for (var i = 0; i < solar.planets.length; i++) {
-            var planet = solar.planets[i]
-            for (var j = 0; j < validSuffix.length; j++) {
-                if (jsonConvert.endWith(planet.name, validSuffix[j])) {
-                    planetStatic[j]++;
+        function sumCallOuts(domainConns, content) {
+            for (var i = 0; i < domainConns.length; i++) {
+                var appConns = domainConns[i].appConns
+                for (var j = 0; j < appConns.length; j++) {
+                    if (appConns[j].from == planet.appName) {
+                        content[1] = appConns[j].catcnt + content[1]
+                    }
                 }
             }
         }
-        solar.domainJsonObj.planets = planetStatic
-        return planetStatic;
+
+        for (var i = 0; i < planets.length; i++) {
+            var planet = planets[i]
+            var name = globalResource.appNameDecorator(planet.appName)
+            var content = [name, 0]
+            sumCallOuts(solarLink.out, content);
+            sumCallOuts(solarLink.bi, content);
+            tableUtil.addContent(table, content)
+        }
+        tableUtil.draw(table, {
+            "info": false,
+            "paging": false,
+            "searching": false,
+            scrollY: "400px",
+            scrollCollapse: true
+        })
     }
+    //按照类型排序
+    solarReport.sortByType = function (planets) {
+        var typeSort = ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv']
+        var sorts = [[], [], [], [], [], [], []]
+        var result = []
+        for (var i = 0; i < planets.length; i++) {
+            var planet = planets[i]
+            for (var j = 0; j < typeSort.length; j++) {
+                if (jsonConvert.startWith(planet.appName, typeSort[j]) || jsonConvert.endWith(planet.appName, typeSort[j])) {
+                    sorts[j].push(planet)
+                    break;
+                }
+            }
+        }
+        for (var i = 0; i < sorts.length; i++)
+            for (var j = 0; j < sorts[i].length; j++)
+                result.push(sorts[i][j])
+        return result
+    },
+        solarReport.doStatic = function (solar) {
+            var planetStatic = solar.domainJsonObj.planetStatic;
+            var validSuffix = jsonConvert.valid_suffix;
+
+            if (planetStatic)
+                return planetStatic
+
+            planetStatic = []
+            for (var i = 0; i < validSuffix.length; i++)
+                planetStatic[i] = 0
+            for (var i = 0; i < solar.planets.length; i++) {
+                var planet = solar.planets[i]
+                for (var j = 0; j < validSuffix.length; j++) {
+                    if (jsonConvert.endWith(planet.name, validSuffix[j])) {
+                        planetStatic[j]++;
+                    }
+                }
+            }
+            solar.domainJsonObj.planets = planetStatic
+            return planetStatic;
+        }
     solarReport.renderStaticPie = function (solar) {
         var planetTypes = solarReport.doStatic(solar)
         var dataset = []
