@@ -114,7 +114,7 @@
             "displayLength": 100,
             "info": false,
             "paging": false,
-            // "searching": false,
+            "searching": false,
         })
     }
     linkFloat.close = function () {

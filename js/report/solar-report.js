@@ -56,9 +56,10 @@
     }
     solarReport.renderAppList = function renderAppList(solar) {
         var solarLink = links.getBySolarName(solar.name);
-        var totalCatOut = solarLink.totalCatOut;
-        $('#domainTitle').text(solar.name + globalResource.domainCallOutTotal + totalCatOut);
-        $('#domainTitle').attr('data-total', totalCatOut)
+        var title = solar.name
+        if (solarLink)
+            title += globalResource.domainCallOutTotal + solarLink.totalCatOut
+        $('#domainTitle').text(title);
         var table = tableUtil.buildTable('#appList', globalResource.appListHead);
         var planets = solarReport.sortByType(solar.planets)
 
@@ -77,8 +78,10 @@
             var planet = planets[i]
             var name = globalResource.appNameDecorator(planet.appName)
             var content = [name, 0]
-            sumCallOuts(solarLink.out, content);
-            sumCallOuts(solarLink.bi, content);
+            if (solarLink) {
+                sumCallOuts(solarLink.out, content);
+                sumCallOuts(solarLink.bi, content);
+            }
             tableUtil.addContent(table, content)
         }
         tableUtil.draw(table, {
