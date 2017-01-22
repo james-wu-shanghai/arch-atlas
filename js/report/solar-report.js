@@ -3,6 +3,43 @@
  */
 (function () {
     var solarReport = window.solarReport = {}
+
+    solarReport.init = function () {
+        var popReport = d3.select('body').append('div')
+        popReport.attr('id', 'solar-report')
+    }
+
+    solarReport.showSolarReport = function (x, y, domain) {
+        d3.select('#solar-report').style({
+            left: x + "px",
+            top: y + "px",
+            display: 'block',
+        })
+
+        //在看不太见的地方死磕的例子
+        $('#solar-report').load('solar-report.html', {}, function () {
+            window.solarReport.render(domain)
+            var $solarReport = $('#solar-report');
+            var top = Number.parseInt($solarReport.css('top'));
+            var height = Number.parseInt($solarReport.css('height'));
+            if (top + height > window.innerHeight) {
+                $solarReport.css('top', window.innerHeight - height);
+            }
+            var left = Number.parseInt($solarReport.css('left'));
+            var width = Number.parseInt($solarReport.css('width'));
+            if (left + width > window.innerWidth)
+                $solarReport.css('left', window.innerWidth - width)
+        })
+    }
+
+    solarReport.close = function () {
+        var report = d3.select('#solar-report')
+        if (report) {
+            report.html('')
+            report.style('display', 'none')
+        }
+    }
+
     solarReport.initResource = function () {
         $('ul a:contains(${appList})').html(globalResource.appList)
         $('ul a:contains(${depLine})').html(globalResource.depLine)
@@ -118,7 +155,7 @@
                             //         hint += '\<a title=\'展示应用依赖\' target=\'vaadin\' href=\'/ui/vaadin/?appName=' + depSet[j][k] + '\'\>' + depSet[j][k] + '\</a\>'
                             return hint;
                         })
-                        var $pop = $('#pop-report');
+                        var $pop = $('#solar-report');
                         var popTop = Number.parseInt($pop.css('top'))
                         var popLeft = Number.parseInt($pop.css('left'))
                         var hintTop = event.clientY - popTop

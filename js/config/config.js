@@ -8,7 +8,8 @@
         solarPie: 'Solar Pie',
         hintSet: ['ToPlanets', 'ToSolar', 'fromPlanets', 'fromSolar', 'biDirectPlanets', 'biDirectSolars'],
         appNameDecorator: function (name) {
-            return name;
-        }
+           return name;
+        },
+        title: 'cloud-atlas',
     }
 }).call(this)

@@ -101,5 +101,5 @@ var jsonConvert = {
             for (var j = 0; j < sorts[i].length; j++)
                 result.push(sorts[i][j])
         return result
-    }
+    },
 }

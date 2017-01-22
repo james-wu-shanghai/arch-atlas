@@ -241,5 +241,16 @@ var links = {
         }
         return [_point1, _point2, _point3, _point4];
     },
+    highlightEdge: function (link) {
+        link.edge.setHighlight(true)
+        links.highLightEdges.push(link)
+    },
 
+    dehighlightAllEdges: function () {
+        for (var i = 0; i < links.highLightEdges.length; i++) {
+            var link = links.highLightEdges[i]
+            link.edge.setHighlight(false)
+        }
+        links.highLightEdges = []
+    }
 }

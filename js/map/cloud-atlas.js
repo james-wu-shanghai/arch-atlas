@@ -32,11 +32,11 @@
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
-                //d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
+                 // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
                 d3.json('libs/data/all.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
-                    //d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
+                     // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
                     d3.json('libs/data/all-dependencies.json', function (error, edgesJson) {
                         if (error)
                             alert(error)

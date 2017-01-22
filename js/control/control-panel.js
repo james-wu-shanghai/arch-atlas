@@ -58,13 +58,10 @@
     cp.reset = function () {
         atlas.trackball.reset();
         var middleSize = 16;
-        //自适应, 效果不好，不做了
-        //if (window.innerWidth < 1440)
-        //    middleSize = 8
 
         this.resize(middleSize)
         links.deactivateAll()
-        report.hideSolarReport()
+        solarReport.close()
         // $('#biDepChk').attr('checked', false);
         cp.removeAllSolarBoxes()
         cp.param = {}
@@ -122,10 +119,10 @@
             var box = new THREE.BoxHelper(solar, 0x00ff00)
             box.name = solar.name + "|box"
             atlas.scence.add(box)
-            report.showSolarReport(evtX, evtY, solar);
+            solarReport.showSolarReport(evtX, evtY, solar);
         } else {
             links.deactivate(solar.name)
-            report.hideSolarReport();
+            solarReport.close();
             solar.activated = false;
             atlas.scence.remove(atlas.scence.getObjectByName(solar.name + "|box"))
             if (cp.param.activatedSolarCount > 0)
@@ -154,7 +151,7 @@
             var solar = intersect[0].object
             cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
         } else
-            report.hideSolarReport();
+            solarReport.close();
 
     }
 
@@ -189,68 +186,25 @@
         var intersect = rayCaster.intersectObjects(activatedLinks, true);
         if (intersect.length > 0) {
             $('#linkHint').empty()
+            var tableData = []
             for (var i = 0; i < intersect.length; i++) {
                 var link = intersect[i].object.parent
                 if (link.edge.show) {
-                    addLinkHints(link);
-                    highlightEdge(link);
+                    tableData.push(link.edge)
+                    links.highlightEdge(link);
                 }
             }
-            showLinkHints();
 
+            linkFloatWindow.showLinkHints(e, tableData);
         }
-        else {
+        else
             cp.removeAllLinkHints();
-        }
-        function addLinkHints(link) {
-            var edge = link.edge;
-            var from = edge.from;
-            var to = edge.to;
 
-            var span = $('<span title="调入"></span>')
-            linkInfoReport.setInfo(edge)
-            span.on('click', linkInfoReport.open)
-            var icon = 'glyphicon-open'
-            if (edge.type == 'OUT') {
-                icon = 'glyphicon-save'
-                span.attr('title', '调出')
-            }
-            else if (edge.type == 'BIDIRECT') {
-                icon = ' glyphicon-resize-vertical'
-                span.attr('title', '双向依赖')
-            }
-            var button = $('<button class="btn btn-primary glyphicon ' + icon + '"></button>.')
-            span.append(button)
-            span.append("<text>" + '从:' + from + " 到:" + to + ( edge.type == 'BIDIRECT' ? ' 双向依赖' : '') + "</text>")
-            var p = $('<p>')
-            $('#linkHint').append(span).append(p)
-
-        }
-
-        function highlightEdge(link) {
-            link.edge.setHighlight(true)
-            links.highLightEdges.push(link)
-        }
-
-        function showLinkHints() {
-            if ($('#linkHint').html() != "") {
-                $('#linkHint').css('display', 'block')
-                d3.select('#linkHint').style({
-                    left: e.clientX + "px",
-                    top: e.clientY + "px",
-                })
-            }
-        }
     }
 
     cp.removeAllLinkHints = function () {
-        $('#linkHint').css('display', 'none')
-        $('#linkHint').empty()
-        for (var i = 0; i < links.highLightEdges.length; i++) {
-            var link = links.highLightEdges[i]
-            link.edge.setHighlight(false)
-        }
-        links.highLightEdges = []
+        linkFloatWindow.close()
+        links.dehighlightAllEdges()
     }
 
     /***

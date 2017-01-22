@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cloud Atlas</title>
+    <title>$(title}</title>
     <style>
         body {
             margin: 0;
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="css/report.css">
     <link rel="stylesheet" href="css/control_panel.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="dataTable/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="css/dataTable/jquery.dataTables.min.css">
 </head>
 <body>
 <div class="controlPanel">
@@ -62,10 +62,10 @@
                             class="glyphicon glyphicon-resize-vertical"></span> </label>
                     <label title="调出" class="btn btn-primary"><input type="radio" name="options"
                                                                      data-type="dep_out"><span
-                            class="glyphicon glyphicon-open"></span></label>
+                            class="glyphicon glyphicon-arrow-up"></span></label>
                     <label title="调入" class="btn btn-primary"><input type="radio" name="options"
                                                                      data-type="dep_in"><span
-                            class="glyphicon glyphicon-save"></span></label>
+                            class="glyphicon glyphicon-arrow-down"></span></label>
                     <label title="调入" class="btn btn-primary"><input type="radio" name="options"
                                                                      data-type="dep_none"><span
                             class="glyphicon glyphicon-remove"></span></label>
@@ -89,8 +89,10 @@
               data-target="#controlPanelCollapse"></span>
     </div>
 </div>
+<!--依赖悬浮窗-->
+<div class="linkHint row" id="linkHint"></div>
+<!--依赖悬浮窗-->
 
-<div class="linkHint row pre-scrollable" id="linkHint"></div>
 <!-- 资源加载进度条-->
 <div id="progModal" class="modal">
     <div class="modal-dialog">
@@ -117,60 +119,21 @@
                 <button type="button" class="close" data-dismiss="modal"
                         aria-hidden="true">×
                 </button>
-                <h4 class="modal-title">Modal标题</h4>
+                <h3 class="modal-title"></h3>
             </div>
-            <div id='panelInfoBody' class="modal-body">
-                <table id="panelInfoBodyTable">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    <tr>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>61</td>
-                        <td>2011/04/25</td>
-                        <td>$320,800</td>
-                    </tr>
-                    <tr>
-                        <td>Cedric Kelly</td>
-                        <td>Senior Javascript Developer</td>
-                        <td>Edinburgh</td>
-                        <td>22</td>
-                        <td>2012/03/29</td>
-                        <td>$433,060</td>
-                    </tr>
-                    <tr>
-                        <td>Airi Satou</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>33</td>
-                        <td>2008/11/28</td>
-                        <td>$162,700</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="modal-body">
+                <div id="panelInfoBody"></div>
+                <div class="collapse" id="commentList">
+                    <div id="commentHead"><h4 class="text-center"></h4></div>
+                    <div id="historyList"></div>
+                    <div id="inputComment"><textarea style="resize:none" class="form-control"
+                                                     id="dependencyComments"></textarea></div>
+                    <button id="submitComments" class="btn btn-primary">提交</button>
+                </div>
             </div>
             <div class="modal-footer">
-                <button data-toggle="modal" data-target="#infoPanel" class="btn btn-primary">
+                <button data-toggle="modal" data-target="#infoPanel" onclick="linkInfoReport.close()"
+                        class="btn btn-primary">
                     退出
                 </button>
             </div>
@@ -193,23 +156,23 @@
 <script src="js/thirdparty/three.min.js"></script>
 <script src="js/thirdparty/TrackballControls.js"></script>
 <script src="js/thirdparty/d3-3.5.17-min.js"></script>
-<script src="dataTable/js/jquery.dataTables.min.js"></script>
-<script src="js/report/d3-report.js"></script>
+<script src="js/thirdparty/jquery.dataTables.min.js"></script>
 <script src="js/map/link.js"></script>
 <script src="js/map/textureUtil.js"></script>
 <script src="js/map/jsonConvert.js"></script>
 <script src="js/map/cloud-atlas.js"></script>
 <script src="js/control/control-panel.js"></script>
 <script src="js/control/state-bar.js"></script>
-<script src="js/report/reportUtil.js"></script>
+<script src="js/utils/tableUtil.js"></script>
+<script src="js/utils/reportUtil.js"></script>
 <script src="js/report/solar-report.js"></script>
 <script src="js/report/link-info-report.js"></script>
 <script src="js/config/config.js"></script>
 <script>
     $(function () {
+        $('title').text(globalResource.title)
         atlas.init('#WebGL')
-        report.init()
-
+        solarReport.init()
     })
 </script>
 </html>
