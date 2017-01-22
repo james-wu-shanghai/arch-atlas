@@ -23,16 +23,16 @@
             <form class="navbar-form navbar-left" role="search">
                 <div class="input-group" title="寻找域">
                     <span class="glyphicon glyphicon-search input-group-addon"></span>
-                    <input name="domain" class="form-control" type="text"
+                    <input name="domain" class="form-control" id="starSearch" type="text"
+                           data-provide="typeahead" data-items="4"
                            onkeypress="if(event.keyCode == '13') return false"
-                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.findDomain(this)">
+                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.searchEntity(this)">
                 </div>
             </form>
             <form class="navbar-form navbar-left" role="presentation">
                 <div class="input-group" title="调整大小">
                     <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
-                    <select class="form-control" id="changeSize"
-                            onchange="window.cp.resize($('#' + this.id + ' option:selected').val())">
+                    <select class="form-control" id="changeSize">
                         <option value="6">很小</option>
                         <option value="8">小</option>
                         <option value="16" selected="selected">中</option>
@@ -158,6 +158,7 @@
 <script src="js/thirdparty/d3-3.5.17-min.js"></script>
 <script src="js/thirdparty/jquery.dataTables.min.js"></script>
 <script src="js/thirdparty/dataTables.bootstrap.min.js"></script>
+<script src="js/thirdparty/bootstrap3-typeahead.min.js"></script>
 <script src="js/map/link.js"></script>
 <script src="js/map/textureUtil.js"></script>
 <script src="js/map/jsonConvert.js"></script>

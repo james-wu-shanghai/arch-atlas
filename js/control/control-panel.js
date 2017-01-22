@@ -7,7 +7,7 @@
     cp.activatedSolar = [];
 
     cp.param = {}
-
+    cp.searchItem = [];
     cp.filterBiDep = function () {
         var type = $('#dep_filter :radio:checked').attr('data-type')
         if (type == 'dep_in')
@@ -25,9 +25,18 @@
             links.activateByType(type)
         }
     }
+    cp.initSearchItems = function () {
+        var si = []
+        for (var i = 0; i < cp.searchItem.length; i++) {
+            si.push('"' + cp.searchItem[i] + '"')
+        }
+        $('#starSearch').attr('data-source', '[' + si + ']');
+    }
+    cp.addSearchItem = function (item) {
+        cp.searchItem.push(item)
+    }
 
-
-    cp.findDomain = function (searchInput) {
+    cp.searchEntity = function (searchInput) {
         var domainObj = atlas.scence.getObjectByName(searchInput.value)
         if (domainObj) {
             atlas.trackball.target = domainObj.position.clone();
@@ -37,8 +46,8 @@
     }
 
     cp.resize = function (size) {
-        if ($("#changeSize").val() == size)
-            return true
+        if (typeof(size) != 'string' && typeof(size) != 'number')
+            size = $('#changeSize option:selected').val()
         atlas.camera.left = window.innerWidth / -size
         atlas.camera.right = window.innerWidth / size
         atlas.camera.top = window.innerHeight / size
@@ -134,7 +143,7 @@
     cp.searchKeyUp = function (searchInput) {
         var keyCode = parseInt(event.keyCode);
         if (keyCode == 13) {
-            this.findDomain(searchInput)
+            this.searchEntity(searchInput)
             searchInput.select()
         }
     }
@@ -213,6 +222,7 @@
 
     $('#dep_filter :radio').on('change', cp.filterBiDep)
     $('#showPlanChk').on('change', cp.showBackground)
+    $('#changeSize').on('change', cp.resize)
     /***
      * end init
      */

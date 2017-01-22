@@ -32,11 +32,11 @@
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
-                 // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
+                // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
                 d3.json('libs/data/all.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
-                     // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
+                    // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
                     d3.json('libs/data/all-dependencies.json', function (error, edgesJson) {
                         if (error)
                             alert(error)
@@ -55,7 +55,7 @@
                         atlas.planets = []
                         atlas.solarObjects = []
                         initDomains();
-
+                        cp.initSearchItems()
                         window.addEventListener('resize', cp.autoResize, false)
                         atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
                         atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
@@ -152,6 +152,7 @@
             solar.domainJsonObj = domain;
             solar.position.set(domain.x, param.entityHeight, domain.y)
             solar.name = domain.name
+            cp.addSearchItem(domain.name)
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
@@ -171,6 +172,7 @@
                     solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
+                    cp.addSearchItem(planet.name)
                     atlas.planets.push({
                         'name': planet.name,
                         'cx': domain.x,

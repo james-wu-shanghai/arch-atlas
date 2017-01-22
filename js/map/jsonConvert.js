@@ -4,11 +4,11 @@
 var jsonConvert = {
     pics: window.textureUtil.pics,
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
-    convert: function (entityJson) {
+    convert: function (domainJson) {
         var domains = [];
 
-        for (var i = 0; i < entityJson.length; i++) {
-            var entity = entityJson[i];
+        for (var i = 0; i < domainJson.length; i++) {
+            var entity = domainJson[i];
             for (var j = 0; j < this.valid_suffix.length; j++) {
                 if (this.endWith(entity.key, this.valid_suffix[j])) {
                     var planet = this.generatePlanet(entity);
