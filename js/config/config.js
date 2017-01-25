@@ -2,6 +2,7 @@
     window.globalConfig = {
         contextPath: '/cloud-atlas',
         planetTypes: ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv'],
+        typedNames: {'web': 'desert', 'gw': 'ice', 'i-': 'fire', 'app': 'gas', 'job': 'forests', 'svc': 'sea', 'srv': 'rocks'},
     }
     window.globalResource = {
         appList: 'Planet List',
@@ -12,7 +13,7 @@
             return name;
         },
         title: 'cloud-atlas',
-        appListHead: ['planet name', 'total call out'],
+        appListHead: ['planet name', 'total call out','planet type'],
         domainCallOutTotal: " Total call out times:"
     }
 }).call(this)

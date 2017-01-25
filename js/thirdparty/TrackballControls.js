@@ -150,7 +150,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 				} else {
 
 					mouseOnBall.z = .5 / length;
-					
+
 				}
 
 			} else if ( length > 1.0 ) {
@@ -438,7 +438,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	function mousemove( event ) {
 
-		if ( _this.enabled === false ) return;
+		if ( _this.enabled === false || cp.undercontrol) return;
 
 		event.preventDefault();
 		event.stopPropagation();

@@ -17,16 +17,14 @@
     <link rel="stylesheet" href="css/dataTable/dataTables.bootstrap.css">
 </head>
 <body>
-<div class="controlPanel">
+<div class="controlPanel" id="controlPanel" onmouseover="cp.undercontrol=true" onmouseout="cp.undercontrol=false">
     <div id="controlPanelCollapse" class="collapse">
         <nav class="navbar nav-tabs" role="navigation">
             <form class="navbar-form navbar-left" role="search">
                 <div class="input-group" title="寻找域">
                     <span class="glyphicon glyphicon-search input-group-addon"></span>
                     <input name="domain" class="form-control" id="starSearch" type="text"
-                           data-provide="typeahead" data-items="4"
-                           onkeypress="if(event.keyCode == '13') return false"
-                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.searchEntity(this)">
+                           data-provide="typeahead" data-items="4">
                 </div>
             </form>
             <form class="navbar-form navbar-left" role="presentation">

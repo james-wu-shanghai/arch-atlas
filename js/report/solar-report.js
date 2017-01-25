@@ -55,52 +55,55 @@
         solarReport.renderDepLines(solar);
     }
     solarReport.renderAppList = function renderAppList(solar) {
-        var solarLink = links.getBySolarName(solar.name);
+        var edgesInfo = links.getBySolarName(solar.name);
         var title = solar.name
-        if (solarLink)
-            title += globalResource.domainCallOutTotal + solarLink.totalCatOut
+        if (edgesInfo)
+            title += globalResource.domainCallOutTotal + edgesInfo.totalCatOut
         $('#domainTitle').text(title);
         var table = tableUtil.buildTable('#appList', globalResource.appListHead);
         var planets = solarReport.sortByType(solar.planets)['oneDimArray']
 
-        function sumCallOuts(domainConns, content) {
-            for (var i = 0; i < domainConns.length; i++) {
-                var appConns = domainConns[i].appConns
-                for (var j = 0; j < appConns.length; j++) {
-                    if (appConns[j].from == planet.appName) {
-                        content[1] = appConns[j].catcnt + content[1]
-                    }
-                }
-            }
-        }
-
         for (var i = 0; i < planets.length; i++) {
-            var planet = planets[i]
-            var name = globalResource.appNameDecorator(planet.appName)
-            var content = [name, 0]
-            if (solarLink) {
-                sumCallOuts(solarLink.out, content);
-                sumCallOuts(solarLink.bi, content);
+            var typedPlanets = planets[i]
+            for (var j = 0; j < typedPlanets.allApps.length; j++) {
+                var planetName = typedPlanets.allApps[j].name
+                var name = globalResource.appNameDecorator(planetName)
+                var content = [name, 0, globalConfig.typedNames[typedPlanets.typedJson.type]]
+                if (edgesInfo) {
+                    sumCallOuts(planetName, edgesInfo.out, content);
+                    sumCallOuts(planetName, edgesInfo.bi, content);
+                }
+                tableUtil.addContent(table, content)
             }
-            tableUtil.addContent(table, content)
         }
         tableUtil.draw(table, {
             "info": false,
             "paging": false,
             "searching": false,
             scrollY: "400px",
-            scrollCollapse: true
+            scrollCollapse: true,
+            sorting: [[2, 'asc']],
         })
+        function sumCallOuts(planetName, domainConns, content) {
+            for (var i = 0; i < domainConns.length; i++) {
+                var appConns = domainConns[i].appConns
+                for (var j = 0; j < appConns.length; j++) {
+                    if (appConns[j].from == planetName) {
+                        content[1] = appConns[j].catcnt + content[1]
+                    }
+                }
+            }
+        }
     }
     //按照类型排序
     solarReport.sortByType = function (planets) {
-        var typeSort =  globalConfig.planetTypes;
+        var typeSort = globalConfig.planetTypes;
         var sorts = [[], [], [], [], [], [], []]
         var result = []
         for (var i = 0; i < planets.length; i++) {
             var planet = planets[i]
             for (var j = 0; j < typeSort.length; j++) {
-                if (jsonConvert.startWith(planet.appName, typeSort[j]) || jsonConvert.endWith(planet.appName, typeSort[j])) {
+                if (jsonConvert.startWith(planet.name, typeSort[j]) || jsonConvert.endWith(planet.name, typeSort[j])) {
                     sorts[j].push(planet)
                     break;
                 }
@@ -109,10 +112,10 @@
         for (var i = 0; i < sorts.length; i++)
             for (var j = 0; j < sorts[i].length; j++)
                 result.push(sorts[i][j])
-        return {'oneDimArray':result, 'twoDimArray':sorts}
+        return {'oneDimArray': result, 'twoDimArray': sorts}
     },
         solarReport.doStatic = function (solar) {
-            var planetStatic = solar.domainJsonObj.planetStatic;
+            var planetStatic = solar.domainJson.planetStatic;
             var validSuffix = jsonConvert.valid_suffix;
 
             if (planetStatic)
@@ -129,7 +132,7 @@
                     }
                 }
             }
-            solar.domainJsonObj.planets = planetStatic
+            solar.domainJson.planets = planetStatic
             return planetStatic;
         }
     solarReport.renderStaticPie = function (solar) {
@@ -141,17 +144,13 @@
         reportUtil.drawPieChart('#solarPie', dataset, {height: 200, width: 200, radius: 200 / 3})
     }
     solarReport.renderDepLines = function (solar) {
-        var static = null;
-        for (var i = 0; i < atlas.edges.length; i++) {
-            if (solar.name == atlas.edges[i].name) {
-                static = atlas.edges[i].stat;
-                break;
-            }
-        }
-        if (!static)
+        var edgesInfo = atlas.edgesMap[solar.name]
+        if (edgesInfo == null || edgesInfo.stat == null)
             return
-        var dataset = [static.byApps.length, static.byDomains.length, static.onApps.length, static.onDomains.length, static.biApps.length, static.biDomains.length]
-        var depSet = [static.byApps, static.byDomains, static.onApps, static.onDomains, static.biApps, static.biDomains]
+        var stat = edgesInfo.stat;
+
+        var dataset = [stat.byApps.length, stat.byDomains.length, stat.onApps.length, stat.onDomains.length, stat.biApps.length, stat.biDomains.length]
+        var depSet = [stat.byApps, stat.byDomains, stat.onApps, stat.onDomains, stat.biApps, stat.biDomains]
         var hintSet = globalResource.hintSet
         var width = 200
         var height = 300;

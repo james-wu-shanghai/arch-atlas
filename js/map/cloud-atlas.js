@@ -5,8 +5,8 @@
         var atlas = window.atlas = {}
         var param = atlas.param = {
             spaceUnit: 1,
-            solarSize: 2.2,
-            planetSize: 0.1,
+            solarSize: 2.5,
+            planetSize: 0.2,
             stepIncrease: 0.0005,
             planeWidth: 250,
             planeHeight: 250,
@@ -21,7 +21,7 @@
 
         //TODO:these one become solar fonts
         atlas.fonts = []
-
+        atlas.domainJsons = {}
         atlas.init = function (name) {
             textureUtil.loadTexture()
 
@@ -32,7 +32,7 @@
                 // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
                 d3.json('libs/data/all.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
-                    atlas.domainJson = entityJson;
+                    atlas.entityJson = entityJson;
                     // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
                     d3.json('libs/data/all-dependencies.json', function (error, edgesJson) {
                         if (error)
@@ -40,6 +40,14 @@
                         progressUtils.progress(90, '3D建模中')
                         atlas.step = 0
                         atlas.edges = edgesJson;
+                        atlas.edgesMap = function (edgesJson) {
+                            var map = {}
+                            for (var i = 0; i < edgesJson.length; i++) {
+                                var edges = edgesJson[i];
+                                map[edges.name] = edges;
+                            }
+                            return map;
+                        }(edgesJson);
                         atlas.raycaster = new THREE.Raycaster();
 
                         atlas.scence = initScene()
@@ -75,7 +83,6 @@
 
         function initScene() {
             var scene = new THREE.Scene();
-            //scene.add(new THREE.AmbientLight(0x888888));
             return scene
         }
 
@@ -132,7 +139,7 @@
         }
 
         function initDomains() {
-            var domains = jsonConvert.convert(atlas.domainJson)
+            var domains = jsonConvert.convert(atlas.entityJson)
             for (var i = 0; i < domains.length; i++) {
                 var domain = domains[i]
                 addDomainSolar(domain)
@@ -142,52 +149,53 @@
         }
 
         function addDomainSolar(domain) {
+            atlas.domainJsons[domain.name] = domain
             var solar = createSolarMesh(new THREE.SphereGeometry(param.solarSize, 30, 30), domain.pic)
             solar.planets = []
             //addLightSpot(domain);
 
-            solar.domainJsonObj = domain;
+            solar.domainJson = domain;
+            domain.solar = solar;
             solar.position.set(domain.x, param.entityHeight, domain.y)
             solar.name = domain.name
             cp.addSearchItem(domain.name)
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
-            addPlanetsNew(domain, solar);
+            addPlanetsNew(domain);
 
-            function addPlanetsNew(domain, solar) {
-                domain.planets = function (planets) {
-                    for (var i = 0; i < planets.length; i++) {
-                        planets[i].appName = planets[i].name;
-                    }
-                    return planets;
-                }(domain.planets);
-
+            function addPlanetsNew(domain) {
+                var solar = domain.solar
                 var typePlanets = solarReport.sortByType(domain.planets)
                 for (var i = 0; i < typePlanets['twoDimArray'].length; i++) {
-                    var typePlanet = typePlanets['twoDimArray'][i];
-                    if (typePlanet.length == 0)
+                    var typedPlanets = typePlanets['twoDimArray'][i];
+                    if (typedPlanets.length == 0)
                         continue;
+                    var type = typedPlanets.type = globalConfig.planetTypes[i]
 
-                    var planet = createPlanetMesh(new THREE.SphereGeometry(Math.log2(typePlanet.length + 2) * param.planetSize, 10, 10), i)
+
+                    var planet = createPlanetMesh(new THREE.SphereGeometry(Math.log2(typedPlanets.length + 2) * param.planetSize, 10, 10), i)
+                    planet.typedJson = typedPlanets;
+
                     var distance = param.solarSize + (i + 1) * param.spaceUnit;
                     var currentX = domain.x + distance
                     var currentY = domain.y
                     planet.position.set(currentX, param.entityHeight, currentY)
-                    planet.name = "[" + domain.name + "]." + typePlanet[0].name;
-                    planet.appName = typePlanet[0].name
-                    planet.allApps = function (typePlanet) {
+                    planet.name = typedPlanets.name = "[" + domain.name + "]." + type;
+                    typedPlanets.allApps = planet.allApps = function (typePlanet) {
                         var apps = []
                         for (var i = -0; i < typePlanet.length; i++) {
-                            apps.push(typePlanet[i].name)
+                            apps.push(typePlanet[i])
                         }
                         return apps;
-                    }(typePlanet);
+                    }(typedPlanets);
 
                     solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
-                    cp.addSearchItem(planet.name)
+                    for (var j = 0; j < planet.allApps.length; j++)
+                        cp.addSearchItem('[' + domain.name + ']' + planet.allApps[j].name)
+
                     atlas.planets.push({
                         'name': planet.name,
                         'cx': domain.x,
@@ -199,29 +207,6 @@
                 }
             }
 
-            function addPlanet(domain, solar) {
-                var planets = domain.planets
-                for (var i = 0; i < planets.length; i++) {
-                    var planet = createPlanetMesh(new THREE.SphereGeometry(param.planetSize, 10, 10))
-                    var distance = param.solarSize + (i + 1) * param.spaceUnit;
-                    var currentX = domain.x + distance
-                    var currentY = domain.y
-                    planet.position.set(currentX, param.entityHeight, currentY)
-                    planet.name = "[" + domain.name + "]." + planets[i].name
-                    planet.appName = planets[i].name
-                    solar.planets.push(planet)
-                    atlas.scence.add(planet)
-                    atlas.stars.push(planet.name)
-                    cp.addSearchItem(planet.name)
-                    atlas.planets.push({
-                        'name': planet.name,
-                        'cx': domain.x,
-                        'cy': domain.y,
-                        'd': distance,
-                        angle: Math.random() * 2 * Math.PI
-                    })
-                }
-            }
         }
 
         function addTags(domains) {

@@ -4,11 +4,11 @@
 var jsonConvert = {
     stars: window.textureUtil.stars,
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
-    convert: function (domainJson) {
+    convert: function (entityJson) {
         var domains = [];
 
-        for (var i = 0; i < domainJson.length; i++) {
-            var entity = domainJson[i];
+        for (var i = 0; i < entityJson.length; i++) {
+            var entity = entityJson[i];
             for (var j = 0; j < this.valid_suffix.length; j++) {
                 if (this.endWith(entity.key, this.valid_suffix[j])) {
                     var planet = this.generatePlanet(entity);
@@ -45,7 +45,7 @@ var jsonConvert = {
     },
 
     endWith: function (original, suffix) {
-        if (suffix == null || suffix == "" || original.length == 0 || suffix.length > original.length)
+        if (suffix == null || suffix == "" || !original || original.length == 0 || suffix.length > original.length)
             return false;
         if (original.substring(original.length - suffix.length) == suffix)
             return true;
@@ -54,7 +54,7 @@ var jsonConvert = {
         return true;
     },
     startWith: function (original, prefix) {
-        if (prefix == null || prefix == "" || original.length == 0 || prefix.length > original.length)
+        if (prefix == null || prefix == "" || !original || original.length == 0 || prefix.length > original.length)
             return false;
         if (original.substring(0, prefix.length) == prefix)
             return true;

@@ -5,7 +5,7 @@
     var cp = window.cp = {}
     cp.actSolarLmt = 10;
     cp.activatedSolar = [];
-
+    cp.undercontrol = false;
     cp.param = {}
     cp.searchItem = [];
     cp.filterBiDep = function () {
@@ -37,7 +37,10 @@
     }
 
     cp.searchEntity = function (searchInput) {
-        var domainObj = atlas.scence.getObjectByName(searchInput.value)
+        var name = searchInput.value;
+        if (jsonConvert.startWith(name, "["))
+            name = name.split(']')[0].substring(1)
+        var domainObj = atlas.scence.getObjectByName(name)
         if (domainObj) {
             atlas.trackball.target = domainObj.position.clone();
             atlas.camera.position = new THREE.Vector3(300, 300, 300)
@@ -223,6 +226,10 @@
     $('#dep_filter :radio').on('change', cp.filterBiDep)
     $('#showPlanChk').on('change', cp.showBackground)
     $('#changeSize').on('change', cp.resize)
+    $('#starSearch').on('change', function (event) {
+        cp.searchEntity(event.target)
+        return true;
+    })
     /***
      * end init
      */

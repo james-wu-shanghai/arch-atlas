@@ -100,12 +100,7 @@ var links = {
         edgesInfo.inited = true;
     },
     getBySolarName: function (solarName) {
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edgesInfo = atlas.edges[i]
-            if (edgesInfo.name == solarName)
-                return edgesInfo;
-        }
-        return null;
+        return atlas.edgesMap[solarName];
     },
     activate: function (solarName) {
         var edgesInfo = this.getBySolarName(solarName)
@@ -116,8 +111,8 @@ var links = {
     },
     activateByType: function (type) {
         links.activatedEdges = []
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edgesInfo = atlas.edges[i]
+        for (var key in atlas.edgesMap) {
+            var edgesInfo = atlas.edgesMap[key]
             if (edgesInfo.activated)
                 edgesInfo.activateLinks(type)
         }
@@ -125,8 +120,8 @@ var links = {
 
     deactivateAll: function () {
         links.activatedEdges = []
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edgesInfo = atlas.edges[i];
+        for (var key in atlas.edgesMap) {
+            var edgesInfo = atlas.edgesMap[key]
             if (edgesInfo.inited)
                 edgesInfo.deactivateLinks()
         }
