@@ -27,8 +27,8 @@ var jsonConvert = {
                 }
             }
             unknown.pic = pic
-            unknown.x = 220
-            unknown.y = -200
+            unknown.x = atlas.param.baseGalaxySize / 2
+            unknown.y = -atlas.param.baseGalaxySize / 2
             return unknown
         };
         var known = hasUnknown(domains, this.stars[0])
@@ -36,8 +36,9 @@ var jsonConvert = {
         for (var i = 0; i < domains.length; i++) {
             var domain = domains[i];
             domain.pic = this.stars[i % this.stars.length]
-            domain.x = 300 / 8 * (i % 8) - 150 + Math.random() * 20;
-            domain.y = 300 / 8 * (i / 8) - 150 + Math.random() * 20;
+            var base = atlas.param.baseGalaxySize
+            domain.x = base / 8 * (i % 8) - base / 2 + Math.random() * base / 15;
+            domain.y = base / 8 * (i / 8) - base / 2 + Math.random() * base / 15;
         }
         if (known != null)
             domains.push(known)

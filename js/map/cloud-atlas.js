@@ -4,12 +4,12 @@
 (function () {
         var atlas = window.atlas = {}
         var param = atlas.param = {
+            baseGalaxySize: 500,
             spaceUnit: 1,
             solarSize: 2.5,
             planetSize: 0.2,
             stepIncrease: 0.0005,
-            planeWidth: 250,
-            planeHeight: 250,
+            radius: 300,
             planeWdtSeg: 10,
             planeHgtSeg: 6,
             entityHeight: 5,
@@ -54,7 +54,7 @@
                         atlas.camera = initCamera();
                         atlas.render = initRender();
                         atlas.clock = new THREE.Clock();
-                        atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
+                        atlas.plane = initPlane(param.radius * 1.5)
                         addGridHelper()
                         atlas.stars = []
                         atlas.planets = []

@@ -58,11 +58,12 @@
         atlas.param.scale = size
         atlas.camera.updateProjectionMatrix();
         $("#changeSize").val(size)
-        // auto adjust size
         var index = $('#changeSize option:selected').index()
+        atlas.trackball.panSpeed = 0.05 + (3 - index) * 0.02
+        // auto adjust size
         for (var i = 0; i < atlas.fonts.length; i++) {
             var font = atlas.fonts[i]
-            var _scale = (1 + (2 - index) * 0.1)
+            var _scale = (1 + (2 - index) * 0.5)
             font.scale.set(_scale, _scale, _scale)
         }
     }
