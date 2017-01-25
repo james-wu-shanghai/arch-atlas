@@ -4,7 +4,7 @@
 (function () {
         var textureUtil = window.textureUtil = {}
 
-        var pics = window.textureUtil.pics = [
+        var stars = window.textureUtil.stars = [
             'blue.jpg',
             'golden.jpg',
             'pink.jpg',
@@ -15,9 +15,13 @@
             'green.jpg',
             'brown.jpg',
             'cyan.jpg'];
-
-        var earth = 'earth.jpg'
-        var plane = 'universe.jpg'
+        var planets = window.textureUtil.planets = ['earth.jpg',
+            'jupeter.jpg',
+            'mars.jpg ',
+            'mercury.jpg',
+            'neptune.jpg',
+            'satum.jpg',
+            'venus.jpg',]
 
         var textures = window.textureUtil.textures = [];
         textureUtil.loadTexture = function () {
@@ -31,12 +35,14 @@
                 txrs.push(txrObj);
             }
 
-            _loadTexture('./jpg/planet/earth.jpg', earth, textureLoader, textures)
-            for (var i = 0; i < pics.length; i++) {
-                var fileName = "./jpg/stars/" + pics[i];
-                _loadTexture(fileName, pics[i], textureLoader, textures)
+            for (var i = 0; i < planets.length; i++) {
+                var fileName = "./jpg/planet/" + planets[i];
+                _loadTexture(fileName, planets[i], textureLoader, textures)
             }
-            //_loadTexture('./jpg/universe.jpg', plane, textureLoader, textures)
+            for (var i = 0; i < stars.length; i++) {
+                var fileName = "./jpg/stars/" + stars[i];
+                _loadTexture(fileName, stars[i], textureLoader, textures)
+            }
         }
 
         window.textureUtil.getTexture = function (textureName) {

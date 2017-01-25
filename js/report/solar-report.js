@@ -61,7 +61,7 @@
             title += globalResource.domainCallOutTotal + solarLink.totalCatOut
         $('#domainTitle').text(title);
         var table = tableUtil.buildTable('#appList', globalResource.appListHead);
-        var planets = solarReport.sortByType(solar.planets)
+        var planets = solarReport.sortByType(solar.planets)['oneDimArray']
 
         function sumCallOuts(domainConns, content) {
             for (var i = 0; i < domainConns.length; i++) {
@@ -94,7 +94,7 @@
     }
     //按照类型排序
     solarReport.sortByType = function (planets) {
-        var typeSort = ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv']
+        var typeSort =  globalConfig.planetTypes;
         var sorts = [[], [], [], [], [], [], []]
         var result = []
         for (var i = 0; i < planets.length; i++) {
@@ -109,7 +109,7 @@
         for (var i = 0; i < sorts.length; i++)
             for (var j = 0; j < sorts[i].length; j++)
                 result.push(sorts[i][j])
-        return result
+        return {'oneDimArray':result, 'twoDimArray':sorts}
     },
         solarReport.doStatic = function (solar) {
             var planetStatic = solar.domainJsonObj.planetStatic;

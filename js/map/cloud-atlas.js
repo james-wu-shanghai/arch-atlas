@@ -4,9 +4,9 @@
 (function () {
         var atlas = window.atlas = {}
         var param = atlas.param = {
-            spaceUnit: 0.45,
+            spaceUnit: 1,
             solarSize: 2.2,
-            planetSize: 0.3,
+            planetSize: 0.1,
             stepIncrease: 0.0005,
             planeWidth: 250,
             planeHeight: 250,
@@ -24,9 +24,6 @@
 
         atlas.init = function (name) {
             textureUtil.loadTexture()
-
-            //cache ajax request,mainly for html xhr included, i remove them from xhr html pages, so no longer needed.
-            // $.ajaxSetup({cache:true})
 
             progressUtils.progress(10, '加载字库中')
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
@@ -156,8 +153,51 @@
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
-            addPlanet(domain, solar);
+            addPlanetsNew(domain, solar);
 
+            function addPlanetsNew(domain, solar) {
+                domain.planets = function (planets) {
+                    for (var i = 0; i < planets.length; i++) {
+                        planets[i].appName = planets[i].name;
+                    }
+                    return planets;
+                }(domain.planets);
+
+                var typePlanets = solarReport.sortByType(domain.planets)
+                for (var i = 0; i < typePlanets['twoDimArray'].length; i++) {
+                    var typePlanet = typePlanets['twoDimArray'][i];
+                    if (typePlanet.length == 0)
+                        continue;
+
+                    var planet = createPlanetMesh(new THREE.SphereGeometry(Math.log2(typePlanet.length + 2) * param.planetSize, 10, 10), i)
+                    var distance = param.solarSize + (i + 1) * param.spaceUnit;
+                    var currentX = domain.x + distance
+                    var currentY = domain.y
+                    planet.position.set(currentX, param.entityHeight, currentY)
+                    planet.name = "[" + domain.name + "]." + typePlanet[0].name;
+                    planet.appName = typePlanet[0].name
+                    planet.allApps = function (typePlanet) {
+                        var apps = []
+                        for (var i = -0; i < typePlanet.length; i++) {
+                            apps.push(typePlanet[i].name)
+                        }
+                        return apps;
+                    }(typePlanet);
+
+                    solar.planets.push(planet)
+                    atlas.scence.add(planet)
+                    atlas.stars.push(planet.name)
+                    cp.addSearchItem(planet.name)
+                    atlas.planets.push({
+                        'name': planet.name,
+                        'cx': domain.x,
+                        'cy': domain.y,
+                        'd': distance,
+                        angle: Math.random() * 2 * Math.PI
+                    })
+
+                }
+            }
 
             function addPlanet(domain, solar) {
                 var planets = domain.planets
@@ -181,12 +221,6 @@
                         angle: Math.random() * 2 * Math.PI
                     })
                 }
-            }
-
-            function addLightSpot(domain) {
-                var pointLight = new THREE.PointLight(0xffffff, 10, 10);
-                pointLight.position.set(domain.x, param.entityHeight, domain.y)
-                atlas.scence.add(pointLight)
             }
         }
 
@@ -237,10 +271,10 @@
             return mesh
         }
 
-        function createPlanetMesh(geom) {
-            var texture = textureUtil.getTexture('earth.jpg')
+        function createPlanetMesh(geom, planetTypeNo) {
+            var textureName = textureUtil.planets[planetTypeNo]
+            var texture = textureUtil.getTexture(textureName)
             var basicMat = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
-            //var normalMat = new THREE.MeshLambertMaterial({color: 0x3399ff})
             return new THREE.Mesh(geom, basicMat)
 
         }

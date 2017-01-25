@@ -1,6 +1,7 @@
 (function () {
     window.globalConfig = {
-        contextPath: '/cloud-atlas'
+        contextPath: '/cloud-atlas',
+        planetTypes: ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv'],
     }
     window.globalResource = {
         appList: 'Planet List',

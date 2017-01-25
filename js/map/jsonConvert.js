@@ -2,7 +2,7 @@
  * Created by jameswu on 16-12-19.
  */
 var jsonConvert = {
-    pics: window.textureUtil.pics,
+    stars: window.textureUtil.stars,
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (domainJson) {
         var domains = [];
@@ -31,11 +31,11 @@ var jsonConvert = {
             unknown.y = -200
             return unknown
         };
-        var known = hasUnknown(domains, this.pics[0])
+        var known = hasUnknown(domains, this.stars[0])
 
         for (var i = 0; i < domains.length; i++) {
             var domain = domains[i];
-            domain.pic = this.pics[i % this.pics.length]
+            domain.pic = this.stars[i % this.stars.length]
             domain.x = 300 / 8 * (i % 8) - 150 + Math.random() * 20;
             domain.y = 300 / 8 * (i / 8) - 150 + Math.random() * 20;
         }
