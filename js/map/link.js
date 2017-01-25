@@ -9,45 +9,135 @@ var links = {
     opacity: 0.3,
     portDistance: 5.5,
     portLength: 9,
-
-
-    activate: function (solarName) {
-        if (atlas.edges == null || cp.param.dependencyLock)
+    activatedEdges: [],
+    highLightEdges: [],
+    initEdgesInfo: function (edgesInfo) {
+        if (edgesInfo.inited)
             return;
-
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
-            if (edge.activated)
-                continue
-
-            var edgeType = null;
-            //被域调用
-            if (edge.from == solarName && edge.to != null)
-                edgeType = 'OUT'
-            // 调用域
-            else if (edge.to == solarName && edge.from != null)
-                edgeType = 'IN'
+        edgesInfo.initEdge = function (edge, edgeType) {
+            links.build(edge, edgeType);
+            edge.setHighlight = function (isHighlight) {
+                for (var i = 0; i < this.link.children.length; i++) {
+                    var obj = this.link.children[i]
+                    var opacity = links.opacity
+                    obj.material.opacity = isHighlight ? opacity * 3 : opacity
+                }
+            }
+            edge.activate = function () {
+                atlas.scence.add(this.link);
+                this.addToEdges(links.activatedEdges)
+            }
+            edge.deactivate = function () {
+                atlas.scence.remove(this.link);
+                this.removeFromEdges(links.activatedEdges)
+            }
+            edge.addToEdges = function (actEdges) {
+                for (var i = 0; i < actEdges.length; i++) {
+                    var actEdge = actEdges[i]
+                    if (actEdge.from == this.from && actEdge.to == this.to && actEdge.type == this.type) {
+                        return
+                    }
+                }
+                actEdges.push(this)
+            }
+            edge.removeFromEdges = function (actEdges) {
+                for (var i = 0; i < actEdges.length; i++) {
+                    var actEdge = actEdges[i]
+                    if (actEdge.from == this.from && actEdge.to == this.to && actEdge.type == this.type) {
+                        actEdges.splice(i, 1)
+                        return
+                    }
+                }
+            }
+        }
+        edgesInfo.initEdges = function (edges, edgeType) {
+            for (var i = 0; i < edges.length; i++) {
+                this.initEdge(edges[i], edgeType)
+            }
+        }
+        edgesInfo.addOrRemoveEdges = function (edges, isAdd) {
+            for (var i = 0; i < edges.length; i++) {
+                var edge = edges[i]
+                if (edge.from == edge.to)
+                    continue
+                if (isAdd) {
+                    edge.activate()
+                }
+                else
+                    edge.deactivate()
+            }
+        }
+        edgesInfo.turnSwitchOnEdges = function (swArray) {
+            var edgesArray = [this.in, this.out, this.bi]
+            for (var i = 0; i < edgesArray.length; i++) {
+                this.addOrRemoveEdges(edgesArray[i], swArray[i])
+            }
+        }
+        edgesInfo.activateLinks = function (type) {
+            this.activated = true
+            if (type == 'IN')
+                this.turnSwitchOnEdges([1, 0, 0])
+            else if (type == 'OUT')
+                this.turnSwitchOnEdges([0, 1, 0])
+            else if (type == 'BIDIRECT')
+                this.turnSwitchOnEdges([0, 0, 1])
+            else if (type == 'ALL')
+                this.turnSwitchOnEdges([1, 1, 1])
             else
-                edgeType = null
-            //双向
-            if (edgeType != null && edge.bidirect == 'true')
-                edgeType = 'BIDIRECT'
-
-            if (edgeType == null || edge.to == edge.from)
-                continue;
-
-            var mesh = links.build(edge, edgeType);
-            if (mesh == null)
-                continue;
-
-            edge.activated = true
-            atlas.scence.add(mesh)
-            atlas.allLinks.push(mesh)
-            var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
-            atlas.scence.add(arrow)
+                this.turnSwitchOnEdges([0, 0, 0])
 
         }
+        edgesInfo.deactivateLinks = function () {
+            if (!this.activated)
+                return
+            this.activateLinks('NONE')
+            this.activated = false;
+
+        }
+        edgesInfo.initEdges(edgesInfo.in, 'IN')
+        edgesInfo.initEdges(edgesInfo.out, 'OUT')
+        edgesInfo.initEdges(edgesInfo.bi, 'BIDIRECT')
+        edgesInfo.inited = true;
     },
+    getBySolarName: function (solarName) {
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i]
+            if (edgesInfo.name == solarName)
+                return edgesInfo;
+        }
+        return null;
+    },
+    activate: function (solarName) {
+        var edgesInfo = this.getBySolarName(solarName)
+        if (edgesInfo != null) {
+            this.initEdgesInfo(edgesInfo)
+            edgesInfo.activateLinks('ALL'.activatedEdges)
+        }
+    },
+    activateByType: function (type) {
+        links.activatedEdges = []
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i]
+            if (edgesInfo.activated)
+                edgesInfo.activateLinks(type)
+        }
+    },
+
+    deactivateAll: function () {
+        links.activatedEdges = []
+        for (var i = 0; i < atlas.edges.length; i++) {
+            var edgesInfo = atlas.edges[i];
+            if (edgesInfo.inited)
+                edgesInfo.deactivateLinks()
+        }
+    },
+
+    deactivate: function (solarName) {
+        var edgesInfo = this.getBySolarName(solarName)
+        if (edgesInfo != null)
+            edgesInfo.deactivateLinks();
+    },
+
     generateArrow: function (cubeMesh, points) {
         var endPoint = points[3];
         var cone = new THREE.Mesh(new THREE.ConeGeometry(links.radius * 1.5, links.radius * 6, 8), new THREE.MeshBasicMaterial({
@@ -66,10 +156,10 @@ var links = {
         cone.rotateY(direction.y * Math.PI)
         cone.rotateX(direction.z * -1 / 2 * Math.PI)
 
-
         cone.name = cubeMesh.name + "|cone";
         return cone;
     },
+
     build: function (edge, type) {
         if (edge.link != null)
             return edge.link;
@@ -101,10 +191,20 @@ var links = {
             opacity: links.opacity,
             color: color
         }))
-        mesh.name = fromSolar.name + "|" + toSolar.name;
-        edge.link = mesh
-        mesh.edgeJson = edge
-        return mesh;
+
+        var arrow = this.generateArrow(mesh, mesh.geometry.parameters.path.points)
+
+        var group = new THREE.Object3D()
+        group.add(mesh)
+        group.add(arrow)
+        group.edge = edge
+        group.name = fromSolar.name + "|" + toSolar.name;
+        edge.link = group
+        edge.type = type
+        edge.activated = true
+        edge.show = true
+
+        return group;
     },
 
     _generatePoints: function (from, to) {
@@ -141,33 +241,16 @@ var links = {
         }
         return [_point1, _point2, _point3, _point4];
     },
-
-    deactivateAllLinks: function (param) {
-
-        if (atlas.edges == null || (cp.param.dependencyLock && !param.byForce))
-            return;
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
-            if (edge.activated == true) {
-                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
-                atlas.scence.remove(edge.link);
-                atlas.scence.remove(cone);
-                edge.activated = false
-            }
-        }
+    highlightEdge: function (link) {
+        link.edge.setHighlight(true)
+        links.highLightEdges.push(link)
     },
-    deactivateSolarLinks: function (solarName) {
-        if (atlas.edges == null || cp.param.dependencyLock)
-            return;
-        for (var i = 0; i < atlas.edges.length; i++) {
-            var edge = atlas.edges[i]
-            if ((edge.from == solarName || edge.to == solarName) && edge.link) {
-                var cone = atlas.scence.getObjectByName(edge.link.name + "|cone")
-                atlas.scence.remove(edge.link);
-                atlas.scence.remove(cone);
-                edge.activated = false
-            }
+
+    dehighlightAllEdges: function () {
+        for (var i = 0; i < links.highLightEdges.length; i++) {
+            var link = links.highLightEdges[i]
+            link.edge.setHighlight(false)
         }
-        atlas.allLinks = []
+        links.highLightEdges = []
     }
 }

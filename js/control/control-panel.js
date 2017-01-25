@@ -7,8 +7,36 @@
     cp.activatedSolar = [];
 
     cp.param = {}
+    cp.searchItem = [];
+    cp.filterBiDep = function () {
+        var type = $('#dep_filter :radio:checked').attr('data-type')
+        if (type == 'dep_in')
+            filterLinks('IN')
+        else if (type == 'dep_out')
+            filterLinks('OUT')
+        else if (type == 'dep_bi')
+            filterLinks('BIDIRECT')
+        else if (type == 'dep_none')
+            filterLinks('NONE')
+        else
+            filterLinks('ALL')
 
-    cp.findDomain = function (searchInput) {
+        function filterLinks(type) {
+            links.activateByType(type)
+        }
+    }
+    cp.initSearchItems = function () {
+        var si = []
+        for (var i = 0; i < cp.searchItem.length; i++) {
+            si.push('"' + cp.searchItem[i] + '"')
+        }
+        $('#starSearch').attr('data-source', '[' + si + ']');
+    }
+    cp.addSearchItem = function (item) {
+        cp.searchItem.push(item)
+    }
+
+    cp.searchEntity = function (searchInput) {
         var domainObj = atlas.scence.getObjectByName(searchInput.value)
         if (domainObj) {
             atlas.trackball.target = domainObj.position.clone();
@@ -18,8 +46,8 @@
     }
 
     cp.resize = function (size) {
-        if ($("#changeSize").val() == size)
-            return true
+        if (typeof(size) != 'string' && typeof(size) != 'number')
+            size = $('#changeSize option:selected').val()
         atlas.camera.left = window.innerWidth / -size
         atlas.camera.right = window.innerWidth / size
         atlas.camera.top = window.innerHeight / size
@@ -39,18 +67,14 @@
     cp.reset = function () {
         atlas.trackball.reset();
         var middleSize = 16;
-        //自适应, 效果不好，不做了
-        //if (window.innerWidth < 1440)
-        //    middleSize = 8
 
         this.resize(middleSize)
-        links.deactivateAllLinks({byForce: true})
-        report.hideSolarReport()
-        $('#biDepChk').attr('checked', false);
+        links.deactivateAll()
+        solarReport.close()
+        // $('#biDepChk').attr('checked', false);
         cp.removeAllSolarBoxes()
         cp.param = {}
         cp.removeAllLinkHints()
-        atlas.allLinks = []
         atlas.camera.position.set(300, 300, 300)
         atlas.camera.updateProjectionMatrix()
     }
@@ -74,37 +98,6 @@
                 atlas.scence.remove(atlas.scence.getObjectByName(boxName));
                 solar.activated = false
             }
-        }
-    }
-    cp.showBiDomainDep = function () {
-        var isShow = $('#biDepChk').is(':checked')
-        if (isShow) {
-            progressUtils.start('开始更新依赖')
-            links.deactivateAllLinks({byForce: true})
-            this.param.dependencyLock = true;
-            for (var i = 0; i < atlas.edges.length; i++) {
-                progressUtils.progress(i / atlas.edges.length * 100, '更新依赖中')
-                var edge = atlas.edges[i];
-                if (edge.bidirect == 'false')
-                    continue;
-                if (edge.from == null || edge.to == null)
-                    continue
-
-                var mesh = edge.link// atlas.scence.getObjectByName(edge.from + "|" + edge.to)
-
-                if (mesh == null) {
-                    var mesh = links.build(edge, 'BIDIRECT')
-                    if (mesh == null)
-                        continue;
-                    edge.link = mesh;
-                }
-                edge.activated = true
-                atlas.scence.add(mesh)
-                progressUtils.end('完成更新')
-            }
-        } else {
-            links.deactivateAllLinks({byForce: true})
-            this.param.dependencyLock = false;
         }
     }
 
@@ -135,21 +128,22 @@
             var box = new THREE.BoxHelper(solar, 0x00ff00)
             box.name = solar.name + "|box"
             atlas.scence.add(box)
-            report.showSolarReport(evtX, evtY, solar);
+            solarReport.showSolarReport(evtX, evtY, solar);
         } else {
-            links.deactivateSolarLinks(solar.name)
-            report.hideSolarReport();
+            links.deactivate(solar.name)
+            solarReport.close();
             solar.activated = false;
             atlas.scence.remove(atlas.scence.getObjectByName(solar.name + "|box"))
             if (cp.param.activatedSolarCount > 0)
                 --cp.param.activatedSolarCount
 
         }
+        cp.filterBiDep()
     }
     cp.searchKeyUp = function (searchInput) {
         var keyCode = parseInt(event.keyCode);
         if (keyCode == 13) {
-            this.findDomain(searchInput)
+            this.searchEntity(searchInput)
             searchInput.select()
         }
     }
@@ -166,7 +160,7 @@
             var solar = intersect[0].object
             cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
         } else
-            report.hideSolarReport();
+            solarReport.close();
 
     }
 
@@ -194,54 +188,42 @@
         var rayCaster = new THREE.Raycaster()
         rayCaster.setFromCamera(vector, atlas.camera);
 
-        var intersect = rayCaster.intersectObjects(atlas.allLinks);
+        var activatedLinks = []
+        for (var i = 0; i < links.activatedEdges.length; i++)
+            activatedLinks.push(links.activatedEdges[i].link)
 
+        var intersect = rayCaster.intersectObjects(activatedLinks, true);
         if (intersect.length > 0) {
             $('#linkHint').empty()
+            var tableData = []
             for (var i = 0; i < intersect.length; i++) {
-                var link = intersect[i].object
-                addLinkHints(link);
-                showEdges(link);
+                var link = intersect[i].object.parent
+                if (link.edge.show) {
+                    tableData.push(link.edge)
+                    links.highlightEdge(link);
+                }
             }
-            showLinkHints();
 
+            linkFloatWindow.showLinkHints(e, tableData);
         }
-        else {
+        else
             cp.removeAllLinkHints();
-        }
-        function addLinkHints(link) {
-            var edgeJson = link.edgeJson;
-            var from = edgeJson.from;
-            var to = edgeJson.to;
-            var span = $('<span class="glyphicon glyphicon-arrow-right"></span>')
 
-            span.text('从:' + from + " 到:" + to + ( edgeJson.bidirect == 'true' ? ' 双向依赖' : ''))
-            var p = $('<p>')
-            $('#linkHint').append(span).append(p)
-
-        }
-
-        function showEdges(link) {
-            link.material.opacity = 0.9
-            atlas.linkEdges.push(link)
-        }
-
-        function showLinkHints() {
-            $('#linkHint').css('display', 'block')
-            d3.select('#linkHint').style({
-                left: e.clientX + "px",
-                top: e.clientY + "px",
-            })
-        }
     }
 
     cp.removeAllLinkHints = function () {
-        $('#linkHint').css('display', 'none')
-        $('#linkHint').empty()
-        for (var i = 0; i < atlas.linkEdges.length; i++) {
-            atlas.linkEdges[i].material.opacity = window.links.opacity
-        }
-        atlas.linkEdges = []
+        linkFloatWindow.close()
+        links.dehighlightAllEdges()
     }
 
+    /***
+     * start init
+     */
+
+    $('#dep_filter :radio').on('change', cp.filterBiDep)
+    $('#showPlanChk').on('change', cp.showBackground)
+    $('#changeSize').on('change', cp.resize)
+    /***
+     * end init
+     */
 }).call(this)

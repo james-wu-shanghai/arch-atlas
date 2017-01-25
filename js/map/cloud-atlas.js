@@ -18,9 +18,7 @@
             atlasWidth: window.innerWidth,
         }
 
-        //TODO:these 2 move to links
-        atlas.allLinks = []
-        atlas.linkEdges = []
+
         //TODO:these one become solar fonts
         atlas.fonts = []
 
@@ -34,50 +32,45 @@
             new THREE.FontLoader().load('font/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
-                //d3.json(globalConfig.contextPath + "/service/domains/all", function (error, entityJson) {
-                d3.json('libs/data/entity.json', function (error, entityJson) {
+                // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
+                d3.json('libs/data/all.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.domainJson = entityJson;
-                    //d3.json(globalConfig.contextPath + '/service/domains/links/static', function (error, depStaticJson) {
-                    d3.json('libs/data/static.json', function (error, depStaticJson) {
-                        progressUtils.progress(70, '加载依赖统计中')
-                        atlas.depStatic = depStaticJson;
-                        //d3.json(globalConfig.contextPath + '/service/domains/links/all', function (error, edgesJson) {
-                        d3.json('libs/data/entity-connections.json', function (error, edgesJson) {
-                            if (error)
-                                alert(error)
-                            progressUtils.progress(90, '3D建模中')
-                            atlas.step = 0
-                            atlas.edges = edgesJson;
-                            atlas.raycaster = new THREE.Raycaster();
+                    // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
+                    d3.json('libs/data/all-dependencies.json', function (error, edgesJson) {
+                        if (error)
+                            alert(error)
+                        progressUtils.progress(90, '3D建模中')
+                        atlas.step = 0
+                        atlas.edges = edgesJson;
+                        atlas.raycaster = new THREE.Raycaster();
 
-                            atlas.scence = initScene()
-                            atlas.camera = initCamera();
-                            atlas.render = initRender();
-                            atlas.clock = new THREE.Clock();
-                            atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
-                            addGridHelper()
-                            atlas.stars = []
-                            atlas.planets = []
-                            atlas.solarObjects = []
-                            initDomains();
+                        atlas.scence = initScene()
+                        atlas.camera = initCamera();
+                        atlas.render = initRender();
+                        atlas.clock = new THREE.Clock();
+                        atlas.plane = initPlane(param.planeWidth * 1.5, param.planeHeight * 1.5, param.planeWdtSeg, param.planeHgtSeg)
+                        addGridHelper()
+                        atlas.stars = []
+                        atlas.planets = []
+                        atlas.solarObjects = []
+                        initDomains();
+                        cp.initSearchItems()
+                        window.addEventListener('resize', cp.autoResize, false)
+                        atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
+                        atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
+                        atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
 
-                            window.addEventListener('resize', cp.autoResize, false)
-                            atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
-                            atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
-                            atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
+                        $(name).append(atlas.render.domElement)
 
-                            $(name).append(atlas.render.domElement)
-
-                            atlas.trackball = initTrackball(atlas.camera);
-                            atlas.draw();
-                            cp.reset();
-                            progressUtils.end('资源加载完毕')
-                        })
+                        atlas.trackball = initTrackball(atlas.camera);
+                        atlas.draw();
+                        cp.reset();
+                        progressUtils.end('资源加载完毕')
                     })
                 })
             }, function (progress) {
-                progressUtils.progress(progress.loaded / progress.total * 0.3 * 100 + 10)
+                progressUtils.progress(progress.loaded / progress.total * 0.2 * 100 + 10)
             }, function (error) {
                 console.error(error)
             });
@@ -121,7 +114,7 @@
             return camera;
         }
 
-        function initPlane(width, height, widthSeg, heightSeg) {
+        function initPlane(width) {
             var plane = createPlaneMesh(
                 new THREE.CircleGeometry(width * .75, 108))
             plane.rotation.x = -0.5 * Math.PI
@@ -159,6 +152,7 @@
             solar.domainJsonObj = domain;
             solar.position.set(domain.x, param.entityHeight, domain.y)
             solar.name = domain.name
+            cp.addSearchItem(domain.name)
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
@@ -178,6 +172,7 @@
                     solar.planets.push(planet)
                     atlas.scence.add(planet)
                     atlas.stars.push(planet.name)
+                    cp.addSearchItem(planet.name)
                     atlas.planets.push({
                         'name': planet.name,
                         'cx': domain.x,

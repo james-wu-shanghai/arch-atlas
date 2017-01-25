@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cloud Atlas</title>
+    <title>$(title}</title>
     <style>
         body {
             margin: 0;
@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/report.css">
     <link rel="stylesheet" href="css/control_panel.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/dataTable/dataTables.bootstrap.css">
 </head>
 <body>
 <div class="controlPanel">
@@ -22,16 +23,16 @@
             <form class="navbar-form navbar-left" role="search">
                 <div class="input-group" title="寻找域">
                     <span class="glyphicon glyphicon-search input-group-addon"></span>
-                    <input name="domain" class="form-control" type="text"
+                    <input name="domain" class="form-control" id="starSearch" type="text"
+                           data-provide="typeahead" data-items="4"
                            onkeypress="if(event.keyCode == '13') return false"
-                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.findDomain(this)">
+                           onkeyup="window.cp.searchKeyUp(this)" onblur="window.cp.searchEntity(this)">
                 </div>
             </form>
             <form class="navbar-form navbar-left" role="presentation">
                 <div class="input-group" title="调整大小">
                     <span class="glyphicon glyphicon-zoom-in input-group-addon"></span>
-                    <select class="form-control" id="changeSize"
-                            onchange="window.cp.resize($('#' + this.id + ' option:selected').val())">
+                    <select class="form-control" id="changeSize">
                         <option value="6">很小</option>
                         <option value="8">小</option>
                         <option value="16" selected="selected">中</option>
@@ -41,21 +42,45 @@
                           onclick="window.cp.reset()"></span>
                 </div>
             </form>
-            <form class="navbar-form navbar-left" role="presentation">
-                <div class="checkbox">
-                    <label><input id="showPlanChk" type="checkbox" checked="checked"
-                                  onclick="cp.showBackground()"><span class="glyphicon glyphicon-th-large">背景</span>
+        </nav>
+
+        <!-- 导航选项卡-->
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#dependency" data-toggle="tab">依赖视图</a></li>
+            <li><a href="#settings" data-toggle="tab">设置</a></li>
+        </ul>
+        <!-- 选项卡面板 -->
+        <div class="tab-content">
+            <div class="tab-pane panelButton active" id="dependency" class="">
+                <div id="dep_filter" class="btn-group" data-toggle="buttons">
+                    <label title="全部" class="btn btn-primary active">
+                        <input type="radio" name="options" data-type="dep_all"
+                               checked="checked"><span
+                            class="glyphicon glyphicon-fullscreen"></span></label>
+                    <label title="双向依赖" class="btn btn-primary"><input type="radio" name="options"
+                                                                       data-type="dep_bi"><span
+                            class="glyphicon glyphicon-resize-vertical"></span> </label>
+                    <label title="调出" class="btn btn-primary"><input type="radio" name="options"
+                                                                     data-type="dep_out"><span
+                            class="glyphicon glyphicon-arrow-up"></span></label>
+                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
+                                                                     data-type="dep_in"><span
+                            class="glyphicon glyphicon-arrow-down"></span></label>
+                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
+                                                                     data-type="dep_none"><span
+                            class="glyphicon glyphicon-remove"></span></label>
+                </div>
+            </div>
+            <div class="tab-pane panelButton" id="settings">
+                <div class="btn-group" data-toggle="buttons">
+                    <label title="背景光" class="btn btn-primary active"><input id="showPlanChk" type="checkbox"
+                                                                             checked="checked">
+                        <span class="glyphicon glyphicon-th-large"></span>
                     </label>
                 </div>
-            </form>
-            <form class="navbar-form navbar-left" role="presentation">
-                <div class="checkbox ">
-                    <label><input id="biDepChk" type="checkbox" onclick="cp.showBiDomainDep()">
-                        <span class="glyphicon glyphicon-transfer">
-                    双向依赖</span></label>
-                </div>
-            </form>
-        </nav>
+            </div>
+        </div>
+
     </div>
     <div class="row text-center">
         <span id="cpCollapseButton" data-toggle="collapse" title="菜单栏" data-status="0" style="width: 100%"
@@ -64,14 +89,16 @@
               data-target="#controlPanelCollapse"></span>
     </div>
 </div>
+<!--依赖悬浮窗-->
+<div class="linkHint row" id="linkHint"></div>
+<!--依赖悬浮窗-->
 
-<div class="linkHint row pre-scrollable" id="linkHint"></div>
 <!-- 资源加载进度条-->
-<div class="modal">
+<div id="progModal" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">资源加载中，请稍后...</h4>
+                <h4 id="progHint" class="modal-title">资源加载中，请稍后...</h4>
             </div>
             <div class="modal-body">
                 <div class="progress ">
@@ -85,6 +112,34 @@
     </div>
 </div>
 <!-- 资源加载进度条-->
+<div id="infoPanel" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body">
+                <div id="panelInfoBody"></div>
+                <div class="collapse" id="commentList">
+                    <div id="commentHead"><h4 class="text-center"></h4></div>
+                    <div id="historyList"></div>
+                    <div id="inputComment"><textarea style="resize:none" class="form-control"
+                                                     id="dependencyComments"></textarea></div>
+                    <button id="submitComments" class="btn btn-primary">提交</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-toggle="modal" data-target="#infoPanel" onclick="linkInfoReport.close()"
+                        class="btn btn-primary">
+                    退出
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="stateBar">
     <h5 id="stateBarHint" class="h5">
         状态栏
@@ -101,19 +156,25 @@
 <script src="js/thirdparty/three.min.js"></script>
 <script src="js/thirdparty/TrackballControls.js"></script>
 <script src="js/thirdparty/d3-3.5.17-min.js"></script>
-<script src="js/report/d3-report.js"></script>
+<script src="js/thirdparty/jquery.dataTables.min.js"></script>
+<script src="js/thirdparty/dataTables.bootstrap.min.js"></script>
+<script src="js/thirdparty/bootstrap3-typeahead.min.js"></script>
 <script src="js/map/link.js"></script>
 <script src="js/map/textureUtil.js"></script>
 <script src="js/map/jsonConvert.js"></script>
 <script src="js/map/cloud-atlas.js"></script>
 <script src="js/control/control-panel.js"></script>
 <script src="js/control/state-bar.js"></script>
+<script src="js/utils/tableUtil.js"></script>
+<script src="js/utils/reportUtil.js"></script>
 <script src="js/report/solar-report.js"></script>
+<script src="js/report/link-info-report.js"></script>
 <script src="js/config/config.js"></script>
 <script>
     $(function () {
+        $('title').text(globalResource.title)
         atlas.init('#WebGL')
-        report.init()
+        solarReport.init()
     })
 </script>
 </html>
