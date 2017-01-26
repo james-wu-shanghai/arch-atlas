@@ -1,6 +1,6 @@
 (function () {
     window.globalConfig = {
-        contextPath: '/cloud-atlas',
+        contextPath: '/arch-atlas',
         planetTypes: ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv'],
         typedNames: {'web': 'desert', 'gw': 'ice', 'i-': 'fire', 'app': 'gas', 'job': 'forests', 'svc': 'sea', 'srv': 'rocks'},
     }
