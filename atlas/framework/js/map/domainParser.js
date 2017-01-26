@@ -1,7 +1,7 @@
 /**
  * Created by jameswu on 16-12-19.
  */
-var jsonConvert = {
+var domainParser = {
     stars: window.textureUtil.stars,
     valid_suffix: ["gw", "app", "svc", "srv", "web"],
     convert: function (entityJson) {

@@ -26,15 +26,15 @@
             textureUtil.loadTexture()
 
             progressUtils.progress(10, '加载字库中')
-            new THREE.FontLoader().load('atlas/font/helvetiker_regular.typeface.json', function (response) {
+            new THREE.FontLoader().load('fonts/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
                 // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
-                d3.json('atlas/data/all.json', function (error, entityJson) {
+                d3.json('data/all.json', function (error, entityJson) {
                     progressUtils.progress(50, '加载域依赖中')
                     atlas.entityJson = entityJson;
                     // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
-                    d3.json('atlas/data/all-dependencies.json', function (error, edgesJson) {
+                    d3.json('../plugins/linkPlugin/data/all-dependencies.json', function (error, edgesJson) {
                         if (error)
                             alert(error)
                         progressUtils.progress(90, '3D建模中')
@@ -139,7 +139,7 @@
         }
 
         function initDomains() {
-            var domains = jsonConvert.convert(atlas.entityJson)
+            var domains = domainParser.convert(atlas.entityJson)
             for (var i = 0; i < domains.length; i++) {
                 var domain = domains[i]
                 addDomainSolar(domain)

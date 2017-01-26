@@ -38,7 +38,7 @@
 
     cp.searchEntity = function (searchInput) {
         var name = searchInput.value;
-        if (jsonConvert.startWith(name, "["))
+        if (domainParser.startWith(name, "["))
             name = name.split(']')[0].substring(1)
         var domainObj = atlas.scence.getObjectByName(name)
         if (domainObj) {

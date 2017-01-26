@@ -36,11 +36,11 @@
             }
 
             for (var i = 0; i < planets.length; i++) {
-                var fileName = "atlas/images/planet/" + planets[i];
+                var fileName = "../plugins/domainPlugin/images/planet/" + planets[i];
                 _loadTexture(fileName, planets[i], textureLoader, textures)
             }
             for (var i = 0; i < stars.length; i++) {
-                var fileName = "atlas/images/stars/" + stars[i];
+                var fileName = "../plugins/domainPlugin/images/stars/" + stars[i];
                 _loadTexture(fileName, stars[i], textureLoader, textures)
             }
         }

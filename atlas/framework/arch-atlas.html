@@ -11,10 +11,10 @@
         }
 
     </style>
-    <link rel="stylesheet" href="atlas/css/report.css">
-    <link rel="stylesheet" href="atlas/css/control_panel.css">
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="dataTable/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="css/report.css">
+    <link rel="stylesheet" href="css/control_panel.css">
+    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../dataTable/css/dataTables.bootstrap.css">
 </head>
 <body>
 <div class="controlPanel" id="controlPanel" onmouseover="cp.undercontrol=true" onmouseout="cp.undercontrol=false">
@@ -145,29 +145,30 @@
 </div>
 <div id="WebGL"></div>
 </body>
-<script src="libs/js/jquery-2.2.4.min.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
-<script src="atlas/js/map/progress-util.js"></script>
+<script src="../../libs/js/jquery-2.2.4.min.js"></script>
+<script src="../../bootstrap/js/bootstrap.min.js"></script>
+<script src="js/utils/progressUtil.js"></script>
 <script>
     progressUtils.start('开始加载资源')
 </script>
-<script src="libs/js/three.min.js"></script>
-<script src="libs/js/TrackballControls.js"></script>
-<script src="libs/js/d3-3.5.17-min.js"></script>
-<script src="dataTable/js/jquery.dataTables.min.js"></script>
-<script src="dataTable/js/dataTables.bootstrap.min.js"></script>
-<script src="libs/js/bootstrap3-typeahead.min.js"></script>
-<script src="atlas/js/map/link.js"></script>
-<script src="atlas/js/map/textureUtil.js"></script>
-<script src="atlas/js/map/jsonConvert.js"></script>
-<script src="atlas/js/map/cloud-atlas.js"></script>
-<script src="atlas/js/control/control-panel.js"></script>
-<script src="atlas/js/control/state-bar.js"></script>
-<script src="atlas/js/utils/tableUtil.js"></script>
-<script src="atlas/js/utils/reportUtil.js"></script>
-<script src="atlas/js/report/solar-report.js"></script>
-<script src="atlas/js/report/link-info-report.js"></script>
-<script src="atlas/js/config/config.js"></script>
+<script src="../../libs/js/three.min.js"></script>
+<script src="../../libs/js/TrackballControls.js"></script>
+<script src="../../libs/js/d3-3.5.17-min.js"></script>
+<script src="../../dataTable/js/jquery.dataTables.min.js"></script>
+<script src="../../dataTable/js/dataTables.bootstrap.min.js"></script>
+<script src="../../libs/js/bootstrap3-typeahead.min.js"></script>
+
+<script src="../plugins/linkPlugin/js/link.js"></script>
+<script src="../plugins/domainPlugin/js/domainTextureLoader.js"></script>
+<script src="js/map/domainParser.js"></script>
+<script src="js/map/main.js"></script>
+<script src="js/map/controlPanel.js"></script>
+<script src="js/map/stateBar.js"></script>
+<script src="js/utils/tableUtil.js"></script>
+<script src="js/utils/reportUtil.js"></script>
+<script src="../plugins/domainPlugin/js/domainInfo.js"></script>
+<script src="../plugins/linkPlugin/js/linksInfo.js"></script>
+<script src="../config/config.js"></script>
 <script>
     $(function () {
         $('title').text(globalResource.title)

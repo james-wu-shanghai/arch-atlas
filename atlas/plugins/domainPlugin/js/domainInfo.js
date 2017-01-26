@@ -17,7 +17,7 @@
         })
 
         //在看不太见的地方死磕的例子
-        $('#solar-report').load('solar-report.html', {}, function () {
+        $('#solar-report').load('../plugins/domainPlugin/domain.html', {}, function () {
             window.solarReport.render(domain)
             var $solarReport = $('#solar-report');
             var top = Number.parseInt($solarReport.css('top'));
@@ -103,7 +103,7 @@
         for (var i = 0; i < planets.length; i++) {
             var planet = planets[i]
             for (var j = 0; j < typeSort.length; j++) {
-                if (jsonConvert.startWith(planet.name, typeSort[j]) || jsonConvert.endWith(planet.name, typeSort[j])) {
+                if (domainParser.startWith(planet.name, typeSort[j]) || domainParser.endWith(planet.name, typeSort[j])) {
                     sorts[j].push(planet)
                     break;
                 }
@@ -116,7 +116,7 @@
     },
         solarReport.doStatic = function (solar) {
             var planetStatic = solar.domainJson.planetStatic;
-            var validSuffix = jsonConvert.valid_suffix;
+            var validSuffix = domainParser.valid_suffix;
 
             if (planetStatic)
                 return planetStatic
@@ -127,7 +127,7 @@
             for (var i = 0; i < solar.planets.length; i++) {
                 var planet = solar.planets[i]
                 for (var j = 0; j < validSuffix.length; j++) {
-                    if (jsonConvert.endWith(planet.name, validSuffix[j])) {
+                    if (domainParser.endWith(planet.name, validSuffix[j])) {
                         planetStatic[j]++;
                     }
                 }
@@ -138,8 +138,8 @@
     solarReport.renderStaticPie = function (solar) {
         var planetTypes = solarReport.doStatic(solar)
         var dataset = []
-        for (var i = 0; i < jsonConvert.valid_suffix.length; i++) {
-            dataset.push([jsonConvert.valid_suffix[i], planetTypes[i]])
+        for (var i = 0; i < domainParser.valid_suffix.length; i++) {
+            dataset.push([domainParser.valid_suffix[i], planetTypes[i]])
         }
         reportUtil.drawPieChart('#solarPie', dataset, {height: 200, width: 200, radius: 200 / 3})
     }
