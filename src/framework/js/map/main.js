@@ -2,6 +2,7 @@
  * Created by jameswu on 16-11-26.
  */
 (function () {
+        'use strict';
         var atlas = window.atlas = {}
         var param = atlas.param = {
             baseGalaxySize: 500,
@@ -24,55 +25,41 @@
         atlas.domainJsons = {}
         atlas.init = function (name) {
             textureUtil.loadTexture()
-
             progressUtils.progress(10, '加载字库中')
             new THREE.FontLoader().load('fonts/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
                 // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
                 d3.json('data/all.json', function (error, entityJson) {
-                    progressUtils.progress(50, '加载域依赖中')
                     atlas.entityJson = entityJson;
-                    // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
-                    d3.json('../plugins/linkPlugin/data/all-dependencies.json', function (error, edgesJson) {
-                        if (error)
-                            alert(error)
-                        progressUtils.progress(90, '3D建模中')
-                        atlas.step = 0
-                        atlas.edges = edgesJson;
-                        atlas.edgesMap = function (edgesJson) {
-                            var map = {}
-                            for (var i = 0; i < edgesJson.length; i++) {
-                                var edges = edgesJson[i];
-                                map[edges.name] = edges;
-                            }
-                            return map;
-                        }(edgesJson);
-                        atlas.raycaster = new THREE.Raycaster();
+                    progressUtils.progress(90, '3D建模中')
+                    atlas.step = 0
+                    atlas.raycaster = new THREE.Raycaster();
 
-                        atlas.scence = initScene()
-                        atlas.camera = initCamera();
-                        atlas.render = initRender();
-                        atlas.clock = new THREE.Clock();
-                        atlas.plane = initPlane(param.radius * 1.5)
-                        addGridHelper()
-                        atlas.stars = []
-                        atlas.planets = []
-                        atlas.solarObjects = []
-                        initDomains();
-                        cp.initSearchItems()
-                        window.addEventListener('resize', cp.autoResize, false)
-                        atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
-                        atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
-                        atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
 
-                        $(name).append(atlas.render.domElement)
+                    atlas.scence = initScene()
+                    atlas.camera = initCamera();
+                    atlas.render = initRender();
+                    atlas.clock = new THREE.Clock();
+                    atlas.plane = initPlane(param.radius * 1.5)
+                    addGridHelper()
+                    atlas.stars = []
+                    atlas.planets = []
+                    atlas.solarObjects = []
+                    initDomains();
+                    cp.initSearchItems()
+                    window.addEventListener('resize', cp.autoResize, false)
+                    atlas.render.domElement.addEventListener('mousedown', cp.onMousedown, false);
+                    atlas.render.domElement.addEventListener('mousewheel', cp.onMousewheel, false);
+                    atlas.render.domElement.addEventListener('mousemove', cp.onMousemove, false);
 
-                        atlas.trackball = initTrackball(atlas.camera);
-                        atlas.draw();
-                        cp.reset();
-                        progressUtils.end('资源加载完毕')
-                    })
+                    $(name).append(atlas.render.domElement)
+
+                    atlas.trackball = initTrackball(atlas.camera);
+                    atlas.draw();
+                    cp.loadPlugin('linkView')
+                    cp.reset();
+                    progressUtils.end('资源加载完毕')
                 })
             }, function (progress) {
                 progressUtils.progress(progress.loaded / progress.total * 0.2 * 100 + 10)

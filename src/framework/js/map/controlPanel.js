@@ -2,12 +2,28 @@
  * Created by jameswu on 17-1-7.
  */
 (function () {
+
     var cp = window.cp = {}
+
     cp.actSolarLmt = 10;
     cp.activatedSolar = [];
     cp.undercontrol = false;
     cp.param = {}
     cp.searchItem = [];
+
+    cp.plugins = {};
+    cp.currentPlugin;
+
+    cp.loadPlugin = function (viewName) {
+        cp.currentPlugin = viewName;
+        var plugin = cp.plugins[viewName]
+        plugin.init();
+    }
+
+    cp.register = function (plugin) {
+        this.plugins[plugin.name] = plugin;
+    }
+
     cp.filterBiDep = function () {
         var type = $('#dep_filter :radio:checked').attr('data-type')
         if (type == 'dep_in')
