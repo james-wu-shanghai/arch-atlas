@@ -289,7 +289,7 @@
         $('#showPlanChk').on('change', this.showBackground)
         $('#changeSize').on('change', this.resize)
         $('#starSearch').on('change', function (event) {
-            this.searchEntity(event.target)
+            cp.searchEntity(event.target)
             return true;
         })
         /***
