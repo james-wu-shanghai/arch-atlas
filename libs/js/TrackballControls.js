@@ -438,7 +438,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	function mousemove( event ) {
 
-		if ( _this.enabled === false || cp.undercontrol) return;
+		if ( _this.enabled === false || cp.getUnderControl()) return;
 
 		event.preventDefault();
 		event.stopPropagation();
