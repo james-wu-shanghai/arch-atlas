@@ -29,8 +29,9 @@
             new THREE.FontLoader().load('fonts/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
-                // d3.json(globalConfig.contextPath + "/service/sso/domains/all", function (error, entityJson) {
-                d3.json('data/all.json', function (error, entityJson) {
+                var domainUrl = globalConfig.localMode ?
+                    'data/all.json' : globalConfig.contextPath + "/service/sso/domains/all";
+                d3.json(domainUrl, function (error, entityJson) {
                     atlas.entityJson = entityJson;
                     progressUtils.progress(90, '3D建模中')
                     atlas.step = 0

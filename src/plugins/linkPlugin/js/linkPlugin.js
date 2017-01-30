@@ -10,8 +10,9 @@
         this.init = function () {
             if (inited)
                 return this;
-            // d3.json(globalConfig.contextPath + '/service/sso/domains/all-dependencies', function (error, edgesJson) {
-            d3.json('../plugins/linkPlugin/data/all-dependencies.json', function (error, edgesJson) {
+            var linkUrl = globalConfig.localMode ?
+                '../plugins/linkPlugin/data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
+            d3.json(linkUrl, function (error, edgesJson) {
                 progressUtils.progress(50, '加载域依赖中')
                 if (error)
                     alert(error)

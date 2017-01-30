@@ -47,8 +47,10 @@
         $('#panelInfoBody').html("")
     }
     lir.showComments = function showComments(fromApp, toApp) {
-        // d3.json(globalConfig.contextPath + '/service/sso/marks/dependency/apps/' + fromApp + '/' + toApp + '/' + 0 + '/' + 50, function (error, response) {
-        d3.json('../plugins/linkPlugin/data/comments.json', function (error, response) {
+        var commentsLink = globalConfig.localMode ?
+            '../plugins/linkPlugin/data/comments.json' :
+        globalConfig.contextPath + '/service/sso/marks/dependency/apps/' + fromApp + '/' + toApp + '/' + 0 + '/' + 50
+        d3.json(commentsLink, function (error, response) {
             $('#historyList').html("<table id='historyListTable'></table>")
             $('#historyListTable').DataTable({
                 data: response,
@@ -130,8 +132,10 @@
         }
         var info = button.target.attributes['data-info'].value
         var infoArr = info.split("|")
-        // $.post(globalConfig.contextPath + "/service/sso/marks/dependency/apps/" + infoArr[2] + "/" + infoArr[3] + "/comment", {comment: comments})
-        $.post(globalConfig.contextPath + "../plugins/linkPlugin/data/commentresp.json", {})
+        var commRespUrl = globalConfig.localMode ?
+        globalConfig.contextPath + "../plugins/linkPlugin/data/commentresp.json" :
+        globalConfig.contextPath + "/service/sso/marks/dependency/apps/" + infoArr[2] + "/" + infoArr[3] + "/comment"
+        $.post(commRespUrl, {comment: comments})
             .success(function (result) {
                 if (result.code == '00')
                     lir.showComments(infoArr[2], infoArr[3])

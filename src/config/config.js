@@ -2,7 +2,17 @@
     window.globalConfig = {
         contextPath: '/arch-atlas',
         planetTypes: ['web', 'gw', 'i-', 'app', 'job', 'svc', 'srv'],
-        typedNames: {'web': 'desert', 'gw': 'ice', 'i-': 'fire', 'app': 'gas', 'job': 'forests', 'svc': 'sea', 'srv': 'rocks'},
+        typedNames: {
+            'web': 'desert',
+            'gw': 'ice',
+            'i-': 'fire',
+            'app': 'gas',
+            'job': 'forests',
+            'svc': 'sea',
+            'srv': 'rocks'
+        },
+        //this true will use local json
+        localMode: false,
     }
     window.globalResource = {
         appList: 'Planet List',
@@ -13,7 +23,7 @@
             return name;
         },
         title: 'arch-atlas',
-        appListHead: ['planet name', 'total call out','planet type'],
+        appListHead: ['planet name', 'total call out', 'planet type'],
         domainCallOutTotal: " Total call out times:"
     }
 }).call(this)
