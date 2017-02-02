@@ -23,12 +23,13 @@
             var name = searchInput.value;
             if (domainParser.startWith(name, "["))
                 name = name.split(']')[0].substring(1)
-            var domainObj = atlas.scence.getObjectByName(name)
-            if (domainObj) {
-                atlas.trackball.target = domainObj.position.clone();
+            var solar = atlas.scence.getObjectByName(name)
+            if (solar) {
+                atlas.trackball.target = solar.position.clone();
                 atlas.camera.position = new THREE.Vector3(300, 300, 300)
                 atlas.camera.updateProjectionMatrix()
             }
+            cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight/ 2)
         }
         this.searchKeyUp = function (searchInput) {
             var keyCode = parseInt(event.keyCode);
@@ -127,11 +128,22 @@
             links.deactivateAll()
             solarReport.close()
             // $('#biDepChk').attr('checked', false);
-            cp.removeAllSolarBoxes()
+            removeAllSolarBoxes()
             cp.param = {}
             cp.removeAllLinkHints()
             atlas.camera.position.set(300, 300, 300)
             atlas.camera.updateProjectionMatrix()
+
+            function removeAllSolarBoxes() {
+                for (var i = 0; i < atlas.solarObjects.length; i++) {
+                    var solar = atlas.solarObjects[i]
+                    var boxName = solar.name + "|box"
+                    if (solar.activated) {
+                        atlas.scence.remove(atlas.scence.getObjectByName(boxName));
+                        solar.activated = false
+                    }
+                }
+            }
         }
         this.autoResize = function () {
             var height = atlas.param.atlasHeight = window.innerHeight;
@@ -183,16 +195,7 @@
             }
             this.filterBiDep()
         }
-        this.removeAllSolarBoxes = function () {
-            for (var i = 0; i < atlas.solarObjects.length; i++) {
-                var solar = atlas.solarObjects[i]
-                var boxName = solar.name + "|box"
-                if (solar.activated) {
-                    atlas.scence.remove(atlas.scence.getObjectByName(boxName));
-                    solar.activated = false
-                }
-            }
-        }
+
         /***
          * solar control end
          */
@@ -296,7 +299,6 @@
          * end init
          */
     }
-
 
 
 }).call(this)

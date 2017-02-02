@@ -12,7 +12,7 @@
             'srv': 'rocks'
         },
         //this true will use local json
-        localMode: false,
+        localMode: true,
     }
     window.globalResource = {
         appList: 'Planet List',
