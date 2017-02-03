@@ -11,7 +11,7 @@
             if (inited)
                 return this;
             var linkUrl = globalConfig.localMode ?
-                '../plugins/linkPlugin/data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
+                'src/plugins/linkPlugin/data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
             d3.json(linkUrl, function (error, edgesJson) {
                 progressUtils.progress(50, '加载域依赖中')
                 if (error)

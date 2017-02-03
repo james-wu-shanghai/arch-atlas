@@ -26,11 +26,11 @@
         atlas.init = function (name) {
             textureUtil.loadTexture()
             progressUtils.progress(10, '加载字库中')
-            new THREE.FontLoader().load('fonts/helvetiker_regular.typeface.json', function (response) {
+            new THREE.FontLoader().load('src/framework/fonts/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
                 progressUtils.progress(30, '加载域对象中')
                 var domainUrl = globalConfig.localMode ?
-                    'data/all.json' : globalConfig.contextPath + "/service/sso/domains/all";
+                    'src/framework/data/all.json' : globalConfig.contextPath + "/service/sso/domains/all";
                 d3.json(domainUrl, function (error, entityJson) {
                     atlas.entityJson = entityJson;
                     progressUtils.progress(90, '3D建模中')

@@ -17,7 +17,7 @@
         })
 
         //在看不太见的地方死磕的例子
-        $('#solar-report').load('../plugins/domainPlugin/domain.html', {}, function () {
+        $('#solar-report').load('src/plugins/domainPlugin/domain.html', {}, function () {
             window.solarReport.render(domain)
             var $solarReport = $('#solar-report');
             var top = Number.parseInt($solarReport.css('top'));

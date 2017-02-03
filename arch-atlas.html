@@ -11,10 +11,10 @@
         }
 
     </style>
-    <link rel="stylesheet" href="css/report.css">
-    <link rel="stylesheet" href="css/control_panel.css">
-    <link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../libs/dataTable/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="src/framework/css/report.css">
+    <link rel="stylesheet" href="src/framework/css/control_panel.css">
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/dataTable/css/dataTables.bootstrap.css">
 </head>
 <body>
 <div class="controlPanel" id="controlPanel" onmouseover="cp.setUnderControl(true)"
@@ -146,31 +146,31 @@
 </div>
 <div id="WebGL"></div>
 </body>
-<script src="../../libs/js/jquery-2.2.4.min.js"></script>
-<script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
-<script src="js/utils/progressUtil.js"></script>
+<script src="libs/js/jquery-2.2.4.min.js"></script>
+<script src="libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="src/framework/js/utils/progressUtil.js"></script>
 <script>
     progressUtils.start('开始加载资源')
 </script>
-<script src="../../libs/js/three.min.js"></script>
-<script src="../../libs/js/TrackballControls.js"></script>
-<script src="../../libs/js/d3-3.5.17-min.js"></script>
-<script src="../../libs/dataTable/js/jquery.dataTables.min.js"></script>
-<script src="../../libs/dataTable/js/dataTables.bootstrap.min.js"></script>
-<script src="../../libs/js/bootstrap3-typeahead.min.js"></script>
+<script src="libs/js/three.min.js"></script>
+<script src="libs/js/TrackballControls.js"></script>
+<script src="libs/js/d3-3.5.17-min.js"></script>
+<script src="libs/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="libs/dataTable/js/dataTables.bootstrap.min.js"></script>
+<script src="libs/js/bootstrap3-typeahead.min.js"></script>
 
-<script src="../plugins/linkPlugin/js/link.js"></script>
-<script src="../plugins/domainPlugin/js/domainTextureLoader.js"></script>
-<script src="js/map/domainParser.js"></script>
-<script src="js/map/main.js"></script>
-<script src="js/map/controlPanel.js"></script>
-<script src="js/map/stateBar.js"></script>
-<script src="js/utils/tableUtil.js"></script>
-<script src="js/utils/reportUtil.js"></script>
-<script src="../plugins/domainPlugin/js/domainInfo.js"></script>
-<script src="../plugins/linkPlugin/js/linksInfo.js"></script>
-<script src="../plugins/linkPlugin/js/linkPlugin.js"></script>
-<script src="../config/config.js"></script>
+<script src="src/plugins/linkPlugin/js/link.js"></script>
+<script src="src/plugins/domainPlugin/js/domainTextureLoader.js"></script>
+<script src="src/framework/js/map/domainParser.js"></script>
+<script src="src/framework/js/map/main.js"></script>
+<script src="src/framework/js/map/controlPanel.js"></script>
+<script src="src/framework/js/map/stateBar.js"></script>
+<script src="src/framework/js/utils/tableUtil.js"></script>
+<script src="src/framework/js/utils/reportUtil.js"></script>
+<script src="src/plugins/domainPlugin/js/domainInfo.js"></script>
+<script src="src/plugins/linkPlugin/js/linksInfo.js"></script>
+<script src="src/plugins/linkPlugin/js/linkPlugin.js"></script>
+<script src="src/config/config.js"></script>
 <script>
     $(function () {
         $('title').text(globalResource.title)
