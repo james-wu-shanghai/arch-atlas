@@ -117,6 +117,7 @@
             "info": false,
             "paging": false,
             "searching": false,
+            sorting: [[0, 'desc']],
         })
     }
     linkFloat.close = function () {
