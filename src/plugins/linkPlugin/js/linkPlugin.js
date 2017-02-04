@@ -17,7 +17,9 @@
             $.get(this.pluginRoot + "navbar.html", function (data) {
                 $('.tab-content').append(data);
                 $('#dep_filter :radio').on('change', links.filterBiDep)
+                $('#biDepAppReport').on('click', linkInfoReport.open)
             })
+
             var linkUrl = globalConfig.localMode ?
             this.pluginRoot + 'data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
             d3.json(linkUrl, function (error, edgesJson) {
@@ -44,6 +46,7 @@
         }
 
     }
+
     window.LinkPlugin = new LinkPlugin();
     cp.register(window.LinkPlugin);
 

@@ -6,17 +6,51 @@
     lir.setInfo = function (edge) {
         lir.edge = edge
     }
-    lir.commentCollapse = function () {
-        $('#inputComment textarea').val("");
-        $('#commentList').attr('class', 'collapse')
-    }
 
-    lir.open = function () {
-        //TODO: this should move to control panel by message
-        solarReport.close()
-        linkFloat.close();
-        lir.commentCollapse();
-        $('#infoPanel').modal({backdrop: true})
+    lir.open = function (e) {
+        $('#infoPanel').load(LinkPlugin.pluginRoot + "linkInfo.html", {}, function () {
+            $('#infoPanel').on('show.bs.modal', function () {
+                //TODO: this should move to control panel by message
+                solarReport.close()
+                linkFloat.close();
+                lir.hideComments();
+            });
+            $('#infoPanel').modal({backdrop: true})
+            var type = e.target.attributes['data-type'].value;
+            if (type == 'linkInfo')
+                lir.openLinkInfo();
+            else if (type == 'biDepReport')
+                lir.openBiDepReport();
+
+            $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
+        })
+    }
+    lir.openBiDepReport = function () {
+        var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数'])
+        var dedup = {}
+
+        for (var key in atlas.edgesMap) {
+            var edge = atlas.edgesMap[key];
+            for (var i = 0; i < edge.bi.length; i++) {
+                var appConns = edge.bi[i].appConns;
+                for (var j = 0; j < appConns.length; j++) {
+                    var appConn = appConns[j];
+                    if (appConn.bidirect) {
+                        var linkKey = (appConns.from + "|" + appConn.to);
+                        if (dedup[linkKey] != null)
+                            continue;
+                        tableUtil.addContent(table, [appConn.from, appConn.to, appConn.catcnt])
+                        dedup[linkKey] = appConn.catcnt;
+                    }
+                }
+            }
+        }
+        tableUtil.draw(table, {
+            scrollCollapse: true,
+            sorting: [[2, 'desc']],
+        })
+    }
+    lir.openLinkInfo = function () {
         var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数', '操作'])
         var edge = lir.edge;
         $('#infoPanel .modal-title').html("从域<strong> " + edge.from + "</strong> 到域 <strong>" + edge.to + "</strong> 的应用依赖列表")
@@ -44,8 +78,9 @@
         })
     }
     lir.close = function () {
-        $('#panelInfoBody').html("")
+        $('#infoPanel').html("")
     }
+
     lir.showComments = function showComments(fromApp, toApp) {
         var commentsLink = globalConfig.localMode ?
         LinkPlugin.pluginRoot + 'data/comments.json' :
@@ -70,6 +105,10 @@
             $('#inputComment textarea').val("");//.css('width', parseInt($('#panelInfoBody').css('width')))
 
         })
+    }
+    lir.hideComments = function () {
+        $('#inputComment textarea').val("");
+        $('#commentList').attr('class', 'collapse')
     }
 
     var linkFloat = window.linkFloatWindow = {}
@@ -96,7 +135,7 @@
             span.attr('title', title)
 
             //open button
-            var openInfo = $('<button title="详情" class="glyphicon glyphicon-list btn btn-primary"></button>')
+            var openInfo = $('<button title="详情" data-type="linkInfo" class="glyphicon glyphicon-list btn btn-primary"></button>')
             linkInfoReport.setInfo(edge)
             openInfo.on('click', linkInfoReport.open)
 

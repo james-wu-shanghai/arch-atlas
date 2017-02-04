@@ -2,29 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <!--<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">-->
 </head>
 <body>
-        <!-- 选项卡面板 -->
-            <div class="tab-pane panelButton active" id="dependency">
-                <div id="dep_filter" class="btn-group" data-toggle="buttons">
-                    <label title="全部" class="btn btn-primary active">
-                        <input type="radio" name="options" data-type="dep_all"
-                               checked="checked"><span
-                            class="glyphicon glyphicon-fullscreen"></span></label>
-                    <label title="双向依赖" class="btn btn-primary"><input type="radio" name="options"
-                                                                       data-type="dep_bi"><span
-                            class="glyphicon glyphicon-resize-vertical"></span> </label>
-                    <label title="调出" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_out"><span
-                            class="glyphicon glyphicon-arrow-up"></span></label>
-                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_in"><span
-                            class="glyphicon glyphicon-arrow-down"></span></label>
-                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_none"><span
-                            class="glyphicon glyphicon-remove"></span></label>
-                </div>
-            </div>
+<!-- 选项卡面板 -->
+<div class="tab-pane panelButton active row" id="dependency">
+    <div id="dep_filter" class="btn-group col-md-3" data-toggle="buttons">
+        <label title="全部" class="btn btn-primary active">
+            <input type="radio" name="options" data-type="dep_all"
+                   checked="checked"><span
+                class="glyphicon glyphicon-fullscreen"></span></label>
+        <label title="双向依赖" class="btn btn-primary"><input type="radio" name="options"
+                                                           data-type="dep_bi"><span
+                class="glyphicon glyphicon-resize-vertical"></span> </label>
+        <label title="调出" class="btn btn-primary"><input type="radio" name="options"
+                                                         data-type="dep_out"><span
+                class="glyphicon glyphicon-arrow-up"></span></label>
+        <label title="调入" class="btn btn-primary"><input type="radio" name="options"
+                                                         data-type="dep_in"><span
+                class="glyphicon glyphicon-arrow-down"></span></label>
+        <label title="调入" class="btn btn-primary"><input type="radio" name="options"
+                                                         data-type="dep_none"><span
+                class="glyphicon glyphicon-remove"></span></label>
+
+    </div>
+    <div class="col-md-1">
+        <button title="双向依赖报告" data-type="biDepReport" id="biDepAppReport"
+                class="btn btn-danger glyphicon glyphicon-align-left"></button>
+    </div>
+</div>
 </body>
 </html>
