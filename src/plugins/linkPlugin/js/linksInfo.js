@@ -27,6 +27,7 @@
     }
     lir.openBiDepReport = function () {
         var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数'])
+        $('#infoPanel .modal-title').html("存在双向依赖的应用列表")
         var dedup = {}
 
         for (var key in atlas.edgesMap) {
