@@ -125,10 +125,10 @@
             for (var i = 0; i < validSuffix.length; i++)
                 planetStatic[i] = 0
             for (var i = 0; i < solar.planets.length; i++) {
-                var planet = solar.planets[i]
+                var typedPlanets = solar.planets[i]
                 for (var j = 0; j < validSuffix.length; j++) {
-                    if (domainParser.endWith(planet.name, validSuffix[j])) {
-                        planetStatic[j]++;
+                    if (domainParser.endWith(typedPlanets.name, validSuffix[j])) {
+                        planetStatic[j] = typedPlanets.allApps.length;
                     }
                 }
             }
