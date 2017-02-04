@@ -13,7 +13,7 @@
         this.init = function () {
             if (inited)
                 return this;
-            $('.nav-tabs').append('<li class="active"><a href="#dependency" data-toggle="tab">依赖视图</a></li>')
+            $('.nav.nav-tabs').append('<li class="active"><a href="#dependency" data-toggle="tab">依赖视图</a></li>')
             $.get(this.pluginRoot + "navbar.html", function (data) {
                 $('.tab-content').append(data);
                 $('#dep_filter :radio').on('change', links.filterBiDep)
