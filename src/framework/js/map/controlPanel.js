@@ -29,7 +29,7 @@
                 atlas.camera.position = new THREE.Vector3(300, 300, 300)
                 atlas.camera.updateProjectionMatrix()
             }
-            cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight/ 2)
+            cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight / 2)
         }
         this.searchKeyUp = function (searchInput) {
             var keyCode = parseInt(event.keyCode);
@@ -69,37 +69,6 @@
 
 
         /***
-         * Filter Link Start
-         * Should move to link plugin
-         */
-
-        this.filterBiDep = function () {
-            var type = $('#dep_filter :radio:checked').attr('data-type')
-            if (type == 'dep_in')
-                filterLinks('IN')
-            else if (type == 'dep_out')
-                filterLinks('OUT')
-            else if (type == 'dep_bi')
-                filterLinks('BIDIRECT')
-            else if (type == 'dep_none')
-                filterLinks('NONE')
-            else
-                filterLinks('ALL')
-            function filterLinks(type) {
-                links.activateByType(type)
-            }
-        }
-
-        this.removeAllLinkHints = function () {
-            linkFloatWindow.close()
-            links.dehighlightAllEdges()
-        }
-
-        /***
-         * Filter Link End
-         */
-
-        /***
          *  resize and reset start
          */
         var middleSize = 16;
@@ -130,7 +99,7 @@
             // $('#biDepChk').attr('checked', false);
             removeAllSolarBoxes()
             cp.param = {}
-            cp.removeAllLinkHints()
+            LinkPlugin.removeAllLinkHints()
             atlas.camera.position.set(300, 300, 300)
             atlas.camera.updateProjectionMatrix()
 
@@ -193,7 +162,7 @@
                     --param.activatedSolarCount
 
             }
-            this.filterBiDep()
+            links.filterBiDep()
         }
 
         /***
@@ -277,7 +246,7 @@
                 linkFloatWindow.showLinkHints(e, tableData);
             }
             else
-                cp.removeAllLinkHints();
+                LinkPlugin.removeAllLinkHints();
 
         }
         /***
@@ -288,7 +257,6 @@
          * start init
          */
 
-        $('#dep_filter :radio').on('change', this.filterBiDep)
         $('#showPlanChk').on('change', this.showBackground)
         $('#changeSize').on('change', this.resize)
         $('#starSearch').on('change', function (event) {

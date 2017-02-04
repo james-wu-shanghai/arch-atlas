@@ -247,5 +247,21 @@ var links = {
             link.edge.setHighlight(false)
         }
         links.highLightEdges = []
+    },
+    filterBiDep: function () {
+        var type = $('#dep_filter :radio:checked').attr('data-type')
+        if (type == 'dep_in')
+            filterLinks('IN')
+        else if (type == 'dep_out')
+            filterLinks('OUT')
+        else if (type == 'dep_bi')
+            filterLinks('BIDIRECT')
+        else if (type == 'dep_none')
+            filterLinks('NONE')
+        else
+            filterLinks('ALL')
+        function filterLinks(type) {
+            links.activateByType(type)
+        }
     }
 }

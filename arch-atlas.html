@@ -45,31 +45,10 @@
 
         <!-- 导航选项卡-->
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#dependency" data-toggle="tab">依赖视图</a></li>
             <li><a href="#settings" data-toggle="tab">设置</a></li>
         </ul>
-        <!-- 选项卡面板 -->
+
         <div class="tab-content">
-            <div class="tab-pane panelButton active" id="dependency" class="">
-                <div id="dep_filter" class="btn-group" data-toggle="buttons">
-                    <label title="全部" class="btn btn-primary active">
-                        <input type="radio" name="options" data-type="dep_all"
-                               checked="checked"><span
-                            class="glyphicon glyphicon-fullscreen"></span></label>
-                    <label title="双向依赖" class="btn btn-primary"><input type="radio" name="options"
-                                                                       data-type="dep_bi"><span
-                            class="glyphicon glyphicon-resize-vertical"></span> </label>
-                    <label title="调出" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_out"><span
-                            class="glyphicon glyphicon-arrow-up"></span></label>
-                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_in"><span
-                            class="glyphicon glyphicon-arrow-down"></span></label>
-                    <label title="调入" class="btn btn-primary"><input type="radio" name="options"
-                                                                     data-type="dep_none"><span
-                            class="glyphicon glyphicon-remove"></span></label>
-                </div>
-            </div>
             <div class="tab-pane panelButton" id="settings">
                 <div class="btn-group" data-toggle="buttons">
                     <label title="背景光" class="btn btn-primary active"><input id="showPlanChk" type="checkbox"
@@ -79,7 +58,6 @@
                 </div>
             </div>
         </div>
-
     </div>
     <div class="row text-center">
         <span id="cpCollapseButton" data-toggle="collapse" title="菜单栏" data-status="0" style="width: 100%"
