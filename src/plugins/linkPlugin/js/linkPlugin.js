@@ -3,6 +3,9 @@
  */
 (function () {
     function LinkPlugin() {
+        this.pluginRoot = 'src/plugins/linkPlugin/';
+        importUtil.import(this.pluginRoot + "js/link.js")
+        importUtil.import(this.pluginRoot + "js/linksInfo.js")
         this.name = 'linkView'
         var inited = LinkPlugin.prototype.inited = false;
 
@@ -11,7 +14,7 @@
             if (inited)
                 return this;
             var linkUrl = globalConfig.localMode ?
-                'src/plugins/linkPlugin/data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
+            this.pluginRoot + 'data/all-dependencies.json' : globalConfig.contextPath + '/service/sso/domains/all-dependencies';
             d3.json(linkUrl, function (error, edgesJson) {
                 progressUtils.progress(50, '加载域依赖中')
                 if (error)

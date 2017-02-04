@@ -48,7 +48,7 @@
     }
     lir.showComments = function showComments(fromApp, toApp) {
         var commentsLink = globalConfig.localMode ?
-            'src/plugins/linkPlugin/data/comments.json' :
+        LinkPlugin.pluginRoot + 'data/comments.json' :
         globalConfig.contextPath + '/service/sso/marks/dependency/apps/' + fromApp + '/' + toApp + '/' + 0 + '/' + 50
         d3.json(commentsLink, function (error, response) {
             $('#historyList').html("<table id='historyListTable'></table>")
@@ -64,7 +64,8 @@
                 info: false,
                 paging: false,
                 scrollY: "100px",
-                scrollCollapse: true
+                scrollCollapse: true,
+                sorting: [[0, 'desc']],
             });
             $('#inputComment textarea').val("");//.css('width', parseInt($('#panelInfoBody').css('width')))
 
@@ -117,7 +118,6 @@
             "info": false,
             "paging": false,
             "searching": false,
-            sorting: [[0, 'desc']],
         })
     }
     linkFloat.close = function () {
@@ -134,7 +134,7 @@
         var info = button.target.attributes['data-info'].value
         var infoArr = info.split("|")
         var commRespUrl = globalConfig.localMode ?
-        globalConfig.contextPath + "/src/plugins/linkPlugin/data/commentresp.json" :
+        globalConfig.contextPath + "/" + LinkPlugin.pluginRoot + "data/commentresp.json" :
         globalConfig.contextPath + "/service/sso/marks/dependency/apps/" + infoArr[2] + "/" + infoArr[3] + "/comment"
         $.post(commRespUrl, {comment: comments})
             .success(function (result) {

@@ -10,7 +10,7 @@
             solarSize: 2.5,
             planetSize: 0.2,
             stepIncrease: 0.0005,
-            radius: 300,
+            radius: 320,
             planeWdtSeg: 10,
             planeHgtSeg: 6,
             entityHeight: 5,
