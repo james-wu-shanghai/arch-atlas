@@ -26,7 +26,7 @@
         })
     }
     lir.openBiDepReport = function () {
-        var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数'])
+        var table = tableUtil.buildTable('#panelInfoBody', ['双向依赖', '调入方', '调出方', '记录到的调用次数'])
         $('#infoPanel .modal-title').html("存在双向依赖的应用列表")
         var dedup = {}
 
@@ -37,18 +37,22 @@
                 for (var j = 0; j < appConns.length; j++) {
                     var appConn = appConns[j];
                     if (appConn.bidirect) {
-                        var linkKey = (appConns.from + "|" + appConn.to);
+                        var linkKey = (appConn.from + "|" + appConn.to);
                         if (dedup[linkKey] != null)
                             continue;
-                        tableUtil.addContent(table, [appConn.from, appConn.to, appConn.catcnt])
+                        var sorted = [appConn.from, appConn.to].sort().join("/");
+                        tableUtil.addContent(table, [sorted, appConn.from, appConn.to, appConn.catcnt])
                         dedup[linkKey] = appConn.catcnt;
                     }
                 }
             }
         }
         tableUtil.draw(table, {
-            scrollCollapse: true,
+            // scrollCollapse: true,
+            scrollY: "400px",
             sorting: [[2, 'desc']],
+            dom: "Bflrtip",
+            buttons: ['copy', 'excel', 'pdf', 'print']
         })
     }
     lir.openLinkInfo = function () {
