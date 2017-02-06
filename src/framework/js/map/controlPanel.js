@@ -113,6 +113,7 @@
                     }
                 }
             }
+            param.activatedSolarCount = 0;
         }
         this.autoResize = function () {
             var height = atlas.param.atlasHeight = window.innerHeight;
