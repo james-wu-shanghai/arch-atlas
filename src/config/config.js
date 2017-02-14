@@ -22,6 +22,9 @@
         appNameDecorator: function (name) {
             return name;
         },
+        depDownloadLink: function (name) {
+            return '#' + name;
+        },
         title: 'arch-atlas',
         appListHead: ['planet name', 'total call out', 'planet type'],
         domainCallOutTotal: " Total call out times:"

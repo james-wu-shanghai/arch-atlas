@@ -25,10 +25,11 @@
         atlas.domainJsons = {}
         atlas.init = function (name) {
             textureUtil.loadTexture()
-            progressUtils.progress(10, '加载字库中')
+            var fontProgress = 50;
+            progressUtils.progress(fontProgress, '加载字库中')
             new THREE.FontLoader().load('src/framework/fonts/helvetiker_regular.typeface.json', function (response) {
                 atlas.font = response;
-                progressUtils.progress(30, '加载域对象中')
+                progressUtils.progress(70, '加载域对象中')
                 var domainUrl = globalConfig.localMode ?
                     'src/framework/data/all.json' : globalConfig.contextPath + "/service/sso/domains/all";
                 d3.json(domainUrl, function (error, entityJson) {
@@ -58,12 +59,13 @@
 
                     atlas.trackball = initTrackball(atlas.camera);
                     atlas.draw();
-                    cp.loadPlugin('linkView')
+                    // cp.loadPlugin('linkView')
+                    cp.loadPlugins();
                     cp.reset();
                     progressUtils.end('资源加载完毕')
                 })
             }, function (progress) {
-                progressUtils.progress(progress.loaded / progress.total * 0.2 * 100 + 10)
+                progressUtils.progress(progress.loaded / progress.total * 0.2 * 100 + fontProgress)
             }, function (error) {
                 console.error(error)
             });

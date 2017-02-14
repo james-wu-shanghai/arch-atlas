@@ -53,10 +53,14 @@
 
         var plugins = {};
         var currentPlugin;
-        this.loadPlugin = function (viewName) {
-            currentPlugin = viewName;
-            var plugin = plugins[viewName]
+        this.loadPlugin = function (plugin) {
+            currentPlugin = plugin;
+            var plugin = plugins[plugin.name]
             plugin.init();
+        }
+        this.loadPlugins = function () {
+            for (var key in plugins)
+                this.loadPlugin(plugins[key])
         }
 
         this.register = function (plugin) {
@@ -113,6 +117,7 @@
                     }
                 }
             }
+
             param.activatedSolarCount = 0;
         }
         this.autoResize = function () {

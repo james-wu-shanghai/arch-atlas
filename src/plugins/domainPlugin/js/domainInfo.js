@@ -81,7 +81,6 @@
             "paging": false,
             "searching": false,
             scrollY: "400px",
-            scrollCollapse: true,
             sorting: [[2, 'asc']],
         })
         function sumCallOuts(planetName, domainConns, content) {
@@ -144,6 +143,7 @@
         reportUtil.drawPieChart('#solarPie', dataset, {height: 200, width: 200, radius: 200 / 3})
     }
     solarReport.renderDepLines = function (solar) {
+        $('#depControl > a').attr("href", globalResource.depDownloadLink(solar.name))
         var edgesInfo = atlas.edgesMap[solar.name]
         if (edgesInfo == null || edgesInfo.stat == null)
             return

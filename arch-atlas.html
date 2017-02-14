@@ -99,6 +99,7 @@
 </div>
 <div id="WebGL"></div>
 </body>
+
 <script src="libs/js/jquery-2.2.4.min.js"></script>
 <script src="libs/bootstrap/js/bootstrap.min.js"></script>
 <script src="src/framework/js/utils/progressUtil.js"></script>
@@ -106,10 +107,13 @@
     progressUtils.start('开始加载资源')
 </script>
 <script src="libs/js/three.min.js"></script>
+<script>
+    progressUtils.progress(20,'加载js脚本中')
+</script>
+<script src="libs/js/bootstrap3-typeahead.min.js"></script>
 <script src="libs/js/TrackballControls.js"></script>
 <script src="libs/js/d3-3.5.17-min.js"></script>
 <script src="libs/dataTable/js/datatables.min.js"></script>
-<script src="libs/js/bootstrap3-typeahead.min.js"></script>
 
 <script src="src/plugins/domainPlugin/js/domainTextureLoader.js"></script>
 <script src="src/framework/js/map/domainParser.js"></script>
@@ -121,6 +125,7 @@
 <script src="src/framework/js/utils/reportUtil.js"></script>
 <script src="src/plugins/domainPlugin/js/domainInfo.js"></script>
 <script src="src/plugins/linkPlugin/js/linkPlugin.js"></script>
+<script src="src/plugins/sysInfoPlugin/js/sysinfoPlugin.js"></script>
 <script src="src/config/config.js"></script>
 <script>
     $(function () {

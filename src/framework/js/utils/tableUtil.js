@@ -1,13 +1,18 @@
 (function () {
         var tu = window.tableUtil = {}
-        tu.addContent = function (table, contentArray) {
-            var tr = $('<tr></tr>')
-            for (var i = 0; i < contentArray.length; i++) {
-                var td = $('<td></td>')
-                td.append(contentArray[i])
-                tr.append(td)
+        tu.buildTableByArray = function (containerId, columnDefs, array, otherParams) {
+            var table = $('<table class="table table-striped table-hover"></table>')
+            table.attr("id", containerId + 'Table')
+            $(containerId).append(table)
+            var params = {
+                data: array,
+                columns: columnDefs,
             }
-            table.append(tr)
+            if (otherParams) {
+                for (var key in otherParams)
+                    params[key] = otherParams[key];
+            }
+            table.DataTable(params)
         }
         tu.buildTable = function (containerId, heads, foots) {
             var container = $(containerId)
@@ -49,6 +54,15 @@
                 tr.append(td)
             }
             table.append(tfoot)
+        }
+        tu.addContent = function (table, contentArray) {
+            var tr = $('<tr></tr>')
+            for (var i = 0; i < contentArray.length; i++) {
+                var td = $('<td></td>')
+                td.append(contentArray[i])
+                tr.append(td)
+            }
+            table.append(tr)
         }
         tu.draw = function (table, params) {
             // params.language.zeroRecords = globalResource.zeroRecords
