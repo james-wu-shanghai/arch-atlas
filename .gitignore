@@ -13,3 +13,4 @@ src/framework/fonts/helvetiker_regular.typeface.original.json
 src/framework/fonts/FZYaoTi_Regular.json
 src/plugins/domainPlugin/images/bak
 src/plugins/sysInfoPlugin/data/owner.json
+src/plugins/databasePlugin/data

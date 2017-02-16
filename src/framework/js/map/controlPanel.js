@@ -54,17 +54,33 @@
         var plugins = {};
         var currentPlugin;
         this.loadPlugin = function (plugin) {
-            currentPlugin = plugin;
             var plugin = plugins[plugin.name]
             plugin.init();
         }
         this.loadPlugins = function () {
             for (var key in plugins)
                 this.loadPlugin(plugins[key])
+            this.addViewTriggerListener();
         }
-
         this.register = function (plugin) {
             plugins[plugin.name] = plugin;
+        }
+        this.openPlugin = function (plugin) {
+            plugin.open();
+            currentPlugin = plugin;
+        }
+        this.addViewTriggerListener = function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                solarReport.close();
+                if (currentPlugin)
+                    currentPlugin.close();
+                cp.setRotate(true);
+                var dataView = e.target.attributes['data-view'];
+                if (dataView != null && dataView.value != "") {
+                    dataView = dataView.value;
+                    cp.openPlugin(plugins[dataView])
+                }
+            })
         }
 
         /***
@@ -132,6 +148,10 @@
             camera.updateProjectionMatrix();
             atlas.render.setSize(width, height);
         };
+
+        this.setRotate = function (isRotate) {
+            atlas.param.doRotate = isRotate;
+        }
         /***
          *  resize and reset end
          */
@@ -170,7 +190,21 @@
             }
             links.filterBiDep()
         }
+        this.setTransparentDomain = function (isTransparent, domainName) {
+            var opacity = isTransparent ? 0.2 : 1
+            var solar = atlas.domainJsons[domainName].solar
+            solar.material.opacity = opacity
+            var planets = solar.planets
+            for (var i = 0; i < planets.length; i++) {
+                var planet = planets[i];
+                planet.material.opacity = opacity
+            }
+        }
+        this.setAllDomainsTransparent = function (isTransparent) {
+            for (var domainName in atlas.domainJsons)
+                this.setTransparentDomain(isTransparent, domainName)
 
+        }
         /***
          * solar control end
          */
@@ -201,13 +235,16 @@
             var rayCaster = new THREE.Raycaster()
             rayCaster.setFromCamera(vector, atlas.camera);
 
-            var intersect = rayCaster.intersectObjects(atlas.solarObjects);
-            if (intersect.length > 0) {
-                var solar = intersect[0].object
-                cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
-            } else
-                solarReport.close();
-
+            if (currentPlugin && currentPlugin.name == 'databaseView')
+                currentPlugin.handleMouseDown(rayCaster, e)
+            else {
+                var intersect = rayCaster.intersectObjects(atlas.solarObjects);
+                if (intersect.length > 0) {
+                    var solar = intersect[0].object
+                    cp.activeSolar(solar, e.clientX + 10, e.clientY + 10)
+                } else
+                    solarReport.close();
+            }
         }
 
         this.onMousewheel = function (event) {
@@ -238,6 +275,9 @@
             for (var i = 0; i < links.activatedEdges.length; i++)
                 activatedLinks.push(links.activatedEdges[i].link)
 
+            if (currentPlugin && currentPlugin.name == 'databaseView') {
+                currentPlugin.handleHover(rayCaster, e)
+            }
             var intersect = rayCaster.intersectObjects(activatedLinks, true);
             if (intersect.length > 0) {
                 $('#linkHint').empty()
@@ -269,6 +309,7 @@
             cp.searchEntity(event.target)
             return true;
         })
+
         /***
          * end init
          */

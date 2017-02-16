@@ -1,6 +1,7 @@
 (function () {
         var tu = window.tableUtil = {}
         tu.buildTableByArray = function (containerId, columnDefs, array, otherParams) {
+            //containerId 是一个selector,带#号的那种
             var table = $('<table class="table table-striped table-hover"></table>')
             table.attr("id", containerId + 'Table')
             $(containerId).append(table)

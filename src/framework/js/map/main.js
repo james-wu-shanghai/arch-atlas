@@ -17,6 +17,7 @@
             scale: 16,
             atlasHeight: window.innerHeight,
             atlasWidth: window.innerWidth,
+            doRotate: true,
         }
 
 
@@ -59,7 +60,6 @@
 
                     atlas.trackball = initTrackball(atlas.camera);
                     atlas.draw();
-                    // cp.loadPlugin('linkView')
                     cp.loadPlugins();
                     cp.reset();
                     progressUtils.end('资源加载完毕')
@@ -152,9 +152,9 @@
             atlas.scence.add(solar)
             atlas.stars.push(domain.name)
             atlas.solarObjects.push(solar)
-            addPlanetsNew(domain);
+            addPlanets(domain);
 
-            function addPlanetsNew(domain) {
+            function addPlanets(domain) {
                 var solar = domain.solar
                 var typePlanets = solarReport.sortByType(domain.planets)
                 for (var i = 0; i < typePlanets['twoDimArray'].length; i++) {
@@ -249,7 +249,7 @@
         function createPlanetMesh(geom, planetTypeNo) {
             var textureName = textureUtil.planets[planetTypeNo]
             var texture = textureUtil.getTexture(textureName)
-            var basicMat = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
+            var basicMat = new THREE.MeshBasicMaterial({map: texture, transparent: true, opacity: 1, color: 0xffffff});
             return new THREE.Mesh(geom, basicMat)
 
         }
@@ -258,17 +258,18 @@
             var delta = atlas.clock.getDelta();
             atlas.trackball.update(delta)
 
-            atlas.step += param.stepIncrease
-            for (var i = 0; i < atlas.stars.length; i++) {
-                atlas.scence.getObjectByName(atlas.stars[i]).rotation.y = atlas.step
+            if (atlas.param.doRotate) {
+                atlas.step += param.stepIncrease
+                for (var i = 0; i < atlas.stars.length; i++) {
+                    atlas.scence.getObjectByName(atlas.stars[i]).rotation.y = atlas.step
+                }
+                for (var i = 0; i < atlas.planets.length; i++) {
+                    var planet = atlas.planets[i]
+                    var planetObj = atlas.scence.getObjectByName(planet.name);
+                    planetObj.position.x = Math.cos(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cx
+                    planetObj.position.z = Math.sin(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cy
+                }
             }
-            for (var i = 0; i < atlas.planets.length; i++) {
-                var planet = atlas.planets[i]
-                var planetObj = atlas.scence.getObjectByName(planet.name);
-                planetObj.position.x = Math.cos(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cx
-                planetObj.position.z = Math.sin(planet.angle + atlas.step * Math.PI * 2) * planet.d + planet.cy
-            }
-
             atlas.render.render(atlas.scence, atlas.camera)
             requestAnimationFrame(atlas.draw);
         }
