@@ -19,7 +19,7 @@
                     ],
                     resp,
                     {
-                        buttons: ['copy', 'excel', 'pdf', 'print'],
+                        buttons: ['copy', 'excel', 'print'],
                         dom: 'Bfltip',
                         scrollY: '300px'
                     });

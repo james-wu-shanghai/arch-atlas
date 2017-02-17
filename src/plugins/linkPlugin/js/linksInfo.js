@@ -55,7 +55,7 @@
             sorting: [[2, 'desc']],
             "dom": 'Bfltip',
             buttons: [
-                'copy', 'excel', 'pdf', 'print'
+                'copy', 'excel', 'print'
             ]
         })
     }
@@ -75,7 +75,7 @@
                     scrollY: "300px",
                     "dom": 'Bfltip',
                     buttons: [
-                        'copy', 'excel', 'pdf', 'print'
+                        'copy', 'excel', 'print'
                     ]
                 }
             )
