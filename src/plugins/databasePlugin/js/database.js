@@ -14,7 +14,7 @@
             cp.setRotate(false);
             cp.setAllDomainsTransparent(true)
             if (!this.inited) {
-                var url = globalConfig.localMode ? DatabasePlugin.pluginRoot + "data/dbDep.json" : globalConfig.contextPath + "/service/sso/domain/all/databases"
+                var url = globalConfig.localMode ? DatabasePlugin.pluginRoot + "data/dbDep.json" : globalConfig.contextPath + "/service/sso/domains/all/databases"
                 d3.json(url, function (dbDepJson) {
                     for (var i = 0; i < dbDepJson.length; i++) {
                         var dbDep = dbDepJson[i];

@@ -18,6 +18,7 @@
                 $('.tab-content').append(data);
                 $('#dep_filter :radio').on('change', links.filterBiDep)
                 $('#biDepAppReport').on('click', linkInfoReport.open)
+                $('#noCatReport').on('click', linkInfoReport.open)
             })
 
             var linkUrl = globalConfig.localMode ?

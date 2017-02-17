@@ -21,6 +21,8 @@
                 lir.openLinkInfo();
             else if (type == 'biDepReport')
                 lir.openBiDepReport();
+            else if (type == 'noCatReport')
+                lir.openNoCatReport();
 
             $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
         })
@@ -55,6 +57,28 @@
             buttons: [
                 'copy', 'excel', 'pdf', 'print'
             ]
+        })
+    }
+    lir.openNoCatReport = function () {
+        var url = globalConfig.localMode ?
+        LinkPlugin.pluginRoot + "data/nocat.json" : globalConfig.contextPath + "/service/sso/domains/all/nocat";
+        d3.json(url, function (response) {
+            $('#infoPanel .modal-title').html("未接入Cat的应用列表")
+            tableUtil.buildTableByArray('#panelInfoBody',
+                [
+                    {title: '域'},
+                    {title: '应用'},
+                    {title: '负责人'},
+                    {title: '说明'}
+                ],
+                response, {
+                    scrollY: "300px",
+                    "dom": 'Bfltip',
+                    buttons: [
+                        'copy', 'excel', 'pdf', 'print'
+                    ]
+                }
+            )
         })
     }
     lir.openLinkInfo = function () {

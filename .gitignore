@@ -1,6 +1,6 @@
 .idea
 src/framework/data/all.json
-src/plugins/linkPlugin/data/all-dependencies.json
+src/plugins/linkPlugin/data
 src/framework/data/entity.json
 src/framework/data/entity-connections.json
 src/framework/data/static-entity.json
