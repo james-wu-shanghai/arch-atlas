@@ -28,8 +28,8 @@
                 atlas.trackball.target = solar.position.clone();
                 atlas.camera.position = new THREE.Vector3(300, 300, 300)
                 atlas.camera.updateProjectionMatrix()
+                cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight / 2)
             }
-            cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight / 2)
         }
         this.searchKeyUp = function (searchInput) {
             var keyCode = parseInt(event.keyCode);
