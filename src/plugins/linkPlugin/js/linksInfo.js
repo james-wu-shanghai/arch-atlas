@@ -23,6 +23,8 @@
                 lir.openBiDepReport();
             else if (type == 'noCatReport')
                 lir.openNoCatReport();
+            else if (type == 'appDepValidReport')
+                lir.openAppDepValidReport();
 
             $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
         })
@@ -60,24 +62,57 @@
         })
     }
     lir.openNoCatReport = function () {
+        lir._genericReport(
+            LinkPlugin.pluginRoot + "data/nocat.json",
+            globalConfig.contextPath + "/service/sso/domains/all/nocat",
+            "未接入Cat的应用列表",
+            [
+                {title: '域'},
+                {title: '应用'},
+                {title: '负责人'},
+                {title: '说明'}
+            ],
+            {
+                scrollY: "300px",
+                "dom": 'Bfltip',
+                buttons: [
+                    'copy', 'excel', 'print'
+                ]
+            }
+        )
+
+    }
+    lir.openAppDepValidReport = function () {
+        lir._genericReport(
+            LinkPlugin.pluginRoot + "data/dep-valid-all.json",
+            globalConfig.contextPath + "/service/sso/marks/all",
+            "应用依赖合理性列表",
+            [
+                {title: 'FromDomain'},
+                {title: 'FromApp'},
+                {title: 'ToDomain'},
+                {title: 'ToApp'},
+                {title: '有效性'},
+            ],
+            {
+                "displayLength": 100,
+                scrollY: "300px",
+                "dom": 'Bfltip',
+                buttons: [
+                    'copy', 'excel', 'print'
+                ]
+            }
+        )
+    }
+    lir._genericReport = function (localUrl, remoteUrl, head, title, tableParam) {
         var url = globalConfig.localMode ?
-        LinkPlugin.pluginRoot + "data/nocat.json" : globalConfig.contextPath + "/service/sso/domains/all/nocat";
+            localUrl : remoteUrl
         d3.json(url, function (response) {
-            $('#infoPanel .modal-title').html("未接入Cat的应用列表")
+            $('#infoPanel .modal-title').html(head)
             tableUtil.buildTableByArray('#panelInfoBody',
-                [
-                    {title: '域'},
-                    {title: '应用'},
-                    {title: '负责人'},
-                    {title: '说明'}
-                ],
-                response, {
-                    scrollY: "300px",
-                    "dom": 'Bfltip',
-                    buttons: [
-                        'copy', 'excel', 'print'
-                    ]
-                }
+                title,
+                response,
+                tableParam
             )
         })
     }

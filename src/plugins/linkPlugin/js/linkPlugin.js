@@ -17,8 +17,9 @@
             $.get(this.pluginRoot + "navbar.html", function (data) {
                 $('.tab-content').append(data);
                 $('#dep_filter :radio').on('change', links.filterBiDep)
-                $('#biDepAppReport').on('click', linkInfoReport.open)
-                $('#noCatReport').on('click', linkInfoReport.open)
+                // $('#biDepAppReport').on('click', linkInfoReport.open)
+                // $('#noCatReport').on('click', linkInfoReport.open)
+                $('.linkReport').on('click', linkInfoReport.open)
             })
 
             var linkUrl = globalConfig.localMode ?
