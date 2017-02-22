@@ -25,6 +25,27 @@
                 lir.openNoCatReport();
             else if (type == 'appDepValidReport')
                 lir.openAppDepValidReport();
+            else if (type == 'dbFileDepValidReport')
+                lir._genericReport(
+                    LinkPlugin.pluginRoot + "data/db-file.json",
+                    globalConfig.contextPath + "/service/sso/marks/all/db-file",
+                    "数据库和文件存储依赖统计",
+                    [
+                        {title: '域'},
+                        {title: '应用'},
+                        {title: '存储名称'},
+                        {title: '存储类型'},
+                        {title: '有效性'}
+                    ],
+                    {
+                        "displayLength": 100,
+                        scrollY: "300px",
+                        "dom": 'Bfltip',
+                        buttons: [
+                            'copy', 'excel', 'print'
+                        ]
+                    }
+                );
 
             $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
         })
