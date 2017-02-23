@@ -25,27 +25,10 @@
                 lir.openNoCatReport();
             else if (type == 'appDepValidReport')
                 lir.openAppDepValidReport();
-            else if (type == 'dbFileDepValidReport')
-                lir._genericReport(
-                    LinkPlugin.pluginRoot + "data/db-file.json",
-                    globalConfig.contextPath + "/service/sso/marks/all/db-file",
-                    "数据库和文件存储依赖统计",
-                    [
-                        {title: '域'},
-                        {title: '应用'},
-                        {title: '存储名称'},
-                        {title: '存储类型'},
-                        {title: '有效性'}
-                    ],
-                    {
-                        "displayLength": 100,
-                        scrollY: "300px",
-                        "dom": 'Bfltip',
-                        buttons: [
-                            'copy', 'excel', 'print'
-                        ]
-                    }
-                );
+            else if (type == 'dbFileDepValidReport') {
+                lir.openDbFileValidReport()
+            }
+
 
             $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
         })
@@ -107,7 +90,7 @@
         lir._genericReport(
             LinkPlugin.pluginRoot + "data/dep-valid-all.json",
             globalConfig.contextPath + "/service/sso/marks/all",
-            "应用依赖合理性列表",
+            "应用依赖合理性统计",
             [
                 {title: 'FromDomain'},
                 {title: 'FromApp'},
@@ -124,6 +107,71 @@
                 ]
             }
         )
+        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/app-static.json", globalConfig.contextPath + "/service/sso/mark/all/static")
+
+    }
+    lir.openDbFileValidReport = function () {
+        lir._genericReport(
+            LinkPlugin.pluginRoot + "data/db-file.json",
+            globalConfig.contextPath + "/service/sso/marks/all/db-file",
+            "数据库和文件存储依赖统计",
+            [
+                {title: '域'},
+                {title: '应用'},
+                {title: '存储名称'},
+                {title: '存储类型'},
+                {title: '有效性'}
+            ],
+            {
+                "displayLength": 100,
+                scrollY: "300px",
+                "dom": 'Bfltip',
+                buttons: [
+                    'copy', 'excel', 'print'
+                ]
+            }
+        );
+        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/mark/all/db-file/static")
+
+    }
+    lir.showPieChart = function (selectorId, localUrl, remoteUrl) {
+        var eclipseButton = $('<div class="row text-center"><span class="glyphicon glyphicon-chevron-down"></span></div>')
+        eclipseButton.on('click', function () {
+            $(selectorId).collapse('toggle');
+            $('#panelInfoBody').collapse('toggle');
+            $(selectorId).load(LinkPlugin.pluginRoot + "dep-static.html", function () {
+                var url = globalConfig.localMode ? localUrl : remoteUrl;
+                d3.json(url, function (response) {
+                    for (var domain in response) {
+                        var option = $("<option value='" + domain + "'>" + domain + "</option>");
+                        if (domain == '总共') {
+                            option.attr('selected', 'selected');
+                            $('#dep-domains option:first').before(option)
+
+                        } else
+                            $('#dep-domains').append(option)
+                    }
+
+                    var pieStaticId = '#dep-static-pie'
+                    $('#dep-domains').on('change', function () {
+                        $('#dep-static-pie').html("")
+                        reportUtil.drawPieChart(pieStaticId, buildDataset(response[$('#dep-domains option:selected').val()]))
+                    })
+
+
+                    reportUtil.drawPieChart(pieStaticId, buildDataset(response[$('#dep-domains option:selected').val()]))
+
+                    function buildDataset(input) {
+                        var data = [];
+                        for (var key in input) {
+                            data.push([key, input[key]])
+                        }
+                        return data;
+                    }
+                })
+            })
+        })
+        $('#panelInfoBody').after(eclipseButton)
     }
     lir._genericReport = function (localUrl, remoteUrl, head, title, tableParam) {
         var url = globalConfig.localMode ?

@@ -7,9 +7,15 @@
         return defaultVal;
     }
 
-
+    reportUtil.default = {
+        height: 300,
+        width: 300,
+        radius: 100,
+    }
     // dataset format: [[key1, val1], [key2, val2],....,[keyN, valN]]
     reportUtil.drawPieChart = function (targetSelector, dataset, parameters) {
+        if (!parameters)
+            parameters = reportUtil.default
         var height = parameters.height
         var width = parameters.width
         var innerRadius = 0;
@@ -45,7 +51,7 @@
                         return d[1]
                     }) * 100
                 if (percent != 0)
-                    return percent.toFixed(1) + "%"
+                    return d.value + "(" + percent.toFixed(1) + "%)"
             })
         arcs.append("line")
             .attr("stroke", "black")
