@@ -107,7 +107,7 @@
                 ]
             }
         )
-        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/app-static.json", globalConfig.contextPath + "/service/sso/mark/all/static")
+        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/app-static.json", globalConfig.contextPath + "/service/sso/marks/all/static")
 
     }
     lir.openDbFileValidReport = function () {
@@ -131,7 +131,7 @@
                 ]
             }
         );
-        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/mark/all/db-file/static")
+        lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/marks/all/db-file/static")
 
     }
     lir.showPieChart = function (selectorId, localUrl, remoteUrl) {
