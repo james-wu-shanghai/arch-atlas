@@ -8,7 +8,13 @@
     }
 
     lir.open = function (e) {
-        $('#infoPanel').load(LinkPlugin.pluginRoot + "linkInfo.html", {}, function () {
+        var template = e.target.attributes['data-template']
+        var tmpVal;
+        if (!template || !template.value)
+            tmpVal = 'linkInfo.html'
+        else
+            tmpVal = template.value
+        $('#infoPanel').load(LinkPlugin.pluginRoot + tmpVal, {}, function () {
             $('#infoPanel').on('show.bs.modal', function () {
                 //TODO: this should move to control panel by message
                 solarReport.close()
@@ -16,6 +22,7 @@
                 lir.hideComments();
             });
             $('#infoPanel').modal({backdrop: true})
+            $('#infoPanel .modal-lg').css('width', window.innerWidth - 50)
             var type = e.target.attributes['data-type'].value;
             if (type == 'linkInfo')
                 lir.openLinkInfo();
@@ -101,13 +108,15 @@
             {
                 "displayLength": 100,
                 scrollY: "300px",
-                "dom": 'Bfltip',
+                "dom": 'Bflt<"footer">ip',
                 buttons: [
                     'copy', 'excel', 'print'
-                ]
+                ],
+                sortAllFields: true
             }
         )
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/app-static.json", globalConfig.contextPath + "/service/sso/marks/all/static")
+        // spsWidget.create('domainFilter')
 
     }
     lir.openDbFileValidReport = function () {
@@ -128,10 +137,12 @@
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
-                ]
+                ],
+                sortAllFields: true
             }
         );
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/marks/all/db-file/static")
+        // spsWidget.create('domainFilter')
 
     }
     lir.showPieChart = function (selectorId, localUrl, remoteUrl) {
@@ -176,14 +187,23 @@
     lir._genericReport = function (localUrl, remoteUrl, head, title, tableParam) {
         var url = globalConfig.localMode ?
             localUrl : remoteUrl
-        d3.json(url, function (response) {
-            $('#infoPanel .modal-title').html(head)
+        $('#infoPanel .modal-title').html(head)
+        var cacheFound = cacheUtil.load('#' + url)
+        if (cacheFound) {
             tableUtil.buildTableByArray('#panelInfoBody',
                 title,
-                response,
+                cacheFound,
                 tableParam
             )
-        })
+        } else
+            d3.json(url, function (response) {
+                tableUtil.buildTableByArray('#panelInfoBody',
+                    title,
+                    response,
+                    tableParam
+                )
+                cacheUtil.setCache('#' + url, response)
+            })
     }
     lir.openLinkInfo = function () {
         var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数', '操作'])

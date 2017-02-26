@@ -20,7 +20,6 @@
             doRotate: true,
         }
 
-
         //TODO:these one become solar fonts
         atlas.fonts = []
         atlas.domainJsons = {}

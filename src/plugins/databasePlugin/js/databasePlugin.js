@@ -15,7 +15,7 @@
             $('.nav.nav-tabs').append('<li><a href="#database" data-view="databaseView" data-toggle="tab">数据库信息</a></li>')
             $.get(this.pluginRoot + "database.html", function (data) {
                 $('.tab-content').append(data);
-                $('#databaseList').on('click',dbMap.openModal)
+                $('#databaseList').on('click', dbMap.openModal)
             })
 
             inited = true;
@@ -23,29 +23,36 @@
         }
 
         this.open = function () {
-            dbMap.load();
+            if (inited)
+                dbMap.load();
         }
 
         this.close = function () {
-            dbMap.unload();
-            dbMap.closeReport();
+            if (inited) {
+                dbMap.unload();
+                dbMap.closeReport();
+            }
         }
 
         this.handleMouseDown = function (rayCaster, e) {
-            var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
-            if (intersect.length > 0) {
-                var db = intersect[0].object
-                dbMap.openReport(db, e.clientX + 10, e.clientY + 10);
-            } else
-                dbMap.closeReport();
+            if (inited) {
+                var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
+                if (intersect.length > 0) {
+                    var db = intersect[0].object
+                    dbMap.openReport(db, e.clientX + 10, e.clientY + 10);
+                } else
+                    dbMap.closeReport();
+            }
         }
         this.handleHover = function (rayCaster, e) {
-            var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
-            if (intersect.length > 0) {
-                var db = intersect[0].object
-                dbMap.showHint(db, e.clientX + 10, e.clientY + 10);
-            } else
-                dbMap.closeHint();
+            if (inited) {
+                var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
+                if (intersect.length > 0) {
+                    var db = intersect[0].object
+                    dbMap.showHint(db, e.clientX + 10, e.clientY + 10);
+                } else
+                    dbMap.closeHint();
+            }
         }
     }
 

@@ -4,6 +4,12 @@
             //containerId 是一个selector,带#号的那种
             var table = $('<table class="table table-striped table-hover"></table>')
             table.attr("id", containerId + 'Table')
+
+            var ft = [];
+            for (var i = 0; i < columnDefs.length; i++)
+                ft.push("")
+            tu.addFoot(table, ft)
+
             $(containerId).append(table)
             var params = {
                 data: array,
@@ -12,6 +18,27 @@
             if (otherParams) {
                 for (var key in otherParams)
                     params[key] = otherParams[key];
+                if (otherParams.sortAllFields) {
+                    params.initComplete = function () {
+                        this.api().columns().every(function () {
+                            var column = this;
+                            var select = $('<select class="form-control input-sm"><option value=""></option></select>')
+                                .appendTo($(column.footer()).empty())
+                                .on('change', function () {
+                                    var val = $.fn.dataTable.util.escapeRegex(
+                                        $(this).val()
+                                    );
+                                    column
+                                        .search(val ? '^' + val + '$' : '', true, false)
+                                        .draw();
+                                });
+
+                            column.data().unique().sort().each(function (d, j) {
+                                select.append('<option value="' + d + '">' + d + '</option>')
+                            });
+                        });
+                    }
+                }
             }
             table.DataTable(params)
         }

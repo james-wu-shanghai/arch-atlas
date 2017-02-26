@@ -39,12 +39,12 @@
             }
         }
 
-        var undercontrol = false;
+        var underControl = false;
         this.setUnderControl = function (isUnderControl) {
-            undercontrol = isUnderControl;
+            underControl = isUnderControl;
         }
         this.getUnderControl = function () {
-            return undercontrol;
+            return underControl;
         }
 
         /***
@@ -297,6 +297,11 @@
         }
         /***
          *  event control end
+         */
+
+
+        /***
+         * Widget end
          */
 
         /***

@@ -37,20 +37,23 @@
                     }
                     return map;
                 }(edgesJson);
+                LinkPlugin.inited = true;
             })
-            inited = true;
             return this;
         }
 
         this.removeAllLinkHints = function () {
-            linkFloatWindow.close()
-            links.dehighlightAllEdges()
+            if (this.inited) {
+                linkFloatWindow.close()
+                links.dehighlightAllEdges()
+            }
         }
         this.open = function () {
 
         }
         this.close = function () {
-            this.removeAllLinkHints()
+            if (this.inited)
+                this.removeAllLinkHints()
         }
     }
 
