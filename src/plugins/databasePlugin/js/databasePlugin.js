@@ -2,15 +2,17 @@
  * Created by jameswu on 17-2-15.
  */
 (function () {
+    window.DatabasePlugin = new DatabasePlugin();
+
     function DatabasePlugin() {
         this.pluginRoot = 'src/plugins/databasePlugin/';
         importUtil.import(this.pluginRoot + "js/database.js")
         this.name = 'databaseView'
-        var inited = DatabasePlugin.prototype.inited = false;
+        this.inited = false;
 
 
         this.init = function () {
-            if (inited)
+            if (this.inited)
                 return this;
             $('.nav.nav-tabs').append('<li><a href="#database" data-view="databaseView" data-toggle="tab">数据库信息</a></li>')
             $.get(this.pluginRoot + "database.html", function (data) {
@@ -18,24 +20,24 @@
                 $('#databaseList').on('click', dbMap.openModal)
             })
 
-            inited = true;
+            this.inited = true;
             return this;
         }
 
         this.open = function () {
-            if (inited)
+            if (this.inited)
                 dbMap.load();
         }
 
         this.close = function () {
-            if (inited) {
+            if (this.inited) {
                 dbMap.unload();
                 dbMap.closeReport();
             }
         }
 
         this.handleMouseDown = function (rayCaster, e) {
-            if (inited) {
+            if (this.inited) {
                 var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
                 if (intersect.length > 0) {
                     var db = intersect[0].object
@@ -45,7 +47,7 @@
             }
         }
         this.handleHover = function (rayCaster, e) {
-            if (inited) {
+            if (this.inited) {
                 var intersect = rayCaster.intersectObjects(dbMap.activatedDatabase);
                 if (intersect.length > 0) {
                     var db = intersect[0].object
@@ -56,6 +58,5 @@
         }
     }
 
-    window.DatabasePlugin = new DatabasePlugin();
     cp.register(window.DatabasePlugin);
 }).call(this)

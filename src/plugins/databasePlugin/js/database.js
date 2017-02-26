@@ -138,6 +138,7 @@
         this.openModal = function () {
             $("#infoPanel").load(DatabasePlugin.pluginRoot + "dbModal.html", {}, function () {
                 $('#infoPanel').modal({backdrop: true})
+                $('#infoPanel .modal-lg').css('width', window.innerWidth - 50)
                 $('#infoPanel').on('hidden.bs.modal', dbMap.closeModal);
                 $('#infoPanel .modal-title').html("数据库列表")
                 var table = tableUtil.buildTable('#panelInfoBody', ['库', '域', '应用', 'Schema'])
@@ -156,7 +157,7 @@
                     // "searching": false,
                     buttons: ['copy', 'excel', 'print'],
                     dom: 'Bfltip',
-                    scrollY: '300px'
+                    scrollY: window.innerHeight * 0.5
                 })
             })
         }

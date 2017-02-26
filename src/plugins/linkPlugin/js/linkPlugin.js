@@ -2,23 +2,23 @@
  * Created by jameswu on 17-1-30.
  */
 (function () {
+    window.LinkPlugin = new LinkPlugin();
+
     function LinkPlugin() {
         this.pluginRoot = 'src/plugins/linkPlugin/';
         importUtil.import(this.pluginRoot + "js/link.js")
         importUtil.import(this.pluginRoot + "js/linksInfo.js")
         this.name = 'linkView'
-        var inited = LinkPlugin.prototype.inited = false;
+        this.inited = false;
 
 
         this.init = function () {
-            if (inited)
+            if (this.inited)
                 return this;
             $('.nav.nav-tabs').append('<li class="active"><a href="#dependency" data-view="linkView" data-toggle="tab">依赖视图</a></li>')
             $.get(this.pluginRoot + "navbar.html", function (data) {
                 $('.tab-content').append(data);
                 $('#dep_filter :radio').on('change', links.filterBiDep)
-                // $('#biDepAppReport').on('click', linkInfoReport.open)
-                // $('#noCatReport').on('click', linkInfoReport.open)
                 $('.linkReport').on('click', linkInfoReport.open)
             })
 
@@ -43,7 +43,7 @@
         }
 
         this.removeAllLinkHints = function () {
-            if (this.inited) {
+            if (LinkPlugin.inited) {
                 linkFloatWindow.close()
                 links.dehighlightAllEdges()
             }
@@ -52,12 +52,11 @@
 
         }
         this.close = function () {
-            if (this.inited)
+            if (LinkPlugin.inited)
                 this.removeAllLinkHints()
         }
     }
 
-    window.LinkPlugin = new LinkPlugin();
     cp.register(window.LinkPlugin);
 
 }).call(this)

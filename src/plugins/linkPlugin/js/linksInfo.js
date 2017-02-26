@@ -9,11 +9,8 @@
 
     lir.open = function (e) {
         var template = e.target.attributes['data-template']
-        var tmpVal;
-        if (!template || !template.value)
-            tmpVal = 'linkInfo.html'
-        else
-            tmpVal = template.value
+        var tmpVal = (template && template.value) ? template.value : 'linkInfo.html';
+
         $('#infoPanel').load(LinkPlugin.pluginRoot + tmpVal, {}, function () {
             $('#infoPanel').on('show.bs.modal', function () {
                 //TODO: this should move to control panel by message
@@ -64,7 +61,7 @@
         }
         tableUtil.draw(table, {
             scrollCollapse: true,
-            scrollY: "300px",
+            scrollY: window.innerHeight * 0.5,
             sorting: [[2, 'desc']],
             "dom": 'Bfltip',
             buttons: [
@@ -84,7 +81,7 @@
                 {title: '说明'}
             ],
             {
-                scrollY: "300px",
+                scrollY: window.innerHeight * 0.5,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
@@ -106,9 +103,9 @@
                 {title: '有效性'},
             ],
             {
-                "displayLength": 100,
-                scrollY: "300px",
-                "dom": 'Bflt<"footer">ip',
+                "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
+                scrollY: window.innerHeight * 0.5,
+                "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
                 ],
@@ -116,7 +113,6 @@
             }
         )
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/app-static.json", globalConfig.contextPath + "/service/sso/marks/all/static")
-        // spsWidget.create('domainFilter')
 
     }
     lir.openDbFileValidReport = function () {
@@ -132,8 +128,9 @@
                 {title: '有效性'}
             ],
             {
-                "displayLength": 100,
-                scrollY: "300px",
+                // "displayLength": 100,
+                "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
+                scrollY: window.innerHeight * 0.5,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
@@ -142,7 +139,6 @@
             }
         );
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/marks/all/db-file/static")
-        // spsWidget.create('domainFilter')
 
     }
     lir.showPieChart = function (selectorId, localUrl, remoteUrl) {

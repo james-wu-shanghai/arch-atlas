@@ -7,6 +7,7 @@
         $("#infoPanel").load(SysinfoPlugin.pluginRoot + "sysModal.html", {}, function () {
             var url = globalConfig.localMode ? SysinfoPlugin.pluginRoot + "data/owner.json" : globalConfig.contextPath + "/service/sso/domains/apps/owners";
             $('#infoPanel').modal({backdrop: true})
+            $('#infoPanel .modal-lg').css('width', window.innerWidth - 50)
             $('#infoPanel').on('hidden.bs.modal', sysinfo.close);
             $('#infoPanel .modal-title').html("应用负责人列表")
             var cached = cacheUtil.load(url)
@@ -22,8 +23,8 @@
                     {
                         buttons: ['copy', 'excel', 'print'],
                         dom: 'Bfltip',
-                        scrollY: '300px'
-                    });
+                        scrollY: window.innerHeight * 0.5
+                    })
             else
                 d3.json(url, function (resp) {
                     cacheUtil.setCache(url, resp)
@@ -38,7 +39,7 @@
                         {
                             buttons: ['copy', 'excel', 'print'],
                             dom: 'Bfltip',
-                            scrollY: '300px'
+                            scrollY: window.innerHeight * 0.5
                         });
                 })
         })
