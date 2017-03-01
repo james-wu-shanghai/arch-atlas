@@ -29,9 +29,10 @@
                 lir.openNoCatReport();
             else if (type == 'appDepValidReport')
                 lir.openAppDepValidReport();
-            else if (type == 'dbFileDepValidReport') {
+            else if (type == 'dbFileDepValidReport')
                 lir.openDbFileValidReport()
-            }
+            else if (type == 'interfaceReport')
+                lir.openInterfaceReport()
 
 
             $('#infoPanel').on('hidden.bs.modal', linkInfoReport.close);
@@ -139,6 +140,54 @@
             }
         );
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/marks/all/db-file/static")
+
+    }
+    lir.openInterfaceReport = function () {
+        lir._genericReport(
+            LinkPlugin.pluginRoot + "data/all-interface.json",
+            globalConfig.contextPath + "/service/sso/interface/all/",
+            "接口依赖统计",
+            [
+                {
+                    title: "id",
+                    targets: [0],
+                    visible: false
+                }, {title: 'from'}, {title: "to"}, {title: '接口名称'}, {title: '总共调用'}, {title: '失败调用'},
+                {title: "最短调用时间"}, {title: "最长调用时间"}, {title: "平均调用时间"}, {title: "标准差"}, {title: "95线"}
+            ],
+            {
+                // "displayLength": 100,
+                "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
+                scrollY: window.innerHeight * 0.5,
+                "dom": 'Bfltip',
+                buttons: [
+                    'copy', 'excel', 'print'
+                ],
+                sortAllFields: true,
+                initComplete: function () {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var header = $(column.header()).html();
+                        if (header == 'from' || header == 'to') {
+                            var select = $('<select class="form-control input-sm"><option value=""></option></select>')
+                                .appendTo($(column.footer()).empty())
+                                .on('change', function () {
+                                    var val = $.fn.dataTable.util.escapeRegex(
+                                        $(this).val()
+                                    );
+                                    column
+                                        .search(val ? '^' + val + '$' : '', true, false)
+                                        .draw();
+                                });
+
+                            column.data().unique().sort().each(function (d, j) {
+                                select.append('<option value="' + d + '">' + d + '</option>')
+                            });
+                        }
+                    });
+                }
+            }
+        );
 
     }
     lir.showPieChart = function (selectorId, localUrl, remoteUrl) {

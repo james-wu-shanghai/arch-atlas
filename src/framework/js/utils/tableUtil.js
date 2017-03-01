@@ -1,5 +1,24 @@
 (function () {
         var tu = window.tableUtil = {}
+        tu.defaultSortFunction = function () {
+            this.api().columns().every(function () {
+                var column = this;
+                var select = $('<select class="form-control input-sm"><option value=""></option></select>')
+                    .appendTo($(column.footer()).empty())
+                    .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        column
+                            .search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
+
+                column.data().unique().sort().each(function (d, j) {
+                    select.append('<option value="' + d + '">' + d + '</option>')
+                });
+            });
+        };
         tu.buildTableByArray = function (containerId, columnDefs, array, otherParams) {
             //containerId 是一个selector,带#号的那种
             var table = $('<table class="table table-striped table-hover"></table>')
@@ -19,25 +38,8 @@
                 for (var key in otherParams)
                     params[key] = otherParams[key];
                 if (otherParams.sortAllFields) {
-                    params.initComplete = function () {
-                        this.api().columns().every(function () {
-                            var column = this;
-                            var select = $('<select class="form-control input-sm"><option value=""></option></select>')
-                                .appendTo($(column.footer()).empty())
-                                .on('change', function () {
-                                    var val = $.fn.dataTable.util.escapeRegex(
-                                        $(this).val()
-                                    );
-                                    column
-                                        .search(val ? '^' + val + '$' : '', true, false)
-                                        .draw();
-                                });
-
-                            column.data().unique().sort().each(function (d, j) {
-                                select.append('<option value="' + d + '">' + d + '</option>')
-                            });
-                        });
-                    }
+                    if (!params.initComplete)
+                        params.initComplete = tu.defaultSortFunction
                 }
             }
             table.DataTable(params)
