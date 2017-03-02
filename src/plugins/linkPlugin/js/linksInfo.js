@@ -102,6 +102,7 @@
                 {title: 'ToDomain'},
                 {title: 'ToApp'},
                 {title: '有效性'},
+                {title: '描述'}
             ],
             {
                 "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
@@ -126,7 +127,9 @@
                 {title: '应用'},
                 {title: '存储名称'},
                 {title: '存储类型'},
-                {title: '有效性'}
+                {title: '用户'},
+                {title: '有效性'},
+                {title: '描述'}
             ],
             {
                 // "displayLength": 100,
