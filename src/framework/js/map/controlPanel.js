@@ -26,7 +26,8 @@
             var solar = atlas.scence.getObjectByName(name)
             if (solar) {
                 atlas.trackball.target = solar.position.clone();
-                atlas.camera.position = new THREE.Vector3(300, 300, 300)
+                atlas.camera.position.add(solar.position.clone().sub(atlas.cameraFocus.clone()))
+                atlas.cameraFocus = solar.position.clone()
                 atlas.camera.updateProjectionMatrix()
                 cp.activeSolar(solar, window.innerWidth / 2, window.innerHeight / 2)
             }
@@ -121,6 +122,7 @@
             cp.param = {}
             LinkPlugin.removeAllLinkHints()
             atlas.camera.position.set(300, 300, 300)
+            atlas.cameraFocus = new THREE.Vector3(0, 0, 0)
             atlas.camera.updateProjectionMatrix()
 
             function removeAllSolarBoxes() {

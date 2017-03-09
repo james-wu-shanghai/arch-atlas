@@ -37,8 +37,6 @@
                     progressUtils.progress(90, '3D建模中')
                     atlas.step = 0
                     atlas.raycaster = new THREE.Raycaster();
-
-
                     atlas.scence = initScene()
                     atlas.camera = initCamera();
                     atlas.render = initRender();
@@ -104,6 +102,7 @@
             var camera = new THREE.OrthographicCamera(param.atlasWidth / -scale, param.atlasWidth / scale,
                 param.atlasHeight / scale, param.atlasHeight / -scale, -1000, 5000);
             camera.position.set(300, 300, 300);
+            atlas.cameraFocus = new THREE.Vector3(0, 0, 0);
             return camera;
         }
 
