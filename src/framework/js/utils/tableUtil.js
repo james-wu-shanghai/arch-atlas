@@ -20,7 +20,9 @@
             });
         };
         tu.buildTableByArray = function (containerId, columnDefs, array, otherParams) {
-            //containerId 是一个selector,带#号的那种
+            if (containerId.substring(0, 1) == '#')
+                containerId = containerId.substr(1);
+            //containerId 是一个id,不带#号
             var table = $('<table class="table table-striped table-hover"></table>')
             table.attr("id", containerId + 'Table')
 
@@ -29,7 +31,7 @@
                 ft.push("")
             tu.addFoot(table, ft)
 
-            $(containerId).append(table)
+            $('#' + containerId).append(table)
             var params = {
                 data: array,
                 columns: columnDefs,
@@ -45,7 +47,9 @@
             table.DataTable(params)
         }
         tu.buildTable = function (containerId, heads, foots) {
-            var container = $(containerId)
+            if (containerId.substring(0, 1) == '#')
+                containerId = containerId.substr(1);
+            var container = $('#' + containerId)
             if (container == null) {
                 console.warn('table with id not found:' + containerId)
                 return
@@ -54,7 +58,7 @@
             var table = $('<table class="table table-striped table-hover"></table>')
             var tableId = container.attr('id') + 'Table';
             $('#' + tableId).html("");
-            table.attr('id', tableId)
+            table.attr('id', tableId.substring(1))
 
             if (heads)
                 tableUtil.addHead(table, heads)
@@ -94,9 +98,17 @@
             }
             table.append(tr)
         }
+        tu.defaultTitle = function (titleArray) {
+            var titleMapArray = [];
+            for (var index in titleArray) {
+                titleMapArray.push({'title': titleArray[index]})
+            }
+            return titleMapArray;
+        }
         tu.draw = function (table, params) {
             // params.language.zeroRecords = globalResource.zeroRecords
-            $('#' + table.attr('id')).DataTable(params)
+            var id = table.attr('id');
+            $('#' + id).DataTable(params)
         }
     }
 ).call(this)

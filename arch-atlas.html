@@ -107,14 +107,8 @@
     progressUtils.start('开始加载资源')
 </script>
 <script src="libs/js/three.min.js"></script>
-<script src="libs/js/Detector.js"></script>
 <script>
     progressUtils.progress(20, '加载js脚本中')
-    if (!Detector.webgl) {
-        var warning = Detector.getWebGLErrorMessage();
-        progressUtils.progress(0, warning)
-//        document.getElementById('body').appendChild(warning);
-    }
 </script>
 <script src="libs/js/bootstrap3-typeahead.min.js"></script>
 <script src="libs/js/TrackballControls.js"></script>

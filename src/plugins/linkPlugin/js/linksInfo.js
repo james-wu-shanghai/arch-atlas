@@ -72,15 +72,11 @@
     }
     lir.openNoCatReport = function () {
         lir._genericReport(
+            '#panelInfoBody',
             LinkPlugin.pluginRoot + "data/nocat.json",
             globalConfig.contextPath + "/service/sso/domains/all/nocat",
             "未接入Cat的应用列表",
-            [
-                {title: '域'},
-                {title: '应用'},
-                {title: '负责人'},
-                {title: '说明'}
-            ],
+            tableUtil.defaultTitle(['域', '应用', '负责人', '说明']),
             {
                 scrollY: window.innerHeight * 0.5,
                 "dom": 'Bfltip',
@@ -93,20 +89,15 @@
     }
     lir.openAppDepValidReport = function () {
         lir._genericReport(
+            '#panelInfoBody',
             LinkPlugin.pluginRoot + "data/dep-valid-all.json",
             globalConfig.contextPath + "/service/sso/marks/all",
             "应用依赖合理性统计",
-            [
-                {title: 'FromDomain'},
-                {title: 'FromApp'},
-                {title: 'ToDomain'},
-                {title: 'ToApp'},
-                {title: '有效性'},
-                {title: '描述'}
-            ],
+            tableUtil.defaultTitle(['FromDomain', 'FromApp', 'ToDomain', 'ToApp', '有效性', '描述',]),
             {
                 "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
                 scrollY: window.innerHeight * 0.5,
+                scrollX: true,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
@@ -119,22 +110,15 @@
     }
     lir.openDbFileValidReport = function () {
         lir._genericReport(
+            '#panelInfoBody',
             LinkPlugin.pluginRoot + "data/db-file.json",
             globalConfig.contextPath + "/service/sso/marks/all/db-file",
             "数据库和文件存储依赖统计",
-            [
-                {title: '域'},
-                {title: '应用'},
-                {title: '存储名称'},
-                {title: '存储类型'},
-                {title: '用户'},
-                {title: '有效性'},
-                {title: '描述'}
-            ],
+            tableUtil.defaultTitle(['域', '应用', '存储名称', '存储类型', '用户', '有效性', '描述']),
             {
-                // "displayLength": 100,
                 "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
                 scrollY: window.innerHeight * 0.5,
+                scrollX: true,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
@@ -145,8 +129,10 @@
         lir.showPieChart("#commentList", LinkPlugin.pluginRoot + "data/db-static.json", globalConfig.contextPath + "/service/sso/marks/all/db-file/static")
 
     }
+
     lir.openInterfaceReport = function () {
         lir._genericReport(
+            '#panelInfoBody',
             LinkPlugin.pluginRoot + "data/all-interface.json",
             globalConfig.contextPath + "/service/sso/interface/all/",
             "接口依赖统计",
@@ -155,13 +141,12 @@
                     title: "id",
                     targets: [0],
                     visible: false
-                }, {title: 'from'}, {title: "to"}, {title: '接口名称'}, {title: '总共调用'}, {title: '失败调用'},
-                {title: "最短调用时间"}, {title: "最长调用时间"}, {title: "平均调用时间"}, {title: "标准差"}, {title: "95线"}
-            ],
+                },
+            ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间", "最长调用时间", "平均调用时间", "标准差", "95线"])),
             {
-                // "displayLength": 100,
                 "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
                 scrollY: window.innerHeight * 0.5,
+                scrollX: true,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
@@ -232,21 +217,21 @@
         })
         $('#panelInfoBody').after(eclipseButton)
     }
-    lir._genericReport = function (localUrl, remoteUrl, head, title, tableParam) {
+    lir._genericReport = function (id, localUrl, remoteUrl, head, titles, tableParam) {
         var url = globalConfig.localMode ?
             localUrl : remoteUrl
-        $('#infoPanel .modal-title').html(head)
+        $('#infoPanel .modal-titles').html(head)
         var cacheFound = cacheUtil.load('#' + url)
         if (cacheFound) {
-            tableUtil.buildTableByArray('#panelInfoBody',
-                title,
+            tableUtil.buildTableByArray(id,
+                titles,
                 cacheFound,
                 tableParam
             )
         } else
             d3.json(url, function (response) {
-                tableUtil.buildTableByArray('#panelInfoBody',
-                    title,
+                tableUtil.buildTableByArray(id,
+                    titles,
                     response,
                     tableParam
                 )
@@ -254,11 +239,7 @@
             })
     }
     lir.openLinkInfo = function () {
-        var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数', '操作'])
-        var edge = lir.edge;
-        $('#infoPanel .modal-title').html("从域<strong> " + edge.from + "</strong> 到域 <strong>" + edge.to + "</strong> 的应用依赖列表")
-        for (var i = 0; i < edge.appConns.length; i++) {
-            var appConn = edge.appConns[i]
+        function addCommentButton(edge, appConn) {
             var commentButton = $('<button class="btn btn-danger glyphicon glyphicon-comment" title="评论" data-toggle="collapse" data-target="#commentList"></button>')
             var commentInfo = edge.from + "|" + edge.to + "|" + appConn.from + "|" + appConn.to;
             commentButton.attr('data-info', commentInfo)
@@ -267,12 +248,65 @@
 
                 $('#submitComments').attr('data-info', button.target.attributes['data-info'].value);
                 $('#commentHead h4').text("添加 " + info.split("|")[2] + " -> " + info.split("|")[3] + " 的评论")
-
-
                 lir.showComments(info.split("|")[2], info.split("|")[3]);
                 return true;
             })
-            tableUtil.addContent(table, [appConn.from, appConn.to, appConn.catcnt, commentButton])
+            return commentButton;
+        }
+
+        function addInterfaceInfo(appConn) {
+            var interfaceButton = $('<button class="btn btn-danger glyphicon glyphicon-record" title="接口信息"></button>')
+            interfaceButton.attr("data-from-app", appConn.from)
+            interfaceButton.attr("data-to-app", appConn.to)
+            interfaceButton.on("click", function (button) {
+                var fromApp = button.target.attributes['data-from-app'].value
+                var toApp = button.target.attributes['data-to-app'].value
+                var status = button.target.attributes['data-show']
+                if (!status || status.value != 'true') {
+                    var $tr = $("<tr></tr>");
+                    var $td = $("<td colspan='99'></td>");
+                    var id = "interface_" + fromApp + "_" + toApp;
+                    $td.attr('id', id)
+                    $tr.append($td)
+                    $($(button.target).context.parentNode.parentNode).after($tr)
+                    $(button.target).attr("data-show", "true")
+                    lir._genericReport(
+                        id,
+                        LinkPlugin.pluginRoot + "/data/interface-app.json",
+                        globalConfig.contextPath + "/service/sso/interface/" + fromApp + "/" + toApp,
+                        "接口统计",
+                        [
+                            {
+                                title: "id",
+                                targets: [0],
+                                visible: false
+                            },
+                        ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间", "最长调用时间", "平均调用时间", "标准差", "95线"])),
+                        {
+                            "paging": false,
+                        }
+                    )
+
+                } else {
+                    var next = $($(button.target).context.parentNode.parentNode).next();
+                    next.html("")
+                    next.remove()
+                    $(button.target).attr("data-show", "false")
+                }
+            })
+            return interfaceButton
+        }
+
+        var table = tableUtil.buildTable('#panelInfoBody', ['调入方', '调出方', '记录到的调用次数', '操作'])
+        var edge = lir.edge;
+        $('#infoPanel .modal-title').html("从域<strong> " + edge.from + "</strong> 到域 <strong>" + edge.to + "</strong> 的应用依赖列表")
+
+
+        for (var i = 0; i < edge.appConns.length; i++) {
+            var appConn = edge.appConns[i]
+            var commentButton = addCommentButton(edge, appConn);
+            var interfaceInfoButton = addInterfaceInfo(appConn);
+            tableUtil.addContent(table, [appConn.from, appConn.to, appConn.catcnt, [commentButton, interfaceInfoButton]])
         }
         tableUtil.draw(table, {
             "displayLength": 100,
@@ -298,7 +332,6 @@
                     {title: "评论人"},
                 ],
                 searching: false,
-//                displayLength: 20,
                 info: false,
                 paging: false,
                 scrollY: "100px",
