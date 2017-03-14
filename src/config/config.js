@@ -25,6 +25,9 @@
         depDownloadLink: function (name) {
             return '#' + name;
         },
+        domainInterfaceDownloadLink: function (name) {
+            return '#' + name;
+        },
         title: 'arch-atlas',
         appListHead: ['planet name', 'total call out', 'planet type'],
         domainCallOutTotal: " Total call out times:"

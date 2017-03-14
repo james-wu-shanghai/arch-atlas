@@ -143,7 +143,8 @@
         reportUtil.drawPieChart('#solarPie', dataset, {height: 200, width: 200, radius: 200 / 3})
     }
     solarReport.renderDepLines = function (solar) {
-        $('#depControl > a').attr("href", globalResource.depDownloadLink(solar.name))
+        $('#depControl > #deps').attr("href", globalResource.depDownloadLink(solar.name))
+        $('#depControl > #interfaces').attr("href", globalResource.domainInterfaceDownloadLink(solar.name))
         var edgesInfo = atlas.edgesMap[solar.name]
         if (edgesInfo == null || edgesInfo.stat == null)
             return
