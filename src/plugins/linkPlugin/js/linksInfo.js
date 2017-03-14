@@ -142,15 +142,16 @@
                     targets: [0],
                     visible: false
                 },
-            ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间", "最长调用时间", "平均调用时间", "标准差", "95线"])),
+            ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间(ms)", "最长调用时间(ms)", "平均调用时间(ms)", "标准差", "95线(ms)"])),
             {
-                "lengthMenu": [[200, 500, -1], [200, 500, "All"]],
+                "lengthMenu": [[200, 500], [200, 500]],
                 scrollY: window.innerHeight * 0.5,
                 scrollX: true,
                 "dom": 'Bfltip',
                 buttons: [
                     'copy', 'excel', 'print'
                 ],
+                truncToLong: true,
                 sortAllFields: true,
                 initComplete: function () {
                     this.api().columns().every(function () {
@@ -220,7 +221,7 @@
     lir._genericReport = function (id, localUrl, remoteUrl, head, titles, tableParam) {
         var url = globalConfig.localMode ?
             localUrl : remoteUrl
-        $('#infoPanel .modal-titles').html(head)
+        $('#infoPanel .modal-title').html(head)
         var cacheFound = cacheUtil.load('#' + url)
         if (cacheFound) {
             tableUtil.buildTableByArray(id,
@@ -281,9 +282,10 @@
                                 targets: [0],
                                 visible: false
                             },
-                        ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间", "最长调用时间", "平均调用时间", "标准差", "95线"])),
+                        ].concat(tableUtil.defaultTitle(['from', "to", '接口名称', '总共调用', '失败调用', "最短调用时间(ms)", "最长调用时间(ms)", "平均调用时间(ms)", "标准差", "95线(ms)"])),
                         {
                             "paging": false,
+                            truncToLong: true,
                         }
                     )
 

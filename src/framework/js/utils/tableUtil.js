@@ -21,8 +21,8 @@
         };
         tu.buildTableByArray = function (containerId, columnDefs, array, otherParams) {
             if (containerId.substring(0, 1) == '#')
-                containerId = containerId.substr(1);
-            //containerId 是一个id,不带#号
+                containerId = containerId.substring(1)
+            //containerId 是一个selector,带#号的那种
             var table = $('<table class="table table-striped table-hover"></table>')
             table.attr("id", containerId + 'Table')
 
@@ -32,6 +32,17 @@
             tu.addFoot(table, ft)
 
             $('#' + containerId).append(table)
+            if (otherParams.truncToLong) {
+                var arrObj = array
+                for (var i = 0; i < arrObj.length; i++) {
+                    for (var j = 0; j < arrObj[i].length; j++) {
+                        if (arrObj[i][j].length > 80)
+                            arrObj[i][j] = escape(arrObj[i][j]).substring(0, 80) + "..."
+                    }
+                }
+                array = arrObj
+            }
+
             var params = {
                 data: array,
                 columns: columnDefs,
